@@ -13,7 +13,7 @@ def tag(
 
     if new:
         if new in mytags:
-            click.echo(f'tag {new} already exists')
+            click.echo(f'🦇 tag {new} already exists')
             exit(1)
         else:
             mysessions = get_sessions()
@@ -26,12 +26,11 @@ def tag(
             }
 
             rewrite_data(new_data)
-            click.echo(f'new tag - {new}')
+            click.echo(f'🦇 new tag - {new}')
             exit(0)
     else:
         if mytags == []:
-            click.echo('you do not have tags yet')
-            click.echo('type "raw tags --new <NAME>" to add a new tag')
+            click.echo('🦇 your tag list is empty right now')
             exit(1)
         for tag in mytags:
             click.echo(f'* {tag}')

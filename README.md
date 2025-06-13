@@ -1,5 +1,5 @@
-# raww ⌛️
+# 🦇 raww 
 
-A CLI tool for tracking study and work time 🎯
+A CLI tool for tracking study and work time 👾
 
 #### by dvodnenko

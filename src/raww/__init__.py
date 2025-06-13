@@ -10,7 +10,7 @@ from .sessions import begin_session, finish_session, pause_session
 def show_version():
     v = version('raww')
 
-    click.echo(f'raww {v}')
+    click.echo(f'🦇 raww v{v}')
 
 
 @click.group()

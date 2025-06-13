@@ -4,6 +4,7 @@ import click
 
 from .data import rewrite_data, get_tags, get_active_session, get_sessions, read_data
 
+
 @click.command('begin')
 @click.argument('tags', nargs=-1)
 def begin_session(tags: tuple):
@@ -11,11 +12,11 @@ def begin_session(tags: tuple):
     active_session = get_active_session()
 
     if active_session:
-        click.echo('you already started a session')
+        click.echo('🦇 there is already an active session')
         exit(1)
 
     if tags == ():
-        click.echo('you should provide at least one tag to begin a session')
+        click.echo('🦇 at least one tag is required to begin a new session')
         exit(1)
     
     mytags = get_tags()
@@ -23,7 +24,7 @@ def begin_session(tags: tuple):
 
     for tag in tags:
         if tag not in mytags:
-            click.echo(f'tag {tag} does not exist yet')
+            click.echo(f'🦇 tag {tag} does not exist yet')
             exit(1)
 
     start = datetime.datetime.now()
@@ -40,7 +41,15 @@ def begin_session(tags: tuple):
 
     rewrite_data(new_data)
 
-    click.echo('session started')
+    click.echo('🦇 session started')
+    click.echo()
+
+    if len(tags) == 1:
+        click.echo(f'tag - {tags[0]}')
+    else:
+        click.echo(f'tags: * {tags[0]}')
+        for tag in tags[1:]:
+            click.echo(f'      * {tag}')
 
 @click.command('finish')
 def finish_session():
@@ -48,7 +57,7 @@ def finish_session():
     active_session = get_active_session()
 
     if not active_session:
-        click.echo('you did not start a session yet')
+        click.echo('🦇 there is no active session yet')
         exit(1)
 
     mytags = get_tags()
@@ -70,6 +79,8 @@ def finish_session():
     timedelta -= minutes * 60
     seconds = timedelta
 
+    tags = [*(active_session.get('tags'))]
+
     total_time = {
         'hours': hours,
         'minutes': minutes,
@@ -77,7 +88,7 @@ def finish_session():
     }
 
     new_session = {
-        'tags': [*(active_session.get('tags'))],
+        'tags': [*tags],
         'start': {
             'date': f'{start_date}',
             'time': f'{start_time}'
@@ -98,8 +109,24 @@ def finish_session():
 
     rewrite_data(new_data=new_data)
 
-    click.echo('session finished')
-    click.echo('')
+    click.echo('the session has ended 🦇')
+    click.echo()
+    
+    if len(tags) == 1:
+        click.echo(f'you did {tags[0]}')
+    else:
+        click.echo(f'you did: * {tags[0]}')
+        for tag in tags[1:]:
+            click.echo(f'         * {tag}')
+
+    work_time_info = f'for '
+    if hours != 0:
+        work_time_info += f'{hours}h '
+    if minutes != 0:
+        work_time_info += f'{minutes}m '
+    work_time_info += f'{seconds}s'
+
+    click.echo(work_time_info)
 
 @click.command('pause')
 def pause_session():
@@ -107,12 +134,14 @@ def pause_session():
     active_session = get_active_session()
 
     if not active_session:
-        click.echo('you did not start a session yet')
+        click.echo('🦇 there is no active session yet')
         exit(1)
 
     tags: list = active_session.get('tags')
     breaks: int = active_session.get('breaks')
     data = read_data()
+
+    click.echo('🦇 the session is paused')
     
     while True:
         time.sleep(1)
