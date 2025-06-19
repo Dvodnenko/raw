@@ -3,6 +3,7 @@ import time, datetime
 import click
 
 from .data import rewrite_data, get_tags, get_active_session, get_sessions, read_data
+from .views import format_work_time_info
 
 
 @click.command('begin')
@@ -93,7 +94,7 @@ def finish_session():
             'date': f'{start_date}',
             'time': f'{start_time}'
         },
-        'end time': {
+        'end': {
             'date': f'{end_date}',
             'time': f'{end_time}'
         },
@@ -111,22 +112,16 @@ def finish_session():
 
     click.echo('the session has ended 🦇')
     click.echo()
+
+    work_time_info = format_work_time_info(hours=hours, minutes=minutes, seconds=seconds)
     
     if len(tags) == 1:
-        click.echo(f'you did {tags[0]}')
+        click.echo(f'you did {tags[0]} for {work_time_info}')
     else:
         click.echo(f'you did: * {tags[0]}')
         for tag in tags[1:]:
             click.echo(f'         * {tag}')
-
-    work_time_info = f'for '
-    if hours != 0:
-        work_time_info += f'{hours}h '
-    if minutes != 0:
-        work_time_info += f'{minutes}m '
-    work_time_info += f'{seconds}s'
-
-    click.echo(work_time_info)
+            click.echo(f'for {work_time_info}')
 
 @click.command('pause')
 def pause_session():
