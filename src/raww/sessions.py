@@ -58,16 +58,20 @@ def create_matrix(sessions: list):
 @click.option('--lxd', type=int) # lxd - think of it like "last X days". for instance: "--lxd 10" means "last 10 days"
 def check_sessions(dr: str, lxd: int):
 
-    if (bool(dr) == bool(lxd)) or (dr is None and lxd is None):
-        click.echo('🦇 you should provide --dr or --lxd option, but you cannot provide both of them')
+    if dr is None and lxd is None:
+        click.echo('🦇 you should provide --dr or --lxd option')
         exit(1)
 
-    if lxd:
+    if dr != None and lxd != None:
+        click.echo('🦇 you cannot provide both --dr and --lxd options')
+        exit(1)
+
+    if lxd != None:
         if lxd <= 0:
             click.echo(f'🦇 you cannot see info about "last {lxd} days". lxd should be grater than 0')
             exit(1)
-        elif lxd > 0:
-            dr = f'{datetime.date.today() - datetime.timedelta(days=lxd)}..{datetime.date.today()}'
+        else:
+            dr = f'{datetime.date.today() - datetime.timedelta(days=(lxd-1))}..{datetime.date.today()}'
 
 
     all_sessions = get_sessions()
