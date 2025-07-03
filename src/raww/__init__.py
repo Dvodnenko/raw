@@ -1,27 +1,16 @@
-from importlib.metadata import version
-
 import click
 
 from .tags import tag
 from .sessions import begin_session, finish_session, pause_session, check_sessions
 
 
-@click.command('version')
-def show_version():
-    v = version('raww')
-
-    click.echo(f'🦇 raww v{v}')
-
-
 @click.group()
+@click.version_option('0.7.3', package_name='raww')
 def raw():
     ...
 
 
 ## commands ##
-
-# std 
-raw.add_command(show_version)
 
 # tags
 raw.add_command(tag)
