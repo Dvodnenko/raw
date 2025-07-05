@@ -4,7 +4,8 @@ from pathlib import Path
 
 CONFIG_DIR = Path.home() / '.config' / 'raww'
 CONFIG_FILE = CONFIG_DIR / 'config.json'
-DEFAULT_RAWW_DF = Path.home() / '.rawdata.json' # DF stands for data file
+DEFAULT_RAWW_DIR = Path.home() / '.raww'
+DEFAULT_RAWW_DF = DEFAULT_RAWW_DIR / 'data.json' # DF stands for data file
 
 
 def load_config():
