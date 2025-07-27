@@ -4,6 +4,8 @@ A CLI Tool for Tracking Study and Work Time 👾
 
 Still under development... 🛠️
 
+Current Version - **v1.3.4**
+
 ## Installation
 
 ### Homebrew
