@@ -7,6 +7,7 @@ class Entity:
 
     ID: int
     group: Path # path to the parent folder
+    title: str
     
     @property
     def short_ID(self): 
