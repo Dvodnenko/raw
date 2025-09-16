@@ -1,13 +1,12 @@
-import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass(eq=False)
 class Entity:
 
-    ID: str = field(init=False, 
-                    default=uuid.uuid4().hex)
-    group: str # path to the parent folder
+    ID: int
+    group: Path # path to the parent folder
     
     @property
     def short_ID(self): 
