@@ -9,11 +9,12 @@ from .group.interfaces import GroupRepository
 from .base.interfaces import FileRepository
 from .base.enums import Color
 from .config.entity import Config
+from .ucr.entity import UseCaseResponse
 
 
 __all__ = [
     'Session', 'SessionRepository', 'SessionIsActiveError',
     'Tag', 'TagRepository',
     'Config', 'Color', 'FileRepository',
-    'Group', 'GroupRepository'
+    'Group', 'GroupRepository', 'UseCaseResponse'
 ]
