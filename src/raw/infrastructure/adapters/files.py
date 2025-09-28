@@ -1,5 +1,6 @@
 from pathlib import Path
 import pickle
+import subprocess
 
 from ...domain import EntityRepository, Entity
 
@@ -13,8 +14,8 @@ class PickleFileRepository(EntityRepository):
 
     ext: str | None = ".pickle"
 
-    def dump(self, basepath: Path, entity: Entity):
-        _path = basepath / f"{entity.subpath}.{self.ext}"
+    def dump(self, rootgroup: Path, entity: Entity):
+        _path = rootgroup / f"{entity.subpath}.{self.ext}"
         with open(_path, "rb") as file:
             pickle.dump(entity, file)
         return None
@@ -23,6 +24,10 @@ class PickleFileRepository(EntityRepository):
         with open(path, "rb") as file:
             data = pickle.load(file)
         return data
+    
+    def mv(self, current: Path, new: Path):
+        subprocess.run(['mv', '-i', current, new])
+        return None
 
 
 class PickleGroupRepository(EntityRepository):
@@ -32,8 +37,8 @@ class PickleGroupRepository(EntityRepository):
 
     ext: str | None = ".pickle"
 
-    def dump(self, basepath: Path, entity: Entity):
-        group_path = basepath / f"{entity.subpath}"
+    def dump(self, rootgroup: Path, entity: Entity):
+        group_path = rootgroup / f"{entity.subpath}"
         self_path = group_path / f".self.{self.ext}"
         with open(self_path, "rb") as file:
             pickle.dump(entity, file)
@@ -43,3 +48,7 @@ class PickleGroupRepository(EntityRepository):
         with open(path/f".self.{self.ext}", "rb") as file:
             data = pickle.load(file)
         return data
+
+    def mv(self, current: Path, new: Path):
+        subprocess.run(['mv', '-i', current, new])
+        return None

@@ -9,7 +9,6 @@ class TagService:
     
     def create(self, tag: Tag) -> UseCaseResponse[Tag]:
         _path = self.config.core.raw_path / tag.subpath / f"{self.prefix}{tag.title}.{self.repo.ext}"
-        self.repo.load(_path)
         if _path.exists():
             return UseCaseResponse(
                 status_code=3,
@@ -22,11 +21,18 @@ class TagService:
         )
     
     def update(self, subpath: str, new: Tag) -> UseCaseResponse[Tag]:
-        _path = self.config.core.raw_path / subpath / f"{self.prefix}{new.title}.{self.repo.ext}"
-        if not _path.exists() or not _path.is_file():
+        current_path = self.config.core.raw_path / subpath / f"{self.prefix}{new.title}.{self.repo.ext}"
+        if not current_path.exists() or not current_path.is_file():
             return UseCaseResponse(
                 message=f"Tag not found: {subpath}", status_code=4
             )
+        new_path = self.config.core.raw_path / new.subpath / f"{self.prefix}{new.title}.{self.repo.ext}"
+        if new_path.exists():
+            return UseCaseResponse(
+                status_code=3,
+                message=f"Tag already exists: {new.subpath}/{new.title}", 
+            )
+        self.repo.mv(current_path, new_path)
         self.repo.dump(new)
         return UseCaseResponse(
             message=f"Tag updated: {subpath}"
