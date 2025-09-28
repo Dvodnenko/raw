@@ -11,6 +11,6 @@ def load_config() -> Config:
     with open(CONFIG_FILE_PATH, "r") as file:
         data: dict = json.load(file)
 
-    core = CoreSettings(rootgroup=data.get("rootgroup"))
+    core = CoreSettings(rootgroup=Path(data.get("rootgroup")))
     config = Config(core=core)
     return config

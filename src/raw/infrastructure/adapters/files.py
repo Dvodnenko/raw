@@ -12,11 +12,11 @@ class PickleFileRepository(EntityRepository):
     Used to work with `FileEntities`, such as Sessions, Tags etc.
     """
 
-    ext: str | None = ".pickle"
+    ext: str | None = "pickle"
 
     def dump(self, rootgroup: Path, entity: Entity):
         _path = rootgroup / f"{entity.subpath}.{self.ext}"
-        with open(_path, "rb") as file:
+        with open(_path, "wb") as file:
             pickle.dump(entity, file)
         return None
 
@@ -35,17 +35,17 @@ class PickleGroupRepository(EntityRepository):
     Groups repository `.pickle` implementation
     """
 
-    ext: str | None = ".pickle"
+    ext: str | None = "pickle"
 
     def dump(self, rootgroup: Path, entity: Entity):
         group_path = rootgroup / f"{entity.subpath}"
-        self_path = group_path / f".self.{self.ext}"
-        with open(self_path, "rb") as file:
+        self_path = group_path / f"self.{self.ext}"
+        with open(self_path, "wb") as file:
             pickle.dump(entity, file)
         return None
 
     def load(self, path: Path) -> Entity:
-        with open(path/f".self.{self.ext}", "rb") as file:
+        with open(path / f"self.{self.ext}", "rb") as file:
             data = pickle.load(file)
         return data
 
