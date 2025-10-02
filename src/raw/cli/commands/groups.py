@@ -5,16 +5,16 @@ import click
 from ...domain import Group, Color, EntityType
 from ...application import GroupService
 from ...infrastructure import PickleDirectoryRepository
+from ..config import load_config
 
 
 @click.command("all")
 @click.pass_context
 def groups_all(ctx: click.Context):
-    rg = ctx.obj.core.rootgroup
-    for group in rg.rglob("*"):
-        if group.is_dir():
-            res = group.relative_to(rg)
-            click.echo(res)
+    service = GroupService(repo=PickleDirectoryRepository, config=ctx.obj)
+    for group in service.yield_all():
+        click.echo(group)
+
 
 
 @click.command("create")
@@ -33,8 +33,14 @@ def groups_create(ctx: click.Context, path: str, icon: str, color: str):
     exit(ucr.status_code)
 
 
+def complete_groups(ctx, param, incomplete):
+    config = load_config()
+    service = GroupService(repo=PickleDirectoryRepository, config=config)
+    return [group for group in service.yield_all() if group.startswith(incomplete)]
+
+
 @click.command("update")
-@click.argument("path")
+@click.argument("path", shell_complete=complete_groups)
 @click.option("--path", "new_path", default="")
 @click.option("--icon", default="")
 @click.option("--color", 
@@ -54,7 +60,7 @@ def groups_update(ctx: click.Context, path: str, new_path: str, icon: str, color
 
 
 @click.command("delete")
-@click.argument("path")
+@click.argument("path", shell_complete=complete_groups)
 @click.pass_context
 def groups_delete(ctx: click.Context, path: str):
     if os.geteuid() != 0:
