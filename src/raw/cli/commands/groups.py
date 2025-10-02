@@ -9,12 +9,21 @@ from ..config import load_config
 
 
 @click.command("all")
+@click.option("-o", is_flag=True)
+@click.option("-f", is_flag=True)
 @click.pass_context
-def groups_all(ctx: click.Context):
-    service = GroupService(repo=PickleDirectoryRepository, config=ctx.obj)
+def groups_all(ctx: click.Context, o, f):
+    repo = PickleDirectoryRepository()
+    service = GroupService(repo=repo, config=ctx.obj)
     for group in service.yield_all():
-        click.echo(group)
-
+        if o:
+            obj = repo.load(ctx.obj.core.rootgroup / group)
+            click.echo(obj)
+        else:
+            if f:
+                click.echo(ctx.obj.core.rootgroup / group)
+                continue
+            click.echo(group)
 
 
 @click.command("create")
