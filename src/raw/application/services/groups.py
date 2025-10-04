@@ -27,3 +27,10 @@ class GroupService:
             return UseCaseResponse(f"Group already exists: {new.title}", status_code=5)
         self.repository.update(title, new)
         return UseCaseResponse(f"Group updated: {title}")
+
+    def delete(self, title: Path, force: bool = False):
+        group = self.repository.get(title)
+        if not group:
+            return UseCaseResponse(f"Group not found: {title}", status_code=4)
+        self.repository.delete(title)
+        return UseCaseResponse(f"Group deleted: {title}")
