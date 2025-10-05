@@ -7,7 +7,6 @@ from ..session.exceptions import SessionIsActiveError
 
 @dataclass(kw_only=True, eq=False)
 class Session(Entity):
-    refs: list[Entity]
     start: datetime
     message: str | None = field(default=None, kw_only=True)
     summary: str | None = field(default=None, kw_only=True)
