@@ -21,6 +21,9 @@ class GroupService:
                 return UseCaseResponse(f"Group not found: {group.parent}", status_code=4)
         self.repository.create(group)
         return UseCaseResponse(f"Group created: {group.title}")
+    
+    def get(self, title: str) -> Group | None:
+        return self.repository.get(title)
         
     def update(self, title: Path, new: Group):
         if not self.repository.get(title):
