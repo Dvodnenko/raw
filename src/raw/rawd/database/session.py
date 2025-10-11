@@ -6,7 +6,7 @@ from ...config import load_config
 
 conf = load_config()
 engine = create_engine(
-    conf.get("data_file"), 
+    conf.get("data_file_path"), 
     echo=conf.get("echo")
 )
 Session = sessionmaker(bind=engine)
