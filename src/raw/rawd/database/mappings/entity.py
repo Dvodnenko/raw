@@ -1,37 +1,47 @@
-from typing import Optional
-from dataclasses import dataclass
+from sqlalchemy import (Table, Column, Integer, 
+                        String, ForeignKey, UniqueConstraint)
+from sqlalchemy.orm import relationship
 
-from sqlalchemy import Integer, String, UniqueConstraint, ForeignKey, Enum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from ..base import Base
-from ...enums.color import Color
+from ...entities import Entity
+from ..orm_registry import mapping_registry
 
 
-@dataclass
-class Entity(Base):
-    __tablename__ = "entities"
+entities_table = Table(
+    "entities", mapping_registry.metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("type", String(50)),
+    Column("parent_id", Integer, 
+           ForeignKey("entities.id", ondelete="CASCADE"), nullable=True),
+    Column("title", String, nullable=False),
+    UniqueConstraint("title", "type", name="uq_entities_title_type"),
+)
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True)
-    title: Mapped[str] = mapped_column(String, nullable=False)
-    color: Mapped[Color] = mapped_column(
-        Enum(Color, name="color_enum", create_type=True), 
-        default=Color.WHITE, nullable=False)
-    type: Mapped[str] = mapped_column(String)
-    parent_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("entities.id"), default=None)
+entity_refs_table = Table(
+    "entity_refs", mapping_registry.metadata,
+    Column("entity_id", Integer, 
+           ForeignKey("entities.id", ondelete="CASCADE"), primary_key=True),
+    Column("ref_id", Integer, 
+           ForeignKey("entities.id", ondelete="CASCADE"), primary_key=True),
+)
 
-    parent: Mapped[Optional["Entity"]] = relationship(
-        back_populates="children", remote_side=[id])
-    children: Mapped[list["Entity"]] = relationship(
-        back_populates="parent", cascade="all, delete-orphan")
-
-    __mapper_args__ = {
-        "polymorphic_identity": "entity",
-        "polymorphic_on": type,
-        "with_polymorphic": "*",
-    }
-    __table_args__ = (
-        UniqueConstraint("title", "type", name="uq_title_n_type")
+def map_entities_table():
+    mapping_registry.map_imperatively(
+        Entity,
+        entities_table,
+        polymorphic_on=entities_table.c.type,
+        polymorphic_identity="entity",
+        properties={
+            "refs": relationship(
+                "Entity",
+                secondary=entity_refs_table,
+                primaryjoin=entities_table.c.id == entity_refs_table.c.entity_id,
+                secondaryjoin=entities_table.c.id == entity_refs_table.c.ref_id,
+                lazy="joined",
+            ),
+            "parent": relationship(
+                "Entity",
+                remote_side=entities_table.c.id,
+                backref="children"
+            )
+        }
     )

@@ -1,18 +1,24 @@
-from dataclasses import dataclass
+from sqlalchemy import Table, Column, Integer, ForeignKey, String, Enum
 
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
-
-from ..base import Base
+from ...entities import Folder, Entity, Color
+from ..orm_registry import mapping_registry
 
 
-@dataclass
-class Folder(Base):
-    __tablename__ = "folders"
+folders_table = Table(
+    "folders",
+    mapping_registry.metadata,
+    Column("id", Integer, ForeignKey("entities.id"), 
+           primary_key=True, autoincrement=True),
+    Column("color", 
+           Enum(Color, name="color_enum", create_type=True),
+           nullable=False, default=Color.WHITE
+    ),
+    Column("icon", String, nullable=False, default="")
+)
 
-    id: Mapped[int] = mapped_column(
-        ForeignKey("entities.id"), primary_key=True)
 
-    __mapper_args__ = {
-        "polymorphic_identity": "folder",
-    }
+def map_folders_table():
+    mapping_registry.map_imperatively(
+        Folder, folders_table, inherits=Entity, 
+        polymorphic_identity="folder",
+    )
