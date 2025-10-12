@@ -1,4 +1,5 @@
 from typing import Optional
+from dataclasses import dataclass
 
 from sqlalchemy import Integer, String, UniqueConstraint, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,6 +8,7 @@ from ..base import Base
 from ...enums.color import Color
 
 
+@dataclass
 class Entity(Base):
     __tablename__ = "entities"
 
