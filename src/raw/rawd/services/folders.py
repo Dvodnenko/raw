@@ -8,7 +8,8 @@ class FolderService:
     def __init__(self):
         self.repository = saFolderRepository(Session())
 
-    def create(self, folder: Folder) -> Response:
+    def create(self, args: list, flags: list, **kwargs) -> Response:
+        folder = Folder(**kwargs)
         if self.repository.get(folder.title):
             return Response(f"Folder already exists: {folder.title}")
         if not folder.parentstr == "":
@@ -17,25 +18,29 @@ class FolderService:
         self.repository.create(folder)
         return Response(f"Folder created: {folder.title}")
     
-    def get(self, title: str) -> Folder | None:
-        return self.repository.get(title)
+    def get(self, args: list, flags: list, **kwargs) -> Folder | None:
+        return self.repository.get(args[0])
         
-    def update(self, title: str, new: Folder):
-        if not self.repository.get(title):
-            return Response(f"Folder not found: {title}")
+    def update(self, args: list, flags: list, **kwargs):
+        new = Folder(**kwargs)
+        if not self.repository.get(args[0]):
+            return Response(f"Folder not found: {args[0]}")
         if self.repository.get(new.title):
             return Response(f"Folder already exists: {new.title}")
-        self.repository.update(title, new)
-        return Response(f"Folder updated: {title}")
+        self.repository.update(args[0], new)
+        return Response(f"Folder updated: {args[0]}")
 
-    def delete(self, title: str, force: bool = False):
-        folder = self.repository.get(title)
+    def delete(self, args: list, flags: list, **kwargs):
+        folder = self.repository.get(args[0])
+        delete = False
         if not folder:
-            return Response(f"Folder not found: {title}")
+            return Response(f"Folder not found: {args[0]}")
         if folder.children:
-            if force:
-                self.repository.delete(folder)
-            else:
-                return Response(
-                    f"Cannot delete Folder '{title}' because it is not empty")
-        return Response(f"Folder deleted: {title}")
+            if "F" in flags:
+                delete = True
+        else: delete = True
+        if delete:
+            self.repository.delete(folder)
+            return Response(f"Folder deleted: {args[0]}")
+        else:
+            return Response(f"Cannot delete Folder '{args[0]}' because it is not empty")
