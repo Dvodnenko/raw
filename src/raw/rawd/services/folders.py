@@ -12,9 +12,9 @@ class FolderService:
         folder = Folder(**kwargs)
         if self.repository.get(folder.title):
             return Response(f"Folder already exists: {folder.title}")
-        if not folder.parentstr == "":
-            if not self.repository.get(folder.parent):
-                return Response(f"Folder not found: {folder.parent}")
+        if folder.parentstr != "":
+            if not self.repository.get(folder.parentstr):
+                return Response(f"Folder not found: {folder.parentstr}")
         self.repository.create(folder)
         return Response(f"Folder created: {folder.title}")
     
@@ -22,12 +22,10 @@ class FolderService:
         return self.repository.get(args[0])
         
     def update(self, args: list, flags: list, **kwargs):
-        new = Folder(**kwargs)
-        if not self.repository.get(args[0]):
+        current = self.repository.get(args[0])
+        if not current:
             return Response(f"Folder not found: {args[0]}")
-        if self.repository.get(new.title):
-            return Response(f"Folder already exists: {new.title}")
-        self.repository.update(args[0], new)
+        self.repository.update(args[0], **kwargs)
         return Response(f"Folder updated: {args[0]}")
 
     def delete(self, args: list, flags: list, **kwargs):
