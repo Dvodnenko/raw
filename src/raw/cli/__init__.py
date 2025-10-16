@@ -5,11 +5,12 @@ import click
 from ..config import load_config
 from .commands.daemon import daemon_start, daemon_stop
 from .constants import DEFAULT_CONFIG, CONFIG_PATH
+from .proxy import ProxyGroup
 
 
 __version__ = "1.3.4"
 
-@click.group()
+@click.group(cls=ProxyGroup)
 @click.version_option(package_name="raw")
 @click.pass_context
 def raw(ctx: click.Context):
