@@ -8,6 +8,16 @@ SERVICES = {
 }
 
 
+def format_response_json(
+    message: str,
+    status_code: int
+) -> str:
+    return json.dumps({
+        "message": message,
+        "status_code": status_code
+    })
+
+
 def handlecmd(request: str):
     data: dict = json.loads(request)
 
@@ -17,11 +27,11 @@ def handlecmd(request: str):
     
     service_instance = SERVICES[args[0]]()
     method = service_instance.__getattribute__(args[1])
-    
+
     response = method(
         args=args[2:],
         flags=flags,
         **kwargs
     )
 
-    return response.message
+    return format_response_json(*response)

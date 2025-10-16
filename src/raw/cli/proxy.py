@@ -11,5 +11,5 @@ class ProxyGroup(click.Group):
             return cmd_name, cmd, args
         args_, kwargs, flags = parse_cli_args(args)
         response = request(args_, kwargs, flags)
-        click.echo(response)
-        exit(0)
+        click.echo(response["message"])
+        exit(response["status_code"])

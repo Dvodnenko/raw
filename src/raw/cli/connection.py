@@ -2,7 +2,7 @@ import socket
 import json
 
 
-def request(args: list, kwargs: dict, flags: list):
+def request(args: list, kwargs: dict, flags: list) -> dict:
     
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     
@@ -18,6 +18,6 @@ def request(args: list, kwargs: dict, flags: list):
     }
     
     client.sendall(json.dumps(requestobj).encode())
-    response = client.recv(1024).decode()
+    response: dict = json.loads(client.recv(1024).decode())
 
     return response
