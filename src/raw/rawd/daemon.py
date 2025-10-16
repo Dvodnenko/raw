@@ -65,7 +65,7 @@ def main():
         detach_process=True,
     )
 
-    setproctitle.setproctitle("rawd")
+    setproctitle.setproctitle("raw")
 
     context.signal_map = {
         signal.SIGTERM: lambda signum, frame: sys.exit(0),
