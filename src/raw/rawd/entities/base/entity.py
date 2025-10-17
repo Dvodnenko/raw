@@ -6,7 +6,7 @@ from .enums import Color
 @dataclass(eq=False)
 class Entity:
 
-    title: str # /a/b/b, not just c
+    title: str # /a/b/c, not just c
     color: Color = Color.WHITE
     icon: str = ""
 
@@ -20,6 +20,9 @@ class Entity:
     def __post_init__(self):
         if not self.title.startswith("/"):
             self.title = f"/{self.title}"
+
+    def __str__(self):
+        return self.title
 
     def update(self, **kwargs):
         new = self

@@ -16,6 +16,16 @@ class FolderService:
                 return f"Folder not found: {folder.parentstr}", 1
         self.repository.create(folder)
         return f"Folder created: {folder.title}", 0
+    
+    def all(self, args: list, flags: list, **kwargs):
+        sortby = kwargs.get("sortby", "title")
+        folders = self.repository.get_all()
+        folders = sorted(
+            folders,
+            key=lambda f: getattr(f, sortby),
+            reverse="r" in flags
+        )
+        return "".join(f"{f.title}\n" for f in folders), 0
         
     def update(self, args: list, flags: list, **kwargs):
         current = self.repository.get(args[0])

@@ -26,7 +26,7 @@ class saFolderRepository:
 
     def get_all(self) -> list[Folder]:
         query = select(Folder)
-        folders = self.session.scalars(query).all()
+        folders = self.session.scalars(query).unique().all()
         return folders
 
     def update(self, title_: str, **kwargs) -> None:
