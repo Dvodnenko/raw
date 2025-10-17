@@ -9,6 +9,7 @@ class Entity:
     title: str # /a/b/c, not just c
     color: Color = Color.WHITE
     icon: str = ""
+    description: str = ""
 
     refs: list["Entity"] = field(
         default_factory=lambda: [])

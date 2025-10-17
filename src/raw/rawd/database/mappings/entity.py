@@ -1,4 +1,4 @@
-from sqlalchemy import (Table, Column, Integer, Enum,
+from sqlalchemy import (Table, Column, Integer, Text, Enum,
                         String, ForeignKey, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
@@ -13,6 +13,7 @@ entities_table = Table(
     Column("parent_id", Integer, 
            ForeignKey("entities.id", ondelete="CASCADE"), nullable=True),
     Column("title", String, nullable=False),
+    Column("description", Text, nullable=True),
     Column("color", 
            Enum(Color, name="color_enum", create_type=True),
            nullable=False, default=Color.WHITE
