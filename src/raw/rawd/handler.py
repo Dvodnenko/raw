@@ -1,10 +1,12 @@
 import json
 
 from .services.folders import FolderService
+from .services.sessions import SessionService
 
 
 SERVICES = {
-    "folders": FolderService
+    "folders": FolderService(),
+    "sessions": SessionService(),
 }
 
 
@@ -25,7 +27,7 @@ def handlecmd(request: str):
     kwargs = data["kwargs"]
     flags = data["flags"]
     
-    service_instance = SERVICES[args[0]]()
+    service_instance = SERVICES[args[0]]
     method = service_instance.__getattribute__(args[1])
 
     response = method(
