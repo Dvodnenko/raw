@@ -14,9 +14,7 @@ class Entity:
     refs: list["Entity"] = field(
         default_factory=lambda: [])
     parent_id: int = None
-    parent: "Entity" = None
-    children: list["Entity"] = field(
-        default_factory=lambda: [])
+    parent: "Folder" = None
 
     def __post_init__(self):
         if not self.title.startswith("/"):

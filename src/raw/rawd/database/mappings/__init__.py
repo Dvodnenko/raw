@@ -1,5 +1,47 @@
-from .entity import map_entities_table
-from .folder import map_folders_table
+from sqlalchemy.orm import relationship
+
+from ..orm_registry import mapping_registry
+from ...entities import Entity, Folder
+from .entity import entities_table, entity_refs_table
+from .folder import folders_table
+
+
+def map_entities_table():
+    mapping_registry.map_imperatively(
+        Entity,
+        entities_table,
+        polymorphic_on=entities_table.c.type,
+        polymorphic_identity="entity",
+        properties={
+            "refs": relationship(
+                "Entity",
+                secondary=entity_refs_table,
+                primaryjoin=entities_table.c.id == entity_refs_table.c.entity_id,
+                secondaryjoin=entities_table.c.id == entity_refs_table.c.ref_id,
+                lazy="joined",
+            ),
+            "parent": relationship(
+                "Folder", back_populates="children",
+                foreign_keys=[entities_table.c.parent_id]
+            )
+        }
+    )
+
+def map_folders_table():
+    mapping_registry.map_imperatively(
+        Folder, folders_table, inherits=Entity, 
+        polymorphic_identity="folder",
+        inherit_condition=folders_table.c.id == entities_table.c.id,
+        inherit_foreign_keys=[folders_table.c.id],
+        properties={
+            "children": relationship(
+                "Entity",
+                back_populates="parent",
+                cascade="all, delete-orphan",
+                foreign_keys=[entities_table.c.parent_id]
+            ),
+        }
+    )
 
 
 def map_tables():
