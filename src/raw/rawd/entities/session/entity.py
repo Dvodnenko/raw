@@ -7,7 +7,10 @@ from ..session.exceptions import SessionIsActiveError
 
 
 def generate_title():
-    return blake2b(digest_size=10).hexdigest()
+    return blake2b(
+        digest_size=20,
+        data=bytes(datetime.now().isoformat(), encoding="utf-8")
+    ).hexdigest()
 
 
 @dataclass(kw_only=True, eq=False)
