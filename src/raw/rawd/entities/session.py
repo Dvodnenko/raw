@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from hashlib import blake2b
 
-from ..base.entity import Entity
+from .entity import Entity
 
 
 def generate_title():

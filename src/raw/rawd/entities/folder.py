@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from ..base.entity import Entity
+from .entity import Entity
 
 
 @dataclass(kw_only=True, eq=False)
