@@ -17,8 +17,9 @@ class SessionService:
         self.active: Session | None = None
 
     def begin(self, args: list, flags: list, **kwargs) -> tuple[str, int]:
-        if self.get_active():
-            return f"Session is already started: '{self.get_active().title}'", 1
+        active = self.get_active()
+        if active:
+            return f"Session is already started: '{active.title}'", 1
         refs = kwargs.get("refs")
         if refs:
             refs_list = refs.split(",")
@@ -29,6 +30,8 @@ class SessionService:
             kwargs["start"] = datetime.fromisoformat(kwargs.get("start")).replace(microsecond=0)
         else:
             kwargs["start"] = datetime.now().replace(microsecond=0)
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
         session = Session(**kwargs)
         if session.parentstr != "":
             if not self.folders_repository.get(session.parentstr):
@@ -50,6 +53,8 @@ class SessionService:
             kwargs["end"] = datetime.fromisoformat(kwargs.get("end")).replace(microsecond=0)
         else:
             kwargs["end"] = datetime.now().replace(microsecond=0)
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
         kwargs["end"].replace(microsecond=0)
         current_title = session.title
         self.repository.update(current_title, **kwargs)
@@ -92,6 +97,8 @@ class SessionService:
                 query = select(Entity).where(Entity.title.in_(refs_list))
                 entities = self.repository.session.scalars(query).unique().all()
                 kwargs["refs"] = entities
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
         current = self.repository.get(args[0])
         if not current:
             return f"Session not found: {args[0]}", 1

@@ -61,6 +61,8 @@ class FolderService:
                 query = select(Entity).where(Entity.title.in_(links_list))
                 entities = self.repository.session.scalars(query).unique().all()
                 kwargs["links"] = entities
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
         current = self.repository.get(args[0])
         if not current:
             return f"Folder not found: {args[0]}", 1
