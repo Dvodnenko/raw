@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from .base import BaseService
+from sqlalchemy import select
+
 from ..repositories.session import saSessionRepository
 from ..repositories.folder import saFolderRepository
 from ..entities import Session, Entity
@@ -9,31 +10,29 @@ from ..database.funcs import get_all_by_titles
 from ..decorators import provide_conf
 
 
-class SessionService(BaseService):
+class SessionService:
     def __init__(self):
         self.repository = saSessionRepository(ormSession())
         self.folders_repository = saFolderRepository(ormSession())
         self.active: Session | None = None
 
-    def cast_kwargs(self, **kwargs):
-        _tcm = {
-            "color": lambda x: int(x),
-            "links": lambda x: get_all_by_titles(Entity, x.split(",")),
-            "start": lambda x: (datetime.fromisoformat(x).replace(microsecond=0) 
-                                if x else datetime.now().replace(microsecond=0)),
-            "end": lambda x: (datetime.fromisoformat(x).replace(microsecond=0) 
-                                if x else datetime.now().replace(microsecond=0)),
-        }
-        keys = set(_tcm.keys()).intersection(kwargs.keys())
-        for key in keys:
-            kwargs[key] = _tcm[key](kwargs[key])
-        return kwargs
-
     def begin(self, args: list, flags: list, **kwargs) -> tuple[str, int]:
         active = self.get_active()
         if active:
             return f"Session is already started: '{active.title}'", 1
-        session = Session(**self.cast_kwargs(**kwargs))
+        refs = kwargs.get("refs")
+        if refs:
+            refs_list = refs.split(",")
+            query = select(Entity).where(Entity.title.in_(refs_list))
+            entities = self.repository.session.scalars(query).unique().all()
+            kwargs["refs"] = entities
+        if kwargs.get("start"):
+            kwargs["start"] = datetime.fromisoformat(kwargs.get("start")).replace(microsecond=0)
+        else:
+            kwargs["start"] = datetime.now().replace(microsecond=0)
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
+        session = Session(**kwargs)
         if session.parentstr != "":
             if not self.folders_repository.get(session.parentstr):
                 return f"Folder not found: {session.parentstr}", 1
@@ -44,7 +43,19 @@ class SessionService(BaseService):
         session = self.get_active()
         if not session:
             return "Active Session not found", 1
-        kwargs = self.cast_kwargs(**kwargs)
+        refs = kwargs.get("refs")
+        if refs:
+            refs_list = refs.split(",")
+            query = select(Entity).where(Entity.title.in_(refs_list))
+            entities = self.repository.session.scalars(query).unique().all()
+            kwargs["refs"] = entities
+        if kwargs.get("end"):
+            kwargs["end"] = datetime.fromisoformat(kwargs.get("end")).replace(microsecond=0)
+        else:
+            kwargs["end"] = datetime.now().replace(microsecond=0)
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
+        kwargs["end"].replace(microsecond=0)
         current_title = session.title
         self.repository.update(current_title, **kwargs)
         return "Session stoped", 0
@@ -77,7 +88,17 @@ class SessionService(BaseService):
             **s.to_dict()).rstrip()}\n" for s in sessions]).rstrip(), 0
         
     def update(self, args: list, flags: list, **kwargs):
-        kwargs = self.cast_kwargs(**kwargs)
+        refs = kwargs.get("refs")
+        if "refs" in kwargs.keys():
+            if refs is "":
+                kwargs["refs"] = []
+            else:
+                refs_list = refs.split(",")
+                query = select(Entity).where(Entity.title.in_(refs_list))
+                entities = self.repository.session.scalars(query).unique().all()
+                kwargs["refs"] = entities
+        if kwargs.get("color"):
+            kwargs["color"] = int(kwargs["color"])
         current = self.repository.get(args[0])
         if not current:
             return f"Session not found: {args[0]}", 1
