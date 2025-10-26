@@ -29,15 +29,11 @@ class Entity:
         if not self.title.startswith("/"):
             self.title = f"/{self.title}"
 
-    def __str__(self):
-        return self.title
-
     def update(self, **kwargs):
-        new = self
         for key, value in kwargs.items():
-            new.__setattr__(key, value)
-        new.__post_init__()
-        return new
+            self.__setattr__(key, value)
+        self.__post_init__()
+        return self
 
     @property
     def parentstr(self) -> str:

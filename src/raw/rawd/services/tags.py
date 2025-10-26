@@ -1,16 +1,14 @@
-from .base import BaseService
 from ..repositories.tag import saTagRepository
 from ..repositories.folder import saFolderRepository
 from ..entities import Tag, Entity
-from ..database.session import Session
 from ..database.funcs import get_all_by_titles
 from ..decorators import provide_conf
 
 
-class TagService(BaseService):
-    def __init__(self):
-        self.repository = saTagRepository(Session())
-        self.folders_repository = saFolderRepository(Session())
+class TagService:
+    def __init__(self, repository: saTagRepository):
+        self.repository = repository
+        self.folders_repository = saFolderRepository(repository.session)
 
     def cast_kwargs(self, **kwargs):
         _tcm = {

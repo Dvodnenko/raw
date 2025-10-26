@@ -1,5 +1,6 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session as ormSession
+from ..database.session import transaction
 
 from ..entities import Session
 
@@ -8,12 +9,9 @@ class saSessionRepository:
     def __init__(self, session: ormSession):
         self.session = session
 
+    @transaction
     def create(self, session: Session) -> None:
-        if session.parentstr != "":
-            parent = self.get(session.parentstr)
-            session.parent = parent
         self.session.add(session)
-        self.session.commit()
         return None
 
     def get(self, title: str) -> Session | None:
@@ -33,15 +31,16 @@ class saSessionRepository:
         sessions = self.session.scalars(query).unique().all()
         return sessions
 
+    @transaction
     def update(self, title_: str, **kwargs) -> None:
         session = (self.session.query(Session)
                   .filter_by(title=title_)
                   .first())
         session = session.update(**kwargs)
-        self.session.commit()
+        self.session.merge(instance=session)
         return None
 
+    @transaction
     def delete(self, entity: Session) -> None:
         self.session.delete(entity)
-        self.session.commit()
         return None

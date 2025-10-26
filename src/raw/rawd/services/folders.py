@@ -2,14 +2,13 @@ from sqlalchemy import select
 
 from ..repositories.folder import saFolderRepository
 from ..entities import Folder, Entity
-from ..database.session import Session
 from ..database.funcs import get_all_by_titles
 from ..decorators import provide_conf
 
 
 class FolderService:
-    def __init__(self):
-        self.repository = saFolderRepository(Session())
+    def __init__(self, repository: saFolderRepository):
+        self.repository = repository
 
     def create(self, args: list, flags: list, **kwargs) -> tuple[str, int]:
         links = kwargs.get("links")
