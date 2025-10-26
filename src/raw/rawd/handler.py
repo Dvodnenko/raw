@@ -56,7 +56,7 @@ def handlecmd(request: str):
         )
     except Exception as e:
         if "v" in flags:
-            response = f"An error occurred: {e}", 1
+            response = f"An error occurred: {e.with_traceback()}", 1
         else:
             response = "An error occurred", 1
     finally:

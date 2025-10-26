@@ -1,8 +1,8 @@
 from ..repositories.tag import saTagRepository
 from ..repositories.folder import saFolderRepository
-from ..entities import Tag, Entity
+from ..entities import Tag
 from ..database.funcs import get_all_by_titles
-from ..decorators import provide_conf
+from .decorators import provide_conf, cast_kwargs
 
 
 class TagService:
@@ -10,23 +10,11 @@ class TagService:
         self.repository = repository
         self.folders_repository = saFolderRepository(repository.session)
 
-    def cast_kwargs(self, **kwargs):
-        _tcm = {
-            "color": lambda x: int(x),
-            "links": lambda x: get_all_by_titles(Entity, x.split(",")),
-        }
-        keys = set(_tcm.keys()).intersection(kwargs.keys())
-        for key in keys:
-            kwargs[key] = _tcm[key](kwargs[key])
-        return kwargs
-
+    @cast_kwargs(Tag)
     def create(self, args: list, flags: list, **kwargs) -> tuple[str, int]:
-        tag = Tag(**self.cast_kwargs(**kwargs))
+        tag = Tag(**kwargs)
         if self.repository.get(tag.title):
             return f"Tag already exists: {tag.title}", 1
-        if tag.parentstr != "":
-            if not self.folders_repository.get(tag.parentstr):
-                return f"Tag not found: {tag.parentstr}", 1
         self.repository.create(tag)
         return f"Tag created: {tag.title}", 0
     
@@ -51,9 +39,9 @@ class TagService:
         pattern: str = kwargs["__cnf"]["formats"]["tag"]
         return "".join([f"{pattern.format(
             **t.to_dict())}" for t in tags]).rstrip(), 0
-        
+    
+    @cast_kwargs(Tag)
     def update(self, args: list, flags: list, **kwargs):
-        kwargs = self.cast_kwargs(**kwargs)
         current = self.repository.get(args[0])
         if not current:
             return f"Tag not found: {args[0]}", 1

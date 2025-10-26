@@ -28,6 +28,7 @@ def cast_kwargs(
                     kwargs["links"] = []
                 else:
                     kwargs["links"] = get_all_by_titles(
+                        self.repository.session,
                         Entity, 
                         kwargs["links"].split(",")
                     )
