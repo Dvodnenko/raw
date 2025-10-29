@@ -2,7 +2,6 @@ from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from ..database.session import transaction
 
 from ..entities import Folder, Entity
 
@@ -11,24 +10,30 @@ class saFolderRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    @transaction
-    def create(self, folder: Folder) -> None:
+    def create(self, folder: Folder):
         self.session.add(folder)
-        return None
+        self.session.commit()
+        yield
 
-    def get(self, title: str) -> Folder | None:
+    def get(self, title: str):
         query = select(Folder) \
             .where(Folder.title == title)
         obj = self.session.scalars(query).first()
-        return obj
+        yield obj
 
-    def get_all(self) -> list[Folder]:
-        query = select(Folder)
-        folders = self.session.scalars(query).unique().all()
-        return folders
+    def get_all(self, order_by: str = "title"):
+        batch_size = 100
+        offset = 0
+        while True:
+            batch = self.session.query(Folder).order_by(getattr(Folder, order_by)).\
+                limit(batch_size).offset(offset).all()
+            if not batch:
+                break
+            for obj in batch:
+                yield obj
+            offset += batch_size
 
-    @transaction
-    def update(self, title_: str, **kwargs) -> None:
+    def update(self, title_: str, **kwargs):
         folder = (self.session.query(Folder)
                   .filter_by(title=title_)
                   .first())
@@ -40,9 +45,10 @@ class saFolderRepository:
             for c in children:
                 relative = Path(c.title).relative_to(title_)
                 c.title = f"{folder.title}/{relative}"
-        return None
+        self.session.commit()
+        yield
 
-    @transaction
-    def delete(self, entity: Folder) -> None:
+    def delete(self, entity: Folder):
         self.session.delete(entity)
-        return None
+        self.session.commit()
+        yield
