@@ -1,16 +1,19 @@
+import sys
 from typing import Any, Generator
 
-from ..icmds.general import raw_init
-from ..icmds.daemon import daemon_start, daemon_stop
+from ..icmds import (daemon_start_darwin, daemon_stop_darwin, raw_init_darwin)
 
 
-INTERNAL_CMD_MAP = {
-    "init": raw_init,
-    "daemon": {
-        "start": daemon_start,
-        "stop": daemon_stop,
-    },
-}
+if sys.platform.lower() == "darwin":
+    INTERNAL_CMD_MAP = {
+        "init": raw_init_darwin,
+        "daemon": {
+            "start": daemon_start_darwin,
+            "stop": daemon_stop_darwin,
+        },
+    }
+elif sys.platform.lower() == "linux":
+    raise NotImplementedError("Not implemented for linux yet")
 
 
 def drill(
