@@ -1,4 +1,7 @@
 import sys
+import concurrent.futures
+
+import halo
 
 from .utils.parser import parse_cli_args
 from .utils.resolve import resolve_callback
@@ -6,7 +9,15 @@ from .constants import SUPPORTED_SYSTEMS
 
 
 def execute(callback, args, kwargs, flags):
-    yield from callback(args, kwargs, flags)
+
+    spinner = halo.Halo(text="Loading...", spinner="dots", color="white")
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        spinner_process = executor.submit(spinner.start)
+        while not spinner_process.running(): ...
+
+    for i in callback(args, kwargs, flags):
+        spinner.clear()
+        yield i
 
 
 @parse_cli_args
