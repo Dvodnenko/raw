@@ -8,8 +8,8 @@ def request(args: list, kwargs: dict, flags: list):
     
     try:
         client.connect("/tmp/raw.sock")
-    except FileNotFoundError:
-        yield "Daemon is not started", 1
+    except (FileNotFoundError, ConnectionRefusedError):
+        yield "Connection error", 1
         return
 
     requestobj = {
