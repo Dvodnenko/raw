@@ -1,5 +1,4 @@
 import sys
-import concurrent.futures
 
 import halo
 
@@ -10,10 +9,9 @@ from .constants import SUPPORTED_SYSTEMS
 
 def execute(callback, args, kwargs, flags):
 
-    spinner = halo.Halo(text="Loading...", spinner="dots", color="white")
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        spinner_process = executor.submit(spinner.start)
-        while not spinner_process.running(): ...
+    spinner = halo.Halo(text="Loading...", spinner="dots", color="white", 
+                        stream=sys.stderr)
+    spinner.start()
 
     for i in callback(args, kwargs, flags):
         spinner.clear()
