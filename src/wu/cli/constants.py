@@ -12,7 +12,7 @@ DEFAULT_CONFIG = {
     "formats": {
         "folder": "* #{id} \u001b[{color}m{title}\u001b[0m",
         "tag": "* #{id} \u001b[{color}m{title}\u001b[0m",
-        "task": "* #{id} \u001b[{color}m{title}\u001b[0m [{status}] {description}",
+        "task": "* #{id} \u001b[{color}m{title}\u001b[0m [{status}] [{deadline}] {description}",
 
         "session": "#{id} {title}\n{sw}, {sm} {sd} {sy} {sH}:{sM}:{sS} - {eH}:{eM}:{eS} \u001b[42m {total} \u001b[0m\n\t{links}\n\n\t{description}\n\t{summary}",
     }

@@ -17,6 +17,6 @@ class Task(Entity):
             **super().to_dict(),
 
             # Task's itself
-            "deadline": self.deadline,
+            "deadline": self.deadline or "",
             "status": self.status.name,
         }
