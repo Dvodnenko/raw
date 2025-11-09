@@ -5,7 +5,7 @@ from ...constants import CONFIG_PATH, DEFAULT_CONFIG, generate_service, SERVICE_
 from ....common.config import load_config
 
 
-def raw_init(args, kwargs, flags):
+def init(args, kwargs, flags):
     
     ## Config
 
@@ -27,7 +27,7 @@ def raw_init(args, kwargs, flags):
 
     config = load_config()
     service_content = generate_service(config.get("daemon_bin_path", 
-                                              shutil.which("rawd")))
+                                              shutil.which("cos")))
     if not SERVICE_PATH.exists():
         SERVICE_PATH.parent.mkdir(parents=True, exist_ok=True)
         SERVICE_PATH.touch(exist_ok=True)

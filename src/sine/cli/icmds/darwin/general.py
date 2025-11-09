@@ -6,7 +6,7 @@ from ...constants import CONFIG_PATH, DEFAULT_CONFIG, generate_plist, PLIST_PATH
 from ....common.config import load_config
 
 
-def raw_init(args, kwargs, flags):
+def init(args, kwargs, flags):
     
     ## Config
 
@@ -28,7 +28,7 @@ def raw_init(args, kwargs, flags):
 
     config = load_config()
     plist_content = generate_plist(config.get("daemon_bin_path", 
-                                              shutil.which("rawd")))
+                                              shutil.which("cos")))
     if not PLIST_PATH.exists():
         PLIST_PATH.touch(exist_ok=True)
         with open(PLIST_PATH, "wb") as file:

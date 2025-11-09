@@ -1,4 +1,4 @@
-from .darwin.general import raw_init as raw_init_darwin
+from .darwin.general import init as init_darwin
 from .darwin.daemon import daemon_start as daemon_start_darwin
 from .darwin.daemon import daemon_stop as daemon_stop_darwin
 from .darwin.daemon import daemon_load as daemon_load_darwin
@@ -6,7 +6,7 @@ from .darwin.daemon import daemon_unload as daemon_unload_darwin
 from .darwin.daemon import daemon_restart as daemon_restart_darwin
 from .darwin.daemon import daemon_remove as daemon_remove_darwin
 
-from .linux.general import raw_init as raw_init_linux
+from .linux.general import init as init_linux
 from .linux.daemon import daemon_start as daemon_start_linux
 from .linux.daemon import daemon_stop as daemon_stop_linux
 from .linux.daemon import daemon_restart as daemon_restart_linux

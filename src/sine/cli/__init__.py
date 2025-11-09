@@ -2,7 +2,6 @@ import sys
 
 import halo
 
-from .utils.parser import parse_cli_args
 from .utils.resolve import resolve_callback
 from .constants import SUPPORTED_SYSTEMS
 
@@ -18,8 +17,7 @@ def execute(callback, args, kwargs, flags):
         yield i
 
 
-@parse_cli_args
-def raw(args, kwargs, flags):
+def sin(args, kwargs, flags):
 
     try:
         if not args:

@@ -1,3 +1,3 @@
-# Raw 🦇
+# Sine 🦇
 
 Adjustable & Flexible LifeOS

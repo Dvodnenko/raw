@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 
-CONFIG_FILE_PATH = Path.home() / ".config" / "raw" / "config.json"
+CONFIG_FILE_PATH = Path.home() / ".config" / "sine" / "config.json"
 
 
 def load_config() -> dict:
