@@ -1,16 +1,16 @@
 from typing import Callable, Any
 
 
-AKF_TYPE_HINT = Callable[[list[str]], list[Any]]
-def akf_parser(argv: list[str]) -> AKF_TYPE_HINT:
+AFK_TYPE_HINT = Callable[[list[str]], list[Any]]
+def afk_parser(argv: list[str]) -> AFK_TYPE_HINT:
     """
     Parses argv and returns `args` (positional),
     `kwargs` & `flags` (the ones that starts with dash)
     """
 
     args = []
-    kwargs = {}
     flags = []
+    kwargs = {}
     i = 0
 
     while i < len(argv):
@@ -37,4 +37,4 @@ def akf_parser(argv: list[str]) -> AKF_TYPE_HINT:
 
         i += 1
 
-    return [args, kwargs, flags]
+    return args, flags, kwargs
