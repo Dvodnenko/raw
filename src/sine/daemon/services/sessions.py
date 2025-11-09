@@ -4,14 +4,31 @@ from ..repositories.session import saSessionRepository
 from ..repositories.folder import saFolderRepository
 from ..entities import Session
 from ..database.funcs import get_all_by_titles
-from .decorators import provide_conf, cast_kwargs
+from .decorators import cast_kwargs
+from .base import Service
+from ...common import load_config, parse_afk
 
 
-class SessionService:
+PARSER = parse_afk
+class SessionService(Service):
     def __init__(self, repository: saSessionRepository):
         self.repository = repository
         self.folders_repository = saFolderRepository(repository.session)
         self.active: Session | None = None
+
+    def execute(self, argv):
+        if not hasattr(self, argv[0]):
+            yield f"Command not found: {argv}", 1
+            return
+        try:
+            if len(argv) > 1:
+                args, flags, kwargs = PARSER(argv[1:])
+            else:
+                args, flags, kwargs = PARSER([])
+            gen = getattr(self, argv[0])(args=args, flags=flags, **kwargs)
+            yield from gen
+        except Exception as e:
+            yield e.args, 1
 
     @cast_kwargs(Session)
     def begin(self, args: list, flags: list, **kwargs):
@@ -36,20 +53,18 @@ class SessionService:
         next(self.repository.update(session.title, **kwargs))
         yield "Session stoped", 0
     
-    @provide_conf
     def all(self, args: list, flags: list, **kwargs):
         sortby = kwargs.get("sortby", "title")
         if "t" in flags:
             for session in self.repository.get_all(sortby):
                 yield session.title, 0
         else:
-            pattern: str = kwargs["__cnf"]["formats"]["session"]
+            pattern: str = load_config()["formats"]["session"]
             for session in self.repository.get_all(sortby):
                 yield pattern.format(**session.to_dict()), 0
     
-    @provide_conf
     def print(self, args: list, flags: list, **kwargs):
-        pattern: str = kwargs["__cnf"]["formats"]["session"]
+        pattern: str = load_config()["formats"]["session"]
         for session in get_all_by_titles(self.repository.session, Session, args):
             yield pattern.format(**session.to_dict()), 0
     
