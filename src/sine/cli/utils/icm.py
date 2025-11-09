@@ -1,5 +1,4 @@
 import sys
-from typing import Any, Generator
 
 from ..icmds import (
     daemon_start_darwin, daemon_stop_darwin, init_darwin, daemon_restart_darwin,
@@ -32,14 +31,3 @@ elif sys.platform.lower() == "linux":
             "disable": daemon_disable_linux,
         },
     }
-
-
-def drill(
-    branch: dict,
-    args: list[str],
-    ci: int = 0
-):
-    next_: Generator[Any, Any, Any] | dict = branch.get(args[ci]) # callback itself or next branch
-    if not callable(next_): # then it is not the destination, keep drilling
-        return drill(next_, args, ci+1)
-    return next_
