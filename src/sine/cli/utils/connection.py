@@ -2,23 +2,19 @@ import socket
 import json
 
 
-def request(args: list, kwargs: dict, flags: list):
+def request(*argv):
     
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     
     try:
-        client.connect("/tmp/raw.sock")
+        client.connect("/tmp/sine.sock")
     except (FileNotFoundError, ConnectionRefusedError):
         yield "Connection error", 1
         return
-
-    requestobj = {
-        "args": args,
-        "kwargs": kwargs,
-        "flags": flags,
-    }
     
-    client.sendall(json.dumps(requestobj).encode())
+    # don't parse arguments, services do it by themselves
+    # using their own parsing strategy (e.g. AKF, SQL etc.)
+    client.sendall(json.dumps(argv).encode())
     buffer = ""
 
     while True:
