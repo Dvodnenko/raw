@@ -2,19 +2,10 @@ from dataclasses import fields
 from datetime import datetime
 from enum import IntEnum
 
-import dateparser
-
 from ..entities import Entity
 from ..repositories.folder import saFolderRepository
 from ..database.funcs import get_all_by_titles
-
-
-def cast_datetime(value: str):
-    return (dateparser.parse(value) or \
-        datetime.now()).replace(microsecond=0)
-
-def is_(type_: type, other: type):
-    return (type_ is other) or (issubclass(type_, other))
+from ..funcs import is_, cast_datetime
 
 
 def cast_kwargs(
