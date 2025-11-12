@@ -11,6 +11,7 @@ from .repositories.tag import saTagRepository
 from .repositories.task import saTaskRepository
 from .database.session import Session
 from .funcs import asexc
+from ..common import parse_afk
 
 
 SERVICES = {
@@ -40,6 +41,9 @@ def format_response_json(
 
 def handlecmd(request: str):
     argv: list = json.loads(request)
+    _, flags, _ = parse_afk(argv)
+
+    quotes = "q" in flags
 
     orm_session = Session()
     repository_instance = REPOSITORIES.get(argv[0])(orm_session)
@@ -51,8 +55,12 @@ def handlecmd(request: str):
     method = service_instance.execute(argv[1:])
 
     try:
-        for row, status_code in method:
-            yield format_response_json(row, status_code)
+        if quotes:
+            for row, status_code in method:
+                yield format_response_json(f'"{row}"', status_code)
+        else:
+            for row, status_code in method:
+                yield format_response_json(row, status_code)
 
     except Exception as e:
         method.close()
