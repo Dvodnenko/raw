@@ -3,7 +3,8 @@ from ..entities import Folder
 from ..database.funcs import get_all_by_titles, select
 from .decorators import cast_kwargs
 from .base import Service
-from ...common import load_config, parse_afk
+from ...common import load_config, parse_afk, drill
+from ...common.constants import DEFAULT_FMT
 from ..funcs import asexc
 
 
@@ -37,31 +38,36 @@ class FolderService(Service):
         yield f"Folder created: {folder.title}", 0
     
     def all(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.get("sortby", "title")
+        sortby = kwargs.pop("sortby", "title")
         if "t" in flags:
             for folder in self.repository.get_all(sortby):
                 yield folder.title, 0
         else:
-            pattern: str = load_config()["formats"]["folder"]
+            config = load_config()
+            fmt = kwargs.get("fmt", "0")
+            pattern: str = drill(
+                config, ["output", "folders", "formats", fmt], default=DEFAULT_FMT)
             for folder in self.repository.get_all(sortby):
                 yield pattern.format(**folder.to_dict()), 0
 
     def select(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.get("sortby")
-        if sortby:
-            kwargs.pop("sortby")
-        else:
-            sortby = "title"
+        sortby = kwargs.pop("sortby", "title")
+        fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
             for folder in select(self.repository.session, Folder, kwargs, sortby):
                 yield folder.title, 0
         else:
-            pattern: str = load_config()["formats"]["folder"]
+            config = load_config()
+            pattern: str = drill(
+                config, ["output", "folders", "formats", fmt], default=DEFAULT_FMT)
             for folder in select(self.repository.session, Folder, kwargs, sortby):
                 yield pattern.format(**folder.to_dict()), 0
     
     def print(self, args: list, flags: list, **kwargs):
-        pattern: str = load_config()["formats"]["folder"]
+        config = load_config()
+        fmt = kwargs.pop("fmt", "0")
+        pattern: str = drill(
+            config, ["output", "folders", "formats", fmt], default=DEFAULT_FMT)
         for folder in get_all_by_titles(self.repository.session, Folder, args):
             yield pattern.format(**folder.to_dict()), 0
 

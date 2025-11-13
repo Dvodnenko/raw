@@ -54,3 +54,8 @@ RestartPreventExitStatus=0
 [Install]
 WantedBy=multi-user.target
     """
+
+
+## Default values
+
+DEFAULT_FMT = "* \033[{color}m{title}\033[0m"

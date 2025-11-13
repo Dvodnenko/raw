@@ -6,7 +6,8 @@ from ..entities import Session
 from ..database.funcs import get_all_by_titles, select
 from .decorators import cast_kwargs
 from .base import Service
-from ...common import load_config, parse_afk
+from ...common import load_config, parse_afk, drill
+from ...common.constants import DEFAULT_FMT
 from ..funcs import asexc
 
 
@@ -60,12 +61,16 @@ class SessionService(Service):
             for session in self.repository.get_all(sortby):
                 yield session.title, 0
         else:
-            pattern: str = load_config()["formats"]["session"]
+            config = load_config()
+            fmt = kwargs.get("fmt", "0")
+            pattern: str = drill(
+                config, ["output", "sessions", "formats", fmt], default=DEFAULT_FMT)
             for session in self.repository.get_all(sortby):
                 yield pattern.format(**session.to_dict()), 0
 
     def select(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.get("sortby")
+        sortby = kwargs.pop("sortby")
+        fmt = kwargs.pop("fmt", "0")
         if sortby:
             kwargs.pop("sortby")
         else:
@@ -74,12 +79,17 @@ class SessionService(Service):
             for session in select(self.repository.session, Session, kwargs, sortby):
                 yield session.title, 0
         else:
-            pattern: str = load_config()["formats"]["session"]
+            config = load_config()
+            pattern: str = drill(
+                config, ["output", "sessions", "formats", fmt], default=DEFAULT_FMT)
             for session in select(self.repository.session, Session, kwargs, sortby):
                 yield pattern.format(**session.to_dict()), 0
     
     def print(self, args: list, flags: list, **kwargs):
-        pattern: str = load_config()["formats"]["session"]
+        config = load_config()
+        fmt = kwargs.pop("fmt", "0")
+        pattern: str = drill(
+            config, ["output", "sessions", "formats", fmt], default=DEFAULT_FMT)
         for session in get_all_by_titles(self.repository.session, Session, args):
             yield pattern.format(**session.to_dict()), 0
     

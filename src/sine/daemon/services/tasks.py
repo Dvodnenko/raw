@@ -4,7 +4,8 @@ from ..entities import Task
 from ..database.funcs import get_all_by_titles, select
 from .decorators import cast_kwargs
 from .base import Service
-from ...common import load_config, parse_afk
+from ...common import load_config, parse_afk, drill
+from ...common.constants import DEFAULT_FMT
 from ..funcs import asexc
 
 
@@ -38,31 +39,36 @@ class TaskService(Service):
         yield f"Task created: {task.title}", 0
     
     def all(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.get("sortby", "title")
+        sortby = kwargs.pop("sortby", "title")
         if "t" in flags:
             for task in self.repository.get_all(sortby):
                 yield task.title, 0
         else:
-            pattern: str = load_config()["formats"]["task"]
+            config = load_config()
+            fmt = kwargs.get("fmt", "0")
+            pattern: str = drill(
+                config, ["output", "tasks", "formats", fmt], default=DEFAULT_FMT)
             for task in self.repository.get_all(sortby):
                 yield pattern.format(**task.to_dict()), 0
 
     def select(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.get("sortby")
-        if sortby:
-            kwargs.pop("sortby")
-        else:
-            sortby = "title"
+        sortby = kwargs.pop("sortby", "title")
+        fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
             for task in select(self.repository.session, Task, kwargs, sortby):
                 yield task.title, 0
         else:
-            pattern: str = load_config()["formats"]["task"]
+            config = load_config()
+            pattern: str = drill(
+                config, ["output", "tasks", "formats", fmt], default=DEFAULT_FMT)
             for task in select(self.repository.session, Task, kwargs, sortby):
                 yield pattern.format(**task.to_dict()), 0
     
     def print(self, args: list, flags: list, **kwargs):
-        pattern: str = load_config()["formats"]["task"]
+        config = load_config()
+        fmt = kwargs.pop("fmt", "0")
+        pattern: str = drill(
+            config, ["output", "tasks", "formats", fmt], default=DEFAULT_FMT)
         for task in get_all_by_titles(self.repository.session, Task, args):
             yield pattern.format(**task.to_dict()), 0
     
