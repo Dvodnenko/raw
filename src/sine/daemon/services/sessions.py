@@ -69,12 +69,8 @@ class SessionService(Service):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": session}), 0
 
     def select(self, args: list, flags: list, **kwargs):
-        sortby = kwargs.pop("sortby")
+        sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
-        if sortby:
-            kwargs.pop("sortby")
-        else:
-            sortby = "title"
         if "t" in flags:
             for session in select(self.repository.session, Session, kwargs, sortby):
                 yield session.title, 0
