@@ -7,7 +7,7 @@ import setproctitle
 
 from .handler import handlecmd
 from .database.session import init_db
-from ..common import CONFIG_GLOBALS, exe_lines, load_config
+from ..common import CONFIG_GLOBALS, exe_lines, config_
 
 
 SOCKET_PATH = "/tmp/sine.sock"
@@ -44,7 +44,7 @@ def run():
     init_db()
     
     exe_lines(
-        load_config().get("execute"),
+        config_.get("execute"),
         CONFIG_GLOBALS
     )
 

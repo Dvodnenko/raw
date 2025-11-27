@@ -2,7 +2,7 @@ import shutil
 import json
 
 from ....common.constants import CONFIG_PATH, DEFAULT_CONFIG, generate_service, SERVICE_PATH
-from ....common.config import load_config
+from ....common import load_config
 
 
 def init(args, flags, kwargs):
@@ -25,6 +25,8 @@ def init(args, flags, kwargs):
 
     ## Service file (for Linux)
 
+    # can't use common.config.config_ here because it could be 
+    # changed above, so i re-run the method
     config = load_config()
     service_content = generate_service(config.get("daemon_bin_path", 
                                               shutil.which("cos")))

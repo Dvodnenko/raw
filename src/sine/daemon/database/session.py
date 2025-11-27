@@ -1,16 +1,15 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from ...common import load_config, drill
+from ...common import config_, drill
 from .orm_registry import mapping_registry
 from .mappings import map_tables
 
 
-conf = load_config()
-url = drill(conf, ["core", "db_path"], raise_=True)
+url = drill(config_, ["core", "db_path"], raise_=True)
 engine = create_engine(
     url=f"sqlite:///{url}",
-    echo=conf.get("echo"),
+    echo=drill(config_, ["core", "echo"], default=False),
 )
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)

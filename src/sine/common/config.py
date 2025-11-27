@@ -15,6 +15,7 @@ def load_config() -> dict:
     except FileNotFoundError as _:
         return {}
 
+config_ = load_config()
 
 def exe_lines(
     lines: list,
