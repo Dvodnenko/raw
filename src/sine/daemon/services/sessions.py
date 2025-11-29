@@ -6,34 +6,30 @@ from ..entities import Session
 from ..database.funcs import get_all_by_titles, filter
 from .decorators import cast_kwargs
 from .base import Service
-from ...common import load_config, parse_afk, drill, CONFIG_GLOBALS
+from ...common import load_config, drill, CONFIG_GLOBALS
 from ...common.constants import DEFAULT_FMT
 from ..funcs import asexc
 
 
-PARSER = parse_afk
 class SessionService(Service):
     def __init__(self, repository: saSessionRepository):
         self.repository = repository
         self.folders_repository = saFolderRepository(repository.session)
         self.active: Session | None = None
 
-    def execute(self, argv):
-        if not hasattr(self, argv[0]):
-            yield f"Command not found: {argv}", 1
+    def execute(self, rspd):
+        if not hasattr(self, rspd["source"][1]):
+            yield f"Command not found: {rspd["source"][1]}", 1
             return
         try:
-            if len(argv) > 1:
-                args, flags, kwargs = PARSER(argv[1:])
-            else:
-                args, flags, kwargs = PARSER([])
-            gen = getattr(self, argv[0])(args=args, flags=flags, **kwargs)
+            gen = getattr(self, rspd["source"][1])(rspd)
             yield from gen
         except Exception as e:
             yield asexc(e), 1
 
     @cast_kwargs(Session)
-    def begin(self, args: list, flags: list, **kwargs):
+    def begin(self, rspd: dict):
+        _, _, kwargs = rspd["ps"]["afk"]
         active = next(self.repository.get_active())
         if active:
             yield f"Session is already started: '{active.title}'", 1
@@ -45,7 +41,8 @@ class SessionService(Service):
         yield f"Session started", 0
     
     @cast_kwargs(Session)
-    def stop(self, args: list, flags: list, **kwargs):
+    def stop(self, rspd: dict):
+        _, _, kwargs = rspd["ps"]["afk"]
         session = next(self.repository.get_active())
         if not session:
             yield "Active Session not found", 1
@@ -55,7 +52,8 @@ class SessionService(Service):
         next(self.repository.update(session.title, **kwargs))
         yield "Session stoped", 0
     
-    def all(self, args: list, flags: list, **kwargs):
+    def all(self, rspd: dict):
+        _, flags, kwargs = rspd["ps"]["afk"]
         sortby = kwargs.get("sortby", "title")
         if "t" in flags:
             for session in self.repository.get_all(sortby):
@@ -68,7 +66,8 @@ class SessionService(Service):
             for session in self.repository.get_all(sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": session}), 0
 
-    def filter(self, args: list, flags: list, **kwargs):
+    def filter(self, rspd: dict):
+        _, flags, kwargs = rspd["ps"]["afk"]
         sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
@@ -81,7 +80,8 @@ class SessionService(Service):
             for session in filter(self.repository.session, Session, kwargs, sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": session}), 0
     
-    def print(self, args: list, flags: list, **kwargs):
+    def print(self, rspd: dict):
+        args, _, kwargs = rspd["ps"]["afk"]
         config = load_config()
         fmt = kwargs.pop("fmt", "0")
         pattern: str = drill(
@@ -90,18 +90,20 @@ class SessionService(Service):
             yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": session}), 0
     
     @cast_kwargs(Session)
-    def update(self, args: list, flags: list, **kwargs):
-        current = next(self.repository.get(args[0]))
+    def update(self, rspd: dict):
+        args, _, kwargs = rspd["ps"]["afk"]
+        current = next(self.repository.get(args[2]))
         if not current:
-            yield f"Session not found: {args[0]}", 1
+            yield f"Session not found: {args[2]}", 1
             return
-        next(self.repository.update(args[0], **kwargs))
-        yield f"Session updated: {args[0]}", 0
+        next(self.repository.update(args[2], **kwargs))
+        yield f"Session updated: {args[2]}", 0
 
-    def delete(self, args: list, flags: list, **kwargs):
-        session = next(self.repository.get(args[0]))
+    def delete(self, rspd: dict):
+        args, _, _ = rspd["ps"]["afk"]
+        session = next(self.repository.get(args[2]))
         if not session:
-            yield f"Session not found: {args[0]}", 1
+            yield f"Session not found: {args[2]}", 1
             return
         next(self.repository.delete(session))
-        yield f"Session deleted: {args[0]}", 0
+        yield f"Session deleted: {args[2]}", 0
