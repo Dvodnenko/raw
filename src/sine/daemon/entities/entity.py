@@ -1,24 +1,15 @@
 from dataclasses import dataclass, field
-from hashlib import blake2b
-from datetime import datetime
-
-
-def generate_title():
-    return blake2b(
-        bytes(datetime.now().isoformat(), encoding="utf-8"),
-        digest_size=10,
-    ).hexdigest()
 
 
 @dataclass(eq=False)
 class Entity:
 
-    id: int = None
-    title: str = field(default_factory=generate_title) # /a/b/c, not just c
+    title: str # /a/b/c, not just c
     styles: str = ""
     icon: str = ""
     description: str = ""
 
+    id: int = None
     links: list["Entity"] = field(
         default_factory=lambda: [])
     parent_id: int = None

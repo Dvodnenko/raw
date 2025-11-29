@@ -4,10 +4,11 @@ from .config import (
     exe_lines, config_)
 from .driller import drill, ARG_RE
 from .rspd import generate_rspd
+from .evalreq import evalreq_
 
 
 __all__ = (
     "parse_afk", "load_config", "CONFIG_FILE_PATH", 
     "drill", "ARG_RE", "exe_lines", "CONFIG_GLOBALS", 
-    "config_", "generate_rspd", "parse_sql"
+    "config_", "generate_rspd", "parse_sql", "evalreq_"
 )

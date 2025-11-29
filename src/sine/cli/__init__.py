@@ -4,7 +4,7 @@ import halo
 
 from .utils.resolve import resolve_callback
 from ..common.constants import SUPPORTED_SYSTEMS
-from ..common import generate_rspd
+from ..common import generate_rspd, evalreq_
 
 
 def execute(callback, rspd):
@@ -20,7 +20,7 @@ def execute(callback, rspd):
 
 def sin():
 
-    argv = sys.argv[1:]
+    argv = evalreq_(sys.argv[1:])
     rspd = generate_rspd(argv)
 
     try:
