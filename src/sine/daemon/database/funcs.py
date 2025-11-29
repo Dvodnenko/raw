@@ -38,16 +38,22 @@ def apply_filters(query, model, filters: dict):
     for key, value in filters.items():
         if "__" in key:
             field, op = key.split("__", 1)
-            if not hasattr(model, field):
+            if not field in allowed.keys():
                 continue
             if allowed[field].type is datetime:
-                value = cast_datetime(value)
+                new_values = set()
+                for val in value:
+                    new_values.add(cast_datetime(val))
+                value = new_values
             column = getattr(model, field)
             if op in OPERATORS:
-                expr = OPERATORS[op](column, value)
-                complex_expressions.append(expr)
+                for val in value:
+                    expr = OPERATORS[op](column, val)
+                    complex_expressions.append(expr)
         else:
-            simple_kwargs[key] = value
+            if not key in allowed.keys():
+                continue
+            simple_kwargs[key] = value[0]
 
     if simple_kwargs:
         query = query.filter_by(**simple_kwargs)

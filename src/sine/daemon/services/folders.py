@@ -49,16 +49,18 @@ class FolderService(Service):
 
     def filter(self, rspd: dict):
         _, flags, kwargs = rspd["ps"]["afk"]
+        filters = rspd["ps"]["sql"]
+        print("filters", filters, flush=True)
         sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
-            for folder in filter(self.repository.session, Folder, kwargs, sortby):
+            for folder in filter(self.repository.session, Folder, filters, sortby):
                 yield folder.title, 0
         else:
             config = load_config()
             pattern: str = drill(
                 config, ["output", "folders", "formats", fmt], default=DEFAULT_FMT)
-            for folder in filter(self.repository.session, Folder, kwargs, sortby):
+            for folder in filter(self.repository.session, Folder, filters, sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": folder}), 0
     
     def print(self, rspd: dict):

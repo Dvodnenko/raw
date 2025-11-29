@@ -51,16 +51,17 @@ class TagService(Service):
 
     def filter(self, rspd: dict):
         _, flags, kwargs = rspd["ps"]["afk"]
+        filters = rspd["ps"]["sql"]
         sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
-            for tag in filter(self.repository.session, Tag, kwargs, sortby):
+            for tag in filter(self.repository.session, Tag, filters, sortby):
                 yield tag.title, 0
         else:
             config = load_config()
             pattern: str = drill(
                 config, ["output", "tags", "formats", fmt], default=DEFAULT_FMT)
-            for tag in filter(self.repository.session, Tag, kwargs, sortby):
+            for tag in filter(self.repository.session, Tag, filters, sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": tag}), 0
     
     def print(self, rspd: dict):

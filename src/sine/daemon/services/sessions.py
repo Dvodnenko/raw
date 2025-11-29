@@ -68,16 +68,17 @@ class SessionService(Service):
 
     def filter(self, rspd: dict):
         _, flags, kwargs = rspd["ps"]["afk"]
+        filters = rspd["ps"]["sql"]
         sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
-            for session in filter(self.repository.session, Session, kwargs, sortby):
+            for session in filter(self.repository.session, Session, filters, sortby):
                 yield session.title, 0
         else:
             config = load_config()
             pattern: str = drill(
                 config, ["output", "sessions", "formats", fmt], default=DEFAULT_FMT)
-            for session in filter(self.repository.session, Session, kwargs, sortby):
+            for session in filter(self.repository.session, Session, filters, sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": session}), 0
     
     def print(self, rspd: dict):

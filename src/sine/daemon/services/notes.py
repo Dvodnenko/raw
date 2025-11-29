@@ -50,16 +50,17 @@ class NoteService(Service):
 
     def filter(self, rspd: dict):
         _, flags, kwargs = rspd["ps"]["afk"]
+        filters = rspd["ps"]["sql"]
         sortby = kwargs.pop("sortby", "title")
         fmt = kwargs.pop("fmt", "0")
         if "t" in flags:
-            for note in filter(self.repository.session, Note, kwargs, sortby):
+            for note in filter(self.repository.session, Note, filters, sortby):
                 yield note.title, 0
         else:
             config = load_config()
             pattern: str = drill(
                 config, ["output", "notes", "formats", fmt], default=DEFAULT_FMT)
-            for note in filter(self.repository.session, Note, kwargs, sortby):
+            for note in filter(self.repository.session, Note, filters, sortby):
                 yield eval(f"f'{pattern}'", globals={**CONFIG_GLOBALS, "e": note}), 0
     
     def print(self, rspd: dict):
