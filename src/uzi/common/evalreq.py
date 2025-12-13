@@ -1,6 +1,10 @@
 import hashlib
 import datetime
 
+from .config import config_
+from .driller import drill
+from .constants import DEFAULT_FSTRING_MARK
+
 
 def rstr(length: int = 10):
     """
@@ -12,9 +16,12 @@ def rstr(length: int = 10):
     ).hexdigest()
 
 
+FSTRING_MARK = drill(
+    config_, ["general", "fstring_mark"], default=DEFAULT_FSTRING_MARK)
+
 def evalreq_(argv: list[str]):
     for index, value in enumerate(argv):
-        if not ("{" in value and "}" in value):
+        if not value.startswith(FSTRING_MARK):
             continue
         argv[index] = eval(f"f'{value}'", globals())
     return argv

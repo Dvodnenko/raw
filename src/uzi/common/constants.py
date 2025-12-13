@@ -59,3 +59,4 @@ WantedBy=multi-user.target
 ## Default values
 
 DEFAULT_FMT = "* {e.title}"
+DEFAULT_FSTRING_MARK = "@"
