@@ -1,12 +1,11 @@
 import shutil
 import json
-import plistlib
 
-from ....common.constants import CONFIG_PATH, DEFAULT_CONFIG, generate_plist, PLIST_PATH
+from ....common.constants import CONFIG_PATH, DEFAULT_CONFIG, generate_service, SERVICE_PATH
 from ....common import load_config
 
 
-def init(rspd: dict):
+def init(rspd):
     _, flags, _ = rspd["ps"]["afk"]
     
     ## Config
@@ -25,21 +24,22 @@ def init(rspd: dict):
         yield "You already have a non-default config file", 1
         
 
-    ## Plist file (for macOS)
+    ## Service file (for Linux)
 
     # can't use common.config.config_ here because it could be 
     # changed above, so i re-run the method
-    config = load_config() 
-    plist_content = generate_plist(config.get("daemon_bin_path", 
-                                              shutil.which("uzi_")))
-    if not PLIST_PATH.exists():
-        PLIST_PATH.touch(exist_ok=True)
-        with open(PLIST_PATH, "wb") as file:
-            plistlib.dump(plist_content, file)
+    config = load_config()
+    service_content = generate_service(config.get("daemon_bin_path", 
+                                              shutil.which("rawd")))
+    if not SERVICE_PATH.exists():
+        SERVICE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        SERVICE_PATH.touch(exist_ok=True)
+        with open(SERVICE_PATH, "w") as file:
+            file.write(service_content)
         return
     elif force:
-        with open(PLIST_PATH, "wb") as file:
-            plistlib.dump(plist_content, file)
+        with open(SERVICE_PATH, "w") as file:
+            file.write(service_content)
         return
     else:
-        yield "You already have a non-default plist file", 1
+        yield "You already have a non-default service file", 1

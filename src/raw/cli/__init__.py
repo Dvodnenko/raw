@@ -19,7 +19,7 @@ def execute(callback, rspd):
         yield i
 
 
-def uzi():
+def main():
 
     argv = evalreq_(sys.argv[1:])
     rspd = generate_rspd(argv)

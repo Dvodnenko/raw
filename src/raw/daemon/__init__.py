@@ -10,8 +10,8 @@ from .database.session import init_db
 from ..common import CONFIG_GLOBALS, exe_lines, config_
 
 
-SOCKET_PATH = "/tmp/uzi.sock"
-PID_PATH = "/tmp/uzi.pid"
+SOCKET_PATH = "/tmp/raw.sock"
+PID_PATH = "/tmp/raw.pid"
 running: bool = True
 
 
@@ -38,7 +38,7 @@ def run():
     signal.signal(signal.SIGTERM, handle_sigterm)
     signal.signal(signal.SIGHUP, handle_sigterm)
 
-    setproctitle.setproctitle("uzi")
+    setproctitle.setproctitle("raw")
     atexit.register(cleanup)
 
     init_db()
