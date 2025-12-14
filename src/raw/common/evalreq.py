@@ -23,5 +23,5 @@ def evalreq_(argv: list[str]):
     for index, value in enumerate(argv):
         if not value.startswith(FSTRING_MARK):
             continue
-        argv[index] = eval(f"f'{value}'", globals())
+        argv[index] = eval(f"f'{value[1:]}'", globals())
     return argv
