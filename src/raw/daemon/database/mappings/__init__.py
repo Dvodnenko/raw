@@ -1,0 +1,32 @@
+from sqlalchemy import Engine
+
+from ..metadata import metadata
+from .entity import entities_table, links_table
+from .folder import folders_table
+from .note import notes_table
+from .session import sessions_table
+from .tag import tags_table
+from .task import tasks_table
+
+
+TABLES = {
+    "entities": entities_table,
+    "links": links_table,
+    "folders": folders_table,
+    "notes": notes_table,
+    "sessions": sessions_table,
+    "tags": tags_table,
+    "tasks": tasks_table,
+}
+
+TABLES_COLUMNS = {
+    table_name: table.c
+    for table_name, table in TABLES.items()
+}
+
+
+def map_tables(engine: Engine):
+    metadata.create_all(
+        engine,
+        tables=[t for t in TABLES.values()]
+    )
