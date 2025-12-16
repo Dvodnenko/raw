@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(eq=False)
@@ -10,20 +10,19 @@ class Entity:
     description: str = ""
 
     id: int = None
-    links: list["Entity"] = field(
-        default_factory=lambda: [])
     parent_id: int = None
-    parent: "Folder" = None
 
     def __post_init__(self):
         if not self.title.startswith("/"):
             self.title = f"/{self.title}"
 
-    def update(self, **kwargs):
-        for key, value in kwargs.items():
-            self.__setattr__(key, value)
-        self.__post_init__()
-        return self
+    @property
+    def desc(self):
+        return self.description
+    
+    @desc.setter
+    def desc(self, value):
+        self.description = value
 
     @property
     def parentstr(self) -> str:

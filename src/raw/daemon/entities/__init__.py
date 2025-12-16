@@ -4,10 +4,10 @@ from .session import Session
 from .tag import Tag
 from .task import Task
 from .note import Note
-from .enums import Color, TaskStatus
+from .enums import TaskStatus
 
 
 __all__ = [
     "Entity", "Folder", "Session", "Tag", 
-    "Color", "Task", "TaskStatus", "Note",
+    "Task", "TaskStatus", "Note",
 ]

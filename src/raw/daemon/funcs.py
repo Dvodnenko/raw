@@ -20,6 +20,3 @@ def cast_datetime(value: str):
     if res:
         return res.replace(microsecond=0)
     raise ValueError(f"cannot parse string '{value}'")
-
-def is_(type_: type, other: type):
-    return (type_ is other) or (issubclass(type_, other))
