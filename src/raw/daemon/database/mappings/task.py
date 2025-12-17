@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime, Enum
 
 from ..metadata import metadata
-from ...entities import TaskStatus
+from .enums import TaskStatus
 
 
 tasks_table = Table(
