@@ -1,23 +1,15 @@
-import inspect
 from typing import Sequence
 
-from sqlalchemy import Connection, insert, select
+from sqlalchemy import Connection, insert
 
-from .database.mappings import (
-    TABLES, TABLES_COLUMNS, TABLES_COLUMNS_NAMES,
-    entities_table, links_table, folders_table, notes_table, 
-    sessions_table, tags_table, tasks_table
+from ..database.mappings import (
+    TABLES, TABLES_COLUMNS,
+    entities_table, links_table
 )
-from .entities import ENTITIES
+from .assemblers import build_entity
 
-
-def build_entity(**data):
-    cls = ENTITIES[data.pop("type")]
-    params = inspect.signature(cls).parameters
-    return cls(**{k:data.get(k) for k in params})
 
 def create(conn: Connection, table: str, **kwargs):
-    cls = ENTITIES[table.rstrip("s")]
     columns = {*kwargs.keys()}.difference("id")
     entity_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS["entities"].keys())}
