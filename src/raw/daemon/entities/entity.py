@@ -11,6 +11,7 @@ class Entity:
 
     id: int = None
     parent_id: int = None
+    type: str = None
     links: list["Entity"] = None
 
     def __post_init__(self):
