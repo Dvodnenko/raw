@@ -1,12 +1,25 @@
-from sqlalchemy import Connection, select
+from typing import Any
+from datetime import datetime
+from dataclasses import fields
+
+from sqlalchemy import Connection, Select, select
 
 from ..database.mappings import (
     entities_table, sessions_table, 
-    tasks_table, notes_table, links_table
+    tasks_table, notes_table, links_table,
+    TABLES, COLUMN_TO_TABLE
 )
+from ..funcs import cast_datetime
+from ..entities import Entity
 
 
-def fetch_entities_batch(conn: Connection, limit: int, offset: int):
+def fetch_entities_batch(
+    conn: Connection,
+    limit: int,
+    offset: int,
+    type: str = None,
+    ids: list[int] = None
+):
     stmt = (
         select(
             entities_table.c.id,
@@ -17,6 +30,10 @@ def fetch_entities_batch(conn: Connection, limit: int, offset: int):
         .limit(limit)
         .offset(offset)
     )
+    if type:
+        stmt = stmt.where(entities_table.c.type == type)
+    if ids:
+        stmt = stmt.where(entities_table.c.id.in_(ids))
     return conn.execute(stmt).mappings().all()
 
 def enrich_entities(conn: Connection, ids: list[int]):
@@ -75,3 +92,55 @@ def fetch_outgoing_links(conn: Connection, from_ids: list[int]):
     )
 
     return conn.execute(stmt).mappings().all()
+
+OPERATORS = {
+    "eq": lambda col, val: col == val,
+    "ne": lambda col, val: col != val,
+    "gt": lambda col, val: col > val,
+    "lt": lambda col, val: col < val,
+    "ge": lambda col, val: col >= val,
+    "le": lambda col, val: col <= val,
+    "like": lambda col, val: col.like(val),
+    "notlike": lambda col, val: col.notlike(val),
+    "ilike": lambda col, val: col.ilike(val),
+    "notilike": lambda col, val: col.notilike(val),
+    "in": lambda col, val: col.in_(val if isinstance(val, list) else [val]),
+    "notin": lambda col, val: col.notin_(val if isinstance(val, list) else [val]),
+}
+
+def apply_filters(
+    query: Select,
+    filters: dict[str, Any],
+    cls: type[Entity] = Entity,
+):
+    simple_kwargs = {}
+    complex_expressions = []
+    allowed = {f.name: f for f in fields(cls)}
+
+    for key, value in filters.items():
+        if "__" in key:
+            field, op = key.split("__", 1)
+            if not field in allowed.keys():
+                continue
+            if allowed[field].type is datetime:
+                new_values = set()
+                for val in value:
+                    new_values.add(cast_datetime(val))
+                value = new_values
+            column = getattr(COLUMN_TO_TABLE[field].c, field)
+            if op in OPERATORS:
+                for val in value:
+                    expr = OPERATORS[op](column, val)
+                    complex_expressions.append(expr)
+        else:
+            if not key in allowed.keys():
+                continue
+            simple_kwargs[key] = value[0]
+
+    if simple_kwargs:
+        query = query.filter_by(**simple_kwargs)
+
+    if complex_expressions:
+        query = query.where(*complex_expressions)
+
+    return query
