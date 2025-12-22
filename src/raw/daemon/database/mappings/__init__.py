@@ -10,13 +10,13 @@ from .task import tasks_table
 
 
 TABLES = {
-    "entities": entities_table,
     "links": links_table,
     "folders": folders_table,
     "notes": notes_table,
     "sessions": sessions_table,
     "tags": tags_table,
     "tasks": tasks_table,
+    "entities": entities_table,
 }
 
 TABLES_COLUMNS = {
@@ -27,6 +27,12 @@ TABLES_COLUMNS = {
 TABLES_COLUMNS_NAMES = {
     table_name: columns.keys()
     for table_name, columns in TABLES_COLUMNS.items()
+}
+
+COLUMN_TO_TABLE_NAME = {
+    column: table
+    for table, columns in TABLES_COLUMNS_NAMES.items()
+    for column in columns
 }
 
 
