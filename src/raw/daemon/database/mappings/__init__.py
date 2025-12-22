@@ -35,6 +35,11 @@ COLUMN_TO_TABLE_NAME = {
     for column in columns
 }
 
+COLUMN_TO_TABLE = {
+    column: TABLES[table_name]
+    for column, table_name in COLUMN_TO_TABLE_NAME.items()
+}
+
 
 def map_tables(engine: Engine):
     metadata.create_all(
