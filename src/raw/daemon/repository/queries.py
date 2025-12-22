@@ -11,6 +11,7 @@ from ..database.mappings import (
 )
 from ..funcs import cast_datetime
 from ..entities import Entity
+from .assemblers import attach_links
 
 
 def fetch_entities_batch(
@@ -144,3 +145,29 @@ def apply_filters(
         query = query.where(*complex_expressions)
 
     return query
+
+## Final APIs
+
+def get_all(
+    conn: Connection, 
+    batch_size=100, 
+    type: str = None, 
+    ids: list[int] = None
+):
+    offset = 0
+
+    while True:
+        base = fetch_entities_batch(
+            conn, batch_size, offset,
+            type=type, ids=ids)
+        if not base:
+            break
+
+        ids = [row["id"] for row in base]
+
+        entities = enrich_entities(conn, ids)
+        links = fetch_outgoing_links(conn, ids)
+
+        yield from attach_links(entities, links)
+
+        offset += batch_size
