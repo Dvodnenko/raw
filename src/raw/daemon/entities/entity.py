@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(eq=False)
@@ -11,8 +11,8 @@ class Entity:
 
     id: int = None
     parent_id: int = None
-    type: str = None
-    links: list["Entity"] = None
+    type: str = ""
+    links: list["Entity"] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.title.startswith("/"):
