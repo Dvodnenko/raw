@@ -1,4 +1,4 @@
-from sqlalchemy import Engine
+from sqlalchemy import Engine, Table
 
 from ..metadata import metadata
 from .entity import entities_table, links_table
@@ -7,6 +7,9 @@ from .note import notes_table
 from .session import sessions_table
 from .tag import tags_table
 from .task import tasks_table
+from ...entities import (
+    Entity, Folder, Session, Tag, Task, Note
+)
 
 
 TABLES = {
@@ -38,6 +41,15 @@ COLUMN_TO_TABLE_NAME = {
 COLUMN_TO_TABLE = {
     column: TABLES[table_name]
     for column, table_name in COLUMN_TO_TABLE_NAME.items()
+}
+
+TABLE_TO_ENTITY: dict[Table, type[Entity]] = {
+    entities_table: Entity,
+    folders_table: Folder, 
+    sessions_table: Session,
+    tags_table: Tag,
+    tasks_table: Task,
+    notes_table: Note,
 }
 
 
