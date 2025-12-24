@@ -2,7 +2,7 @@ from typing import Any
 from datetime import datetime
 from dataclasses import fields
 
-from sqlalchemy import Connection, Select, select
+from sqlalchemy import Connection, Select, Table, select
 
 from ..database.mappings import (
     entities_table, sessions_table, 
@@ -111,7 +111,8 @@ OPERATORS = {
 
 def apply_filters(
     query: Select,
-    filters: dict[str, Any],
+    filters: dict[str, tuple[Any]],
+    table: Table,
     cls: type[Entity] = Entity,
 ):
     simple_kwargs = {}
@@ -128,7 +129,7 @@ def apply_filters(
                 for val in value:
                     new_values.add(cast_datetime(val))
                 value = new_values
-            column = getattr(COLUMN_TO_TABLE[field].c, field)
+            column = getattr(table.c, field)
             if op in OPERATORS:
                 for val in value:
                     expr = OPERATORS[op](column, val)
