@@ -7,7 +7,7 @@ from sqlalchemy import Connection, Select, Table, select
 from ..database.mappings import (
     entities_table, sessions_table, 
     tasks_table, notes_table, links_table,
-    TABLES, COLUMN_TO_TABLE
+    TABLES, TABLE_TO_ENTITY
 )
 from ..funcs import cast_datetime
 from ..entities import Entity
@@ -18,8 +18,7 @@ def fetch_entities_batch(
     conn: Connection,
     limit: int,
     offset: int,
-    type: str = None,
-    ids: list[int] = None
+    filters: dict[str, tuple[Any]] = {}
 ):
     stmt = (
         select(
@@ -31,14 +30,16 @@ def fetch_entities_batch(
         .limit(limit)
         .offset(offset)
     )
-    if type:
-        stmt = stmt.where(entities_table.c.type == type)
-    if ids:
-        stmt = stmt.where(entities_table.c.id.in_(ids))
+    if filters:
+        stmt = apply_filters(stmt, filters, entities_table, Entity)
     return conn.execute(stmt).mappings().all()
 
-def enrich_entities(conn: Connection, ids: list[int]):
-    stmt = (
+def enrich_entities(
+    conn: Connection,
+    ids: list[int],
+    filters: dict[str, dict[str, tuple[Any]]] = {}
+):
+    subq = (
         select(
             entities_table.c.id,
             entities_table.c.type,
@@ -58,9 +59,21 @@ def enrich_entities(conn: Connection, ids: list[int]):
         .outerjoin(tasks_table, tasks_table.c.id == entities_table.c.id)
         .outerjoin(notes_table, notes_table.c.id == entities_table.c.id)
         .order_by(entities_table.c.id)
+        .subquery(name="subq_1")
     )
 
-    return conn.execute(stmt).mappings().all()
+    query = select(subq)
+
+    if filters:
+        for table_name, filters_ in filters.items():
+            query = apply_filters(
+                query,
+                filters_,
+                subq,
+                TABLE_TO_ENTITY[TABLES[table_name]]
+            )
+
+    return conn.execute(query).mappings().all()
 
 def fetch_outgoing_links(conn: Connection, from_ids: list[int]):
     stmt = (
