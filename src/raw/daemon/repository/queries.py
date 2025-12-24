@@ -11,7 +11,7 @@ from ..database.mappings import (
 )
 from ..funcs import cast_datetime
 from ..entities import Entity
-from .assemblers import attach_links
+from .assemblers import attach_links, resolve_tables_to_filter
 
 
 def fetch_entities_batch(
@@ -180,6 +180,34 @@ def get_all(
         ids = [row["id"] for row in base]
 
         entities = enrich_entities(conn, ids)
+        links = fetch_outgoing_links(conn, ids)
+
+        yield from attach_links(entities, links)
+
+        offset += batch_size
+
+def filter(
+    conn: Connection, 
+    filters: dict[str, tuple[Any]] = {},
+    batch_size=100,
+):
+    offset = 0
+    filters = resolve_tables_to_filter(filters)
+    entity_only_filters = filters.pop("entities", {})
+
+    while True:
+        base = fetch_entities_batch(
+            conn,
+            batch_size,
+            offset,
+            entity_only_filters
+        )
+        if not base:
+            break
+
+        ids = [row["id"] for row in base]
+
+        entities = enrich_entities(conn, ids, filters)
         links = fetch_outgoing_links(conn, ids)
 
         yield from attach_links(entities, links)
