@@ -4,6 +4,7 @@ from sqlalchemy import (
     Connection,
     insert,
     update as sa_update,
+    delete as sa_delete,
     select
 )
 
@@ -37,23 +38,27 @@ def create(conn: Connection, table: str, **kwargs):
     conn.execute(stmt2)
     kwargs["id"] = this_values["id"]
     if links:
-        next(link_entity(conn, entity_part.id, links))
+        link_entity(conn, entity_part.id, links)
     
     yield build_entity(**kwargs)
 
 def link_entity(conn: Connection, id: int, ids: Sequence[int]):
-    stmt = insert(links_table)
+    stmt1 = sa_delete(links_table).where(links_table.c.from_id == id)
+    conn.execute(stmt1)
+
+    stmt2 = insert(links_table)
     conn.execute(
-        stmt,
+        stmt2,
         [
             {"from_id": id, "to_id": to_id} 
             for to_id in ids
         ]
     )
-    yield
+    return
 
 def update(conn: Connection, id: int, **kwargs):
 
+    links: list[int] = kwargs.pop("links", [])
     kwargs = resolve_tables_to_filter(kwargs)
     entities_kwargs = kwargs.pop("entities", None)
 
@@ -87,7 +92,7 @@ def update(conn: Connection, id: int, **kwargs):
     entity_row = conn.execute(stmt1).mappings().one()
     table_name = entity_row["type"]+"s"
     table = TABLES[table_name]
-    this_kwargs = kwargs.pop(table_name)
+    this_kwargs = kwargs.pop(table_name, None)
 
     if this_kwargs:
         stmt2 = (
@@ -103,4 +108,8 @@ def update(conn: Connection, id: int, **kwargs):
         )
 
     this_row = conn.execute(stmt2).mappings().one()
+    
+    if links:
+        link_entity(conn, this_row["id"], links)
+
     return build_entity(**entity_row, **this_row)
