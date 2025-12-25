@@ -24,7 +24,11 @@ def fetch_entities_batch(
         select(
             entities_table.c.id,
             entities_table.c.type,
+            entities_table.c.parent_id,
             entities_table.c.title,
+            entities_table.c.description,
+            entities_table.c.styles,
+            entities_table.c.icon,
         )
         .order_by(entities_table.c.id)
         .limit(limit)
@@ -43,7 +47,11 @@ def enrich_entities(
         select(
             entities_table.c.id,
             entities_table.c.type,
+            entities_table.c.parent_id,
             entities_table.c.title,
+            entities_table.c.description,
+            entities_table.c.styles,
+            entities_table.c.icon,
 
             sessions_table.c.start,
             sessions_table.c.end,
