@@ -5,6 +5,10 @@ from ..metadata import metadata
 
 folders_table = Table(
     "folders", metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-        primary_key=True, autoincrement=True),
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entities.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
 )

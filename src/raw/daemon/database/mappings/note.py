@@ -5,7 +5,11 @@ from ..metadata import metadata
 
 notes_table = Table(
     "notes", metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-        primary_key=True, autoincrement=True),
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entities.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
     Column("content", Text, nullable=False)
 )
