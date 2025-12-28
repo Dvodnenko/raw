@@ -2,7 +2,7 @@ from typing import Any
 from datetime import datetime
 from dataclasses import fields
 
-from sqlalchemy import Connection, Select, Table, select
+from sqlalchemy import Connection, Select, Table, select, or_
 
 from ..database.mappings import (
     entities_table, sessions_table, 
@@ -136,32 +136,28 @@ def apply_filters(
     table: Table,
     cls: type[Entity] = Entity,
 ):
-    simple_kwargs = {}
     complex_expressions = []
     allowed = {f.name: f for f in fields(cls)}
 
     for key, value in filters.items():
         if "__" in key:
             field, op = key.split("__", 1)
-            if not field in allowed.keys():
-                continue
-            if allowed[field].type is datetime:
-                new_values = set()
-                for val in value:
-                    new_values.add(cast_datetime(val))
-                value = new_values
-            column = getattr(table.c, field)
-            if op in OPERATORS:
-                for val in value:
-                    expr = OPERATORS[op](column, val)
-                    complex_expressions.append(expr)
         else:
-            if not key in allowed.keys():
-                continue
-            simple_kwargs[key] = value[0]
-
-    if simple_kwargs:
-        query = query.filter_by(**simple_kwargs)
+            field, op = key, "eq"
+        if not field in allowed.keys():
+            continue
+        if allowed[field].type is datetime:
+            new_values = set()
+            for val in value:
+                new_values.add(cast_datetime(val))
+            value = new_values
+        column = getattr(table.c, field)
+        if op in OPERATORS:
+            expression = or_(
+                OPERATORS[op](column, val)
+                for val in value
+            )
+            complex_expressions.append(expression)
 
     if complex_expressions:
         query = query.where(*complex_expressions)
