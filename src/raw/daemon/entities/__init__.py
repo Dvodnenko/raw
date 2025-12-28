@@ -5,18 +5,11 @@ from .tag import Tag
 from .task import Task
 from .note import Note
 from .enums import TaskStatus
+from .utils import build_entity, ENTITIES
 
-
-ENTITIES: dict[str, type[Entity]] = {
-    "entity": Entity,
-    "folder": Folder,
-    "session": Session,
-    "tag": Tag,
-    "task": Task,
-    "note": Note
-}
 
 __all__ = (
     "Entity", "Folder", "Session", "Tag", 
     "Task", "TaskStatus", "Note", "ENTITIES",
+    "build_entity",
 )

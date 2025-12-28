@@ -8,11 +8,12 @@ from sqlalchemy import (
     select
 )
 
+from ..entities import build_entity
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entities_table, links_table
 )
-from .assemblers import build_entity, resolve_tables_to_filter
+from .assemblers import resolve_tables_to_filter
 
 
 def create(conn: Connection, table: str, **kwargs):

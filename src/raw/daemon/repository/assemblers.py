@@ -1,15 +1,9 @@
-import inspect
 from collections import defaultdict
 from typing import Any
 
 from ..database.mappings import COLUMN_TO_TABLE
-from ..entities import ENTITIES
+from ..entities import build_entity
 
-
-def build_entity(**data):
-    cls = ENTITIES[data.get("type")]
-    params = inspect.signature(cls).parameters
-    return cls(**{k:data.get(k) for k in params})
 
 def group_links(rows):
     grouped = defaultdict(list)
