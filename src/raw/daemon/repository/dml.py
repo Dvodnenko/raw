@@ -3,7 +3,7 @@ from typing import Sequence
 from sqlalchemy import (
     Connection,
     insert,
-    update as sa_update,
+    update,
     delete as sa_delete,
     select
 )
@@ -12,7 +12,7 @@ from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entities_table, links_table
 )
-from .assemblers import build_entity, resolve_tables_to_filter, build_entity
+from .assemblers import build_entity, resolve_tables_to_filter
 
 
 def create(conn: Connection, table: str, **kwargs):
@@ -56,7 +56,7 @@ def link_entity(conn: Connection, id: int, ids: Sequence[int]):
     )
     return
 
-def update(conn: Connection, id: int, **kwargs):
+def edit(conn: Connection, id: int, **kwargs):
 
     links: list[int] = kwargs.pop("links", [])
     kwargs = resolve_tables_to_filter(kwargs)
@@ -64,7 +64,7 @@ def update(conn: Connection, id: int, **kwargs):
 
     if entities_kwargs:
         stmt1 = (
-            sa_update(entities_table)
+            update(entities_table)
             .where(entities_table.c.id == id)
             .values(**entities_kwargs)
             .returning(
@@ -96,7 +96,7 @@ def update(conn: Connection, id: int, **kwargs):
 
     if this_kwargs:
         stmt2 = (
-            sa_update(table)
+            update(table)
             .where(table.c.id == id)
             .values(**this_kwargs)
             .returning(table)
