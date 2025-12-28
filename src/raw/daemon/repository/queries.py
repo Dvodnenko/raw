@@ -1,5 +1,4 @@
 from typing import Any
-from datetime import datetime
 from dataclasses import fields
 
 from sqlalchemy import Connection, Select, Table, select, or_
@@ -9,7 +8,6 @@ from ..database.mappings import (
     tasks_table, notes_table, links_table,
     TABLES, TABLE_TO_ENTITY
 )
-from ..funcs import cast_datetime
 from ..entities import Entity
 from .assemblers import attach_links, resolve_tables_to_filter
 
@@ -146,11 +144,6 @@ def apply_filters(
             field, op = key, "eq"
         if not field in allowed.keys():
             continue
-        if allowed[field].type is datetime:
-            new_values = set()
-            for val in value:
-                new_values.add(cast_datetime(val))
-            value = new_values
         column = getattr(table.c, field)
         if op in OPERATORS:
             expression = or_(
