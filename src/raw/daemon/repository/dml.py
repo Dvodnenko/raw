@@ -1,4 +1,5 @@
 from typing import Sequence
+from dataclasses import asdict
 
 from sqlalchemy import (
     Connection,
@@ -8,7 +9,7 @@ from sqlalchemy import (
     select
 )
 
-from ..entities import build_entity
+from ..entities import build_entity, Entity
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entities_table, links_table
@@ -16,7 +17,9 @@ from ..database.mappings import (
 from .assemblers import resolve_tables_to_filter
 
 
-def create(conn: Connection, table: str, **kwargs):
+def create(conn: Connection, obj: Entity):
+    kwargs = asdict(obj)
+    table = obj.type+"s"
     columns = {*kwargs.keys()}.difference("id")
     entity_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS["entities"].keys())}
@@ -41,7 +44,7 @@ def create(conn: Connection, table: str, **kwargs):
     if links:
         link_entity(conn, entity_part.id, links)
     
-    yield build_entity(**kwargs)
+    return build_entity(**kwargs)
 
 def link_entity(conn: Connection, id: int, ids: Sequence[int]):
     stmt1 = sa_delete(links_table).where(links_table.c.from_id == id)
