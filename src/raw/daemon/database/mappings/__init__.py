@@ -1,25 +1,25 @@
 from sqlalchemy import Engine, Table
 
 from ..metadata import metadata
-from .entity import entities_table, links_table
-from .folder import folders_table
-from .note import notes_table
-from .session import sessions_table
-from .tag import tags_table
-from .task import tasks_table
+from .entity import entity_table, link_table
+from .folder import folder_table
+from .note import note_table
+from .session import session_table
+from .tag import tag_table
+from .task import task_table
 from ...entities import (
     Entity, Folder, Session, Tag, Task, Note
 )
 
 
 TABLES = {
-    "links": links_table,
-    "folders": folders_table,
-    "notes": notes_table,
-    "sessions": sessions_table,
-    "tags": tags_table,
-    "tasks": tasks_table,
-    "entities": entities_table,
+    "link": link_table,
+    "folder": folder_table,
+    "note": note_table,
+    "session": session_table,
+    "tag": tag_table,
+    "task": task_table,
+    "entity": entity_table,
 }
 
 TABLES_COLUMNS = {
@@ -44,12 +44,12 @@ COLUMN_TO_TABLE = {
 }
 
 TABLE_TO_ENTITY: dict[Table, type[Entity]] = {
-    entities_table: Entity,
-    folders_table: Folder, 
-    sessions_table: Session,
-    tags_table: Tag,
-    tasks_table: Task,
-    notes_table: Note,
+    entity_table: Entity,
+    folder_table: Folder, 
+    session_table: Session,
+    tag_table: Tag,
+    task_table: Task,
+    note_table: Note,
 }
 
 

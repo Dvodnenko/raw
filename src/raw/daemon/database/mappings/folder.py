@@ -3,12 +3,12 @@ from sqlalchemy import Table, Column, Integer, ForeignKey
 from ..metadata import metadata
 
 
-folders_table = Table(
-    "folders", metadata,
+folder_table = Table(
+    "folder", metadata,
     Column(
         "id",
         Integer,
-        ForeignKey("entities.id", ondelete="CASCADE"),
+        ForeignKey("entity.id", ondelete="CASCADE"),
         primary_key=True, nullable=False
     ),
 )

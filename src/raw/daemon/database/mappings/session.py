@@ -3,12 +3,12 @@ from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime, Text
 from ..metadata import metadata
 
 
-sessions_table = Table(
-    "sessions", metadata,
+session_table = Table(
+    "session", metadata,
     Column(
         "id",
         Integer,
-        ForeignKey("entities.id", ondelete="CASCADE"),
+        ForeignKey("entity.id", ondelete="CASCADE"),
         primary_key=True, nullable=False
     ),
     Column("start", DateTime, nullable=False),

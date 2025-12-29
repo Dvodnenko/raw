@@ -3,12 +3,12 @@ from sqlalchemy import Table, Column, Integer, ForeignKey
 from ..metadata import metadata
 
 
-tags_table = Table(
-    "tags", metadata,
+tag_table = Table(
+    "tag", metadata,
     Column(
         "id",
         Integer,
-        ForeignKey("entities.id", ondelete="CASCADE"),
+        ForeignKey("entity.id", ondelete="CASCADE"),
         primary_key=True, nullable=False
     ),
 )

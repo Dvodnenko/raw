@@ -12,31 +12,30 @@ from sqlalchemy import (
 from ..entities import build_entity, Entity
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
-    entities_table, links_table
+    entity_table, link_table
 )
 from .assemblers import resolve_tables_to_filter
 
 
 def create(conn: Connection, obj: Entity):
     kwargs = asdict(obj)
-    table = obj.type+"s"
     columns = {*kwargs.keys()}.difference("id")
     entity_values = {c: kwargs[c] 
-        for c in columns.intersection(TABLES_COLUMNS["entities"].keys())}
+        for c in columns.intersection(TABLES_COLUMNS["entity"].keys())}
     this_values = {c: kwargs[c] 
-        for c in columns.intersection(TABLES_COLUMNS[table].keys())}
-    links: list[int] | None = kwargs.pop("links", None)
+        for c in columns.intersection(TABLES_COLUMNS[obj.type].keys())}
+    links: list[int] | None = kwargs.pop("link", None)
     
     stmt1 = (
-        insert(entities_table)
+        insert(entity_table)
         .values(**entity_values)
-        .returning(entities_table.c.id)
+        .returning(entity_table.c.id)
     )
     entity_part = conn.execute(stmt1).one()
 
     this_values["id"] = entity_part.id
     stmt2 = (
-        insert(TABLES[table])
+        insert(TABLES[obj.type])
         .values(**this_values)
     )
     conn.execute(stmt2)
@@ -47,10 +46,10 @@ def create(conn: Connection, obj: Entity):
     return build_entity(**kwargs)
 
 def link_entity(conn: Connection, id: int, ids: Sequence[int]):
-    stmt1 = sa_delete(links_table).where(links_table.c.from_id == id)
+    stmt1 = sa_delete(link_table).where(link_table.c.from_id == id)
     conn.execute(stmt1)
 
-    stmt2 = insert(links_table)
+    stmt2 = insert(link_table)
     conn.execute(
         stmt2,
         [
@@ -62,35 +61,35 @@ def link_entity(conn: Connection, id: int, ids: Sequence[int]):
 
 def edit(conn: Connection, id: int, **kwargs):
 
-    links: list[int] = kwargs.pop("links", [])
+    links: list[int] = kwargs.pop("link", [])
     kwargs = resolve_tables_to_filter(kwargs)
-    entities_kwargs = kwargs.pop("entities", None)
+    entities_kwargs = kwargs.pop("entity", None)
 
     if entities_kwargs:
         stmt1 = (
-            update(entities_table)
-            .where(entities_table.c.id == id)
+            update(entity_table)
+            .where(entity_table.c.id == id)
             .values(**entities_kwargs)
             .returning(
-                entities_table.c.type,
-                entities_table.c.parent_id,
-                entities_table.c.title,
-                entities_table.c.description,
-                entities_table.c.styles,
-                entities_table.c.icon,
+                entity_table.c.type,
+                entity_table.c.parent_id,
+                entity_table.c.title,
+                entity_table.c.description,
+                entity_table.c.styles,
+                entity_table.c.icon,
             )
         )
     else:
         stmt1 = (
             select(
-                entities_table.c.type,
-                entities_table.c.parent_id,
-                entities_table.c.title,
-                entities_table.c.description,
-                entities_table.c.styles,
-                entities_table.c.icon,
+                entity_table.c.type,
+                entity_table.c.parent_id,
+                entity_table.c.title,
+                entity_table.c.description,
+                entity_table.c.styles,
+                entity_table.c.icon,
             )
-            .where(entities_table.c.id == id)
+            .where(entity_table.c.id == id)
         )
 
     entity_row = conn.execute(stmt1).mappings().one()
@@ -120,15 +119,15 @@ def edit(conn: Connection, id: int, **kwargs):
 
 def delete(conn: Connection, id: int):
     stmt1 = (
-        sa_delete(entities_table)
-        .where(entities_table.c.id == id)
+        sa_delete(entity_table)
+        .where(entity_table.c.id == id)
         .returning(
-            entities_table.c.title,
-            entities_table.c.type
+            entity_table.c.title,
+            entity_table.c.type
         )
     )
     entity_row = conn.execute(stmt1).one()
-    table = TABLES[entity_row.type+"s"]
+    table = TABLES[entity_row.type]
     stmt2 = sa_delete(table).where(table.c.id == id)
     conn.execute(stmt2)
 

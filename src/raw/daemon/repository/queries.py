@@ -4,8 +4,8 @@ from dataclasses import fields
 from sqlalchemy import Connection, Select, Table, select, or_
 
 from ..database.mappings import (
-    entities_table, sessions_table, 
-    tasks_table, notes_table, links_table,
+    entity_table, session_table, 
+    task_table, note_table, link_table,
     TABLES, TABLE_TO_ENTITY
 )
 from ..entities import Entity
@@ -20,20 +20,20 @@ def fetch_entities_batch(
 ):
     stmt = (
         select(
-            entities_table.c.id,
-            entities_table.c.type,
-            entities_table.c.parent_id,
-            entities_table.c.title,
-            entities_table.c.description,
-            entities_table.c.styles,
-            entities_table.c.icon,
+            entity_table.c.id,
+            entity_table.c.type,
+            entity_table.c.parent_id,
+            entity_table.c.title,
+            entity_table.c.description,
+            entity_table.c.styles,
+            entity_table.c.icon,
         )
-        .order_by(entities_table.c.id)
+        .order_by(entity_table.c.id)
         .limit(limit)
         .offset(offset)
     )
     if filters:
-        stmt = apply_filters(stmt, filters, entities_table, Entity)
+        stmt = apply_filters(stmt, filters, entity_table, Entity)
     return conn.execute(stmt).mappings().all()
 
 def enrich_entities(
@@ -43,28 +43,28 @@ def enrich_entities(
 ):
     subq = (
         select(
-            entities_table.c.id,
-            entities_table.c.type,
-            entities_table.c.parent_id,
-            entities_table.c.title,
-            entities_table.c.description,
-            entities_table.c.styles,
-            entities_table.c.icon,
+            entity_table.c.id,
+            entity_table.c.type,
+            entity_table.c.parent_id,
+            entity_table.c.title,
+            entity_table.c.description,
+            entity_table.c.styles,
+            entity_table.c.icon,
 
-            sessions_table.c.start,
-            sessions_table.c.end,
-            sessions_table.c.summary,
+            session_table.c.start,
+            session_table.c.end,
+            session_table.c.summary,
 
-            tasks_table.c.deadline,
-            tasks_table.c.status,
+            task_table.c.deadline,
+            task_table.c.status,
 
-            notes_table.c.content,
+            note_table.c.content,
         )
-        .where(entities_table.c.id.in_(ids))
-        .outerjoin(sessions_table, sessions_table.c.id == entities_table.c.id)
-        .outerjoin(tasks_table, tasks_table.c.id == entities_table.c.id)
-        .outerjoin(notes_table, notes_table.c.id == entities_table.c.id)
-        .order_by(entities_table.c.id)
+        .where(entity_table.c.id.in_(ids))
+        .outerjoin(session_table, session_table.c.id == entity_table.c.id)
+        .outerjoin(task_table, task_table.c.id == entity_table.c.id)
+        .outerjoin(note_table, note_table.c.id == entity_table.c.id)
+        .order_by(entity_table.c.id)
         .subquery(name="subq_1")
     )
 
@@ -84,31 +84,31 @@ def enrich_entities(
 def fetch_outgoing_links(conn: Connection, from_ids: list[int]):
     stmt = (
         select(
-            entities_table.c.id,
-            entities_table.c.type,
-            entities_table.c.parent_id,
-            entities_table.c.title,
-            entities_table.c.description,
-            entities_table.c.styles,
-            entities_table.c.icon,
+            entity_table.c.id,
+            entity_table.c.type,
+            entity_table.c.parent_id,
+            entity_table.c.title,
+            entity_table.c.description,
+            entity_table.c.styles,
+            entity_table.c.icon,
 
-            links_table.c.from_id,
+            link_table.c.from_id,
 
-            sessions_table.c.start,
-            sessions_table.c.end,
-            sessions_table.c.summary,
+            session_table.c.start,
+            session_table.c.end,
+            session_table.c.summary,
 
-            tasks_table.c.deadline,
-            tasks_table.c.status,
+            task_table.c.deadline,
+            task_table.c.status,
 
-            notes_table.c.content,
+            note_table.c.content,
         )
-        .where(links_table.c.from_id.in_(from_ids))
-        .join(entities_table, entities_table.c.id == links_table.c.to_id)
-        .outerjoin(sessions_table, sessions_table.c.id == entities_table.c.id)
-        .outerjoin(tasks_table, tasks_table.c.id == entities_table.c.id)
-        .outerjoin(notes_table, notes_table.c.id == entities_table.c.id)
-        .order_by(links_table.c.from_id)
+        .where(link_table.c.from_id.in_(from_ids))
+        .join(entity_table, entity_table.c.id == link_table.c.to_id)
+        .outerjoin(session_table, session_table.c.id == entity_table.c.id)
+        .outerjoin(task_table, task_table.c.id == entity_table.c.id)
+        .outerjoin(note_table, note_table.c.id == entity_table.c.id)
+        .order_by(link_table.c.from_id)
     )
 
     return conn.execute(stmt).mappings().all()
@@ -190,7 +190,7 @@ def filter(
 ):
     offset = 0
     filters = resolve_tables_to_filter(filters)
-    entity_only_filters = filters.pop("entities", {})
+    entity_only_filters = filters.pop("entity", {})
 
     while True:
         base = fetch_entities_batch(
