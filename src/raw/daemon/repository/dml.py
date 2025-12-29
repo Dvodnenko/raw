@@ -24,7 +24,7 @@ def create(conn: Connection, obj: Entity):
         for c in columns.intersection(TABLES_COLUMNS["entity"].keys())}
     this_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS[obj.type].keys())}
-    links: list[int] | None = kwargs.pop("link", None)
+    links: list[int] | None = kwargs.pop("links", None)
     
     stmt1 = (
         insert(entity_table)
@@ -39,11 +39,11 @@ def create(conn: Connection, obj: Entity):
         .values(**this_values)
     )
     conn.execute(stmt2)
-    kwargs["id"] = this_values["id"]
+    obj.id = this_values["id"]
     if links:
         link_entity(conn, entity_part.id, links)
     
-    return build_entity(**kwargs)
+    return obj
 
 def link_entity(conn: Connection, id: int, ids: Sequence[int]):
     stmt1 = sa_delete(link_table).where(link_table.c.from_id == id)
