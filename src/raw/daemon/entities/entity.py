@@ -11,12 +11,14 @@ class Entity:
 
     id: int = None
     parent_id: int = None
-    type: str = ""
+    type: str = None
     links: list["Entity"] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.title.startswith("/"):
             self.title = f"/{self.title}"
+        if not self.type:
+            self.type = type(self).__name__.lower()
 
     @property
     def desc(self):
