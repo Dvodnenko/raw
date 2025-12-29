@@ -8,7 +8,7 @@ from ..database.mappings import (
     task_table, note_table, link_table,
     TABLES, TABLE_TO_ENTITY
 )
-from ..entities import Entity
+from ..domain import Entity
 from .assemblers import attach_links, resolve_tables_to_filter
 
 

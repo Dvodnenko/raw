@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Any
 
 from ..database.mappings import COLUMN_TO_TABLE
-from ..entities import build_entity
+from ..domain import build_entity
 
 
 def group_links(rows):

@@ -7,7 +7,7 @@ from .note import note_table
 from .session import session_table
 from .tag import tag_table
 from .task import task_table
-from ...entities import (
+from ...domain import (
     Entity, Folder, Session, Tag, Task, Note
 )
 

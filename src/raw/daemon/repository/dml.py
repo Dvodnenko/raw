@@ -9,7 +9,7 @@ from sqlalchemy import (
     select
 )
 
-from ..entities import build_entity, Entity
+from ..domain import build_entity, Entity
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entity_table, link_table
