@@ -30,6 +30,5 @@ class Repository:
     def filter(
         self,
         filters: dict[str, tuple[Any]],
-        batch_size: int
     ):
-        yield from filter(self.conn, filters, batch_size)
+        yield from filter(self.conn, filters)

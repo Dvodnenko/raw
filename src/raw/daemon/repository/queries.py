@@ -185,10 +185,10 @@ def get_all(
 
 def filter(
     conn: Connection, 
-    filters: dict[str, tuple[Any]] = {},
-    batch_size=100,
+    filters: dict[str, tuple[Any]],
 ):
     offset = 0
+    batch_size = 100
     filters = resolve_tables_to_filter(filters)
     entity_only_filters = filters.pop("entity", {})
 
