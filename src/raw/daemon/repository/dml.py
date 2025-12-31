@@ -9,7 +9,7 @@ from sqlalchemy import (
     select
 )
 
-from ..domain import build_entity, Entity, MissingIdentifierError
+from ..domain import Entity, MissingIdentifierError
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entity_table, link_table
@@ -25,7 +25,7 @@ def create(conn: Connection, obj: Entity):
     this_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS[obj.type].keys())}
     links: list[int] | None = kwargs.pop("links", None)
-    
+
     stmt1 = (
         insert(entity_table)
         .values(**entity_values)
@@ -43,7 +43,7 @@ def create(conn: Connection, obj: Entity):
     if links:
         link_entity(conn, entity_part.id, links)
     
-    return obj
+    return None
 
 def link_entity(conn: Connection, id: int, ids: Sequence[int]):
     stmt1 = sa_delete(link_table).where(link_table.c.from_id == id)
@@ -57,11 +57,11 @@ def link_entity(conn: Connection, id: int, ids: Sequence[int]):
             for to_id in ids
         ]
     )
-    return
+    return None
 
-def edit(conn: Connection, id: int = None, title: str = None, **kwargs):
+def edit(conn: Connection, id_: int = None, title_: str = None, **kwargs):
 
-    if bool(id) == bool(title) == False:
+    if bool(id_) == bool(title_) == False:
         raise MissingIdentifierError()
 
     links: list[int] = kwargs.pop("link", [])
@@ -93,10 +93,10 @@ def edit(conn: Connection, id: int = None, title: str = None, **kwargs):
             )
         )
 
-    if id:
-        stmt1 = stmt1.where(entity_table.c.id == id)
+    if id_:
+        stmt1 = stmt1.where(entity_table.c.id == id_)
     else:
-        stmt1 = stmt1.where(entity_table.c.title == title)
+        stmt1 = stmt1.where(entity_table.c.title == title_)
 
     entity_row = conn.execute(stmt1).mappings().one()
     table_name = entity_row["type"]+"s"
@@ -114,20 +114,20 @@ def edit(conn: Connection, id: int = None, title: str = None, **kwargs):
             select(table)
         )
 
-    if id:
-        stmt2 = stmt2.where(table.c.id == id)
+    if id_:
+        stmt2 = stmt2.where(table.c.id == id_)
     else:
-        stmt2 = stmt2.where(table.c.title == title)
+        stmt2 = stmt2.where(table.c.title == title_)
 
     this_row = conn.execute(stmt2).mappings().one()
     
     if links:
         link_entity(conn, this_row["id"], links)
 
-    return build_entity(**entity_row, **this_row)
+    return None
 
-def delete(conn: Connection, id: int = None, title: str = None):
-    if bool(id) == bool(title) == False:
+def delete(conn: Connection, id_: int = None, title_: str = None):
+    if bool(id_) == bool(title_) == False:
         raise MissingIdentifierError()
 
     stmt1 = (
@@ -138,19 +138,19 @@ def delete(conn: Connection, id: int = None, title: str = None):
         )
     )
 
-    if id:
-        stmt1 = stmt1.where(entity_table.c.id == id)
+    if id_:
+        stmt1 = stmt1.where(entity_table.c.id == id_)
     else:
-        stmt1 = stmt1.where(entity_table.c.title == title)
+        stmt1 = stmt1.where(entity_table.c.title == title_)
 
     entity_row = conn.execute(stmt1).one()
     table = TABLES[entity_row.type]
     stmt2 = sa_delete(table)
 
-    if id:
-        stmt2 = stmt2.where(table.c.id == id)
+    if id_:
+        stmt2 = stmt2.where(table.c.id == id_)
     else:
-        stmt2 = stmt2.where(table.c.title == title)
+        stmt2 = stmt2.where(table.c.title == title_)
 
     conn.execute(stmt2)
 

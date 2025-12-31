@@ -20,17 +20,17 @@ class Repository:
         return create(self.conn, obj)
     
     @handle_database_exceptions
-    def edit(self, id: int = None, title: str = None, **kwargs):
-        return edit(self.conn, id=id, title=title, **kwargs)
+    def edit(self, id_: int = None, title_: str = None, **kwargs):
+        return edit(self.conn, id_=id_, title_=title_, **kwargs)
     
     @handle_database_exceptions
-    def delete(self, id: int = None, title: str = None):
-        return delete(self.conn, id=id, title=title)
+    def delete(self, id_: int = None, title_: str = None):
+        return delete(self.conn, id_=id_, title_=title_)
     
     # Queries
 
     def filter(
         self,
-        filters: dict[str, list[Any]],
+        filters: dict[str, dict[str, list[Any]]],
     ):
         yield from filter(self.conn, filters)
