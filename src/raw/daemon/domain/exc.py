@@ -6,7 +6,12 @@ class Exc(Exception):
 
 
 class UniquenessError(Exc):
-    
+
     def __str__(self):
-        return f"Unique constraint failed: {
+        return f"Unique constraint violated: {
             ", ".join([arg for arg in self.args])}"
+
+
+class MissingIdentifierError(Exc):
+    def __str__(self):
+        return "Missing required identifier"
