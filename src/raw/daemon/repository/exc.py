@@ -1,6 +1,6 @@
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
-from ..domain import UniquenessError
+from ..domain import UniquenessError, EntryNotFoundError
 
 
 def unique_violation_column(exc: IntegrityError) -> str | None:
@@ -20,5 +20,7 @@ def handle_database_exceptions(func):
         except IntegrityError as exc:
             if col := unique_violation_column(exc):
                 raise UniquenessError(col) from None
+        except NoResultFound:
+            raise EntryNotFoundError() from None
 
     return wrap

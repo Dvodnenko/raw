@@ -7,13 +7,35 @@ from .note import Note
 from .enums import TaskStatus
 from .utils import (
     build_entity, ENTITIES, plural_to_singular, parse_datetime, parse_list)
-from .exc import Exc, UniquenessError, MissingIdentifierError
+
+from .exc import (
+    Exc, UniquenessError, MissingIdentifierError, EntryNotFoundError
+)
 
 
 __all__ = (
-    "Entity", "Folder", "Session", "Tag", 
-    "Task", "TaskStatus", "Note", "ENTITIES",
-    "build_entity", "Exc", "UniquenessError",
-    "MissingIdentifierError", "plural_to_singular",
-    "parse_datetime", "parse_list",
+    ## Entity Types
+    "Entity",
+    "Folder",
+    "Session",
+    "Tag", 
+    "Task",
+    "Note",
+    
+    "TaskStatus",
+
+    ## Mappings
+    "ENTITIES",
+
+    ## Utils
+    "plural_to_singular",
+    "build_entity",
+    "parse_datetime",
+    "parse_list",
+    
+    ## Exceptions
+    "Exc",
+    "MissingIdentifierError",
+    "UniquenessError",
+    "EntryNotFoundError",
 )
