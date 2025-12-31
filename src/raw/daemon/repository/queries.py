@@ -16,7 +16,7 @@ def fetch_entities_batch(
     conn: Connection,
     limit: int,
     offset: int,
-    filters: dict[str, tuple[Any]] = {}
+    filters: dict[str, list[Any]] = {}
 ):
     stmt = (
         select(
@@ -39,7 +39,7 @@ def fetch_entities_batch(
 def enrich_entities(
     conn: Connection,
     ids: list[int],
-    filters: dict[str, dict[str, tuple[Any]]] = {}
+    filters: dict[str, dict[str, list[Any]]] = {}
 ):
     subq = (
         select(
@@ -130,7 +130,7 @@ OPERATORS = {
 
 def apply_filters(
     query: Select,
-    filters: dict[str, tuple[Any]],
+    filters: dict[str, list[Any]],
     table: Table,
     cls: type[Entity] = Entity,
 ):
@@ -185,7 +185,7 @@ def get_all(
 
 def filter(
     conn: Connection, 
-    filters: dict[str, tuple[Any]],
+    filters: dict[str, list[Any]],
 ):
     offset = 0
     batch_size = 100

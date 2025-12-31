@@ -31,6 +31,6 @@ class Repository:
 
     def filter(
         self,
-        filters: dict[str, tuple[Any]],
+        filters: dict[str, list[Any]],
     ):
         yield from filter(self.conn, filters)

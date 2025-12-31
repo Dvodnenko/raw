@@ -26,9 +26,9 @@ def attach_links(entity_rows, link_rows):
         yield entity
 
 def resolve_tables_to_filter(
-    filters: dict[str, tuple[Any]]
+    filters: dict[str, list[Any]]
 ):
-    table_to_filter_map: dict[str, dict[str, tuple[Any]]] = {}
+    table_to_filter_map: dict[str, dict[str, list[Any]]] = {}
     for key, value in filters.items():
         if "__" in key: # then it's a complex expression
             table = COLUMN_TO_TABLE[key[0:key.index("__")]]
