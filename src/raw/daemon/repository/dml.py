@@ -9,7 +9,7 @@ from sqlalchemy import (
     select
 )
 
-from ..domain import build_entity, Entity
+from ..domain import build_entity, Entity, MissingIdentifierError
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entity_table, link_table
@@ -59,7 +59,10 @@ def link_entity(conn: Connection, id: int, ids: Sequence[int]):
     )
     return
 
-def edit(conn: Connection, id: int, **kwargs):
+def edit(conn: Connection, id: int = None, title: str = None, **kwargs):
+
+    if bool(id) == bool(title) == False:
+        raise MissingIdentifierError()
 
     links: list[int] = kwargs.pop("link", [])
     kwargs = resolve_tables_to_filter(kwargs)
@@ -68,7 +71,6 @@ def edit(conn: Connection, id: int, **kwargs):
     if entities_kwargs:
         stmt1 = (
             update(entity_table)
-            .where(entity_table.c.id == id)
             .values(**entities_kwargs)
             .returning(
                 entity_table.c.type,
@@ -89,8 +91,12 @@ def edit(conn: Connection, id: int, **kwargs):
                 entity_table.c.styles,
                 entity_table.c.icon,
             )
-            .where(entity_table.c.id == id)
         )
+
+    if id:
+        stmt1 = stmt1.where(entity_table.c.id == id)
+    else:
+        stmt1 = stmt1.where(entity_table.c.title == title)
 
     entity_row = conn.execute(stmt1).mappings().one()
     table_name = entity_row["type"]+"s"
@@ -100,15 +106,18 @@ def edit(conn: Connection, id: int, **kwargs):
     if this_kwargs:
         stmt2 = (
             update(table)
-            .where(table.c.id == id)
             .values(**this_kwargs)
             .returning(table)
         )
     else:
         stmt2 = (
             select(table)
-            .where(table.c.id == id)
         )
+
+    if id:
+        stmt2 = stmt2.where(table.c.id == id)
+    else:
+        stmt2 = stmt2.where(table.c.title == title)
 
     this_row = conn.execute(stmt2).mappings().one()
     
@@ -117,18 +126,32 @@ def edit(conn: Connection, id: int, **kwargs):
 
     return build_entity(**entity_row, **this_row)
 
-def delete(conn: Connection, id: int):
+def delete(conn: Connection, id: int = None, title: str = None):
+    if bool(id) == bool(title) == False:
+        raise MissingIdentifierError()
+
     stmt1 = (
         sa_delete(entity_table)
-        .where(entity_table.c.id == id)
         .returning(
             entity_table.c.title,
             entity_table.c.type
         )
     )
+
+    if id:
+        stmt1 = stmt1.where(entity_table.c.id == id)
+    else:
+        stmt1 = stmt1.where(entity_table.c.title == title)
+
     entity_row = conn.execute(stmt1).one()
     table = TABLES[entity_row.type]
-    stmt2 = sa_delete(table).where(table.c.id == id)
+    stmt2 = sa_delete(table)
+
+    if id:
+        stmt2 = stmt2.where(table.c.id == id)
+    else:
+        stmt2 = stmt2.where(table.c.title == title)
+
     conn.execute(stmt2)
 
     return None

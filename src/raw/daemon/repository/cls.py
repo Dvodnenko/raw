@@ -19,11 +19,13 @@ class Repository:
     def create(self, obj: Entity):
         return create(self.conn, obj)
     
-    def edit(self, id: int, **kwargs):
-        return edit(self.conn, id, **kwargs)
+    @handle_database_exceptions
+    def edit(self, id: int = None, title: str = None, **kwargs):
+        return edit(self.conn, id=id, title=title, **kwargs)
     
-    def delete(self, id: int):
-        return delete(self.conn, id)
+    @handle_database_exceptions
+    def delete(self, id: int = None, title: str = None):
+        return delete(self.conn, id=id, title=title)
     
     # Queries
 
