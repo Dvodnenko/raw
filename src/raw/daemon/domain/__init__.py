@@ -6,7 +6,9 @@ from .task import Task
 from .note import Note
 from .enums import TaskStatus
 from .utils import (
-    build_entity, ENTITIES, plural_to_singular, parse_datetime, parse_list)
+    build_entity, ENTITIES, plural_to_singular, parse_datetime, parse_list,
+    resolve_entities_to_filter,
+)
 
 from .exc import (
     Exc, UniquenessError, MissingIdentifierError, EntryNotFoundError
@@ -32,6 +34,7 @@ __all__ = (
     "build_entity",
     "parse_datetime",
     "parse_list",
+    "resolve_entities_to_filter",
     
     ## Exceptions
     "Exc",

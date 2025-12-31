@@ -9,12 +9,11 @@ from sqlalchemy import (
     select
 )
 
-from ..domain import Entity, MissingIdentifierError
+from ..domain import Entity, MissingIdentifierError, resolve_entities_to_filter
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entity_table, link_table
 )
-from .assemblers import resolve_tables_to_filter
 
 
 def create(conn: Connection, obj: Entity):
@@ -65,7 +64,7 @@ def edit(conn: Connection, id_: int = None, title_: str = None, **kwargs):
         raise MissingIdentifierError()
 
     links: list[int] = kwargs.pop("link", [])
-    kwargs = resolve_tables_to_filter(kwargs)
+    kwargs = resolve_entities_to_filter(kwargs)
     entities_kwargs = kwargs.pop("entity", None)
 
     if entities_kwargs:

@@ -9,7 +9,7 @@ from ..database.mappings import (
     TABLES, TABLE_TO_ENTITY
 )
 from ..domain import Entity
-from .assemblers import attach_links, resolve_tables_to_filter
+from .assemblers import attach_links
 
 
 def fetch_entities_batch(
@@ -185,11 +185,10 @@ def get_all(
 
 def filter(
     conn: Connection, 
-    filters: dict[str, list[Any]],
+    filters: dict[str, dict[str, list[Any]]],
 ):
     offset = 0
     batch_size = 100
-    filters = resolve_tables_to_filter(filters)
     entity_only_filters = filters.pop("entity", {})
 
     while True:

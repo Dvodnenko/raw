@@ -1,5 +1,6 @@
 import inspect
 from dataclasses import fields
+from typing import Any
 
 import dateparser
 
@@ -37,10 +38,6 @@ ALL_FIELDS = [
     for field in fields(type)
 ]
 
-ALL_FIELDS_NAME = [
-    field.name for field in ALL_FIELDS
-]
-
 
 def build_entity(**data):
     cls = ENTITIES[data.get("type")]
@@ -55,7 +52,7 @@ def plural_to_singular(value: str):
 NONES = ("none", "null", "0")
 
 def parse_datetime(value: str):
-    if value.lower() in NONES:
+    if value is None or value.lower() in NONES:
         return None
     res = dateparser.parse(value)
     if res:
@@ -64,3 +61,21 @@ def parse_datetime(value: str):
 
 def parse_list(value: str, separator: str = ","):
     return value.split(separator)
+
+
+def resolve_entities_to_filter(
+    filters: dict[str, list[Any]]
+):
+    entity_to_filter_map: dict[str, dict[str, list[Any]]] = {}
+    for filter_name_and_op, values_list in filters.items():
+        if "__" in filter_name_and_op: # then it's a complex expression
+            entity = FIELD_NAME_TO_ENTITY_NAME[
+                filter_name_and_op[0:filter_name_and_op.index("__")]]
+        else:
+            entity = FIELD_NAME_TO_ENTITY_NAME[filter_name_and_op]
+
+        if entity_to_filter_map.get(entity):
+            entity_to_filter_map[entity].update({filter_name_and_op: values_list})
+        else:
+            entity_to_filter_map[entity] = {filter_name_and_op: values_list}
+    return entity_to_filter_map
