@@ -5,7 +5,8 @@ from .tag import Tag
 from .task import Task
 from .note import Note
 from .enums import TaskStatus
-from .utils import build_entity, ENTITIES, plural_to_singular
+from .utils import (
+    build_entity, ENTITIES, plural_to_singular, parse_datetime, parse_list)
 from .exc import Exc, UniquenessError, MissingIdentifierError
 
 
@@ -14,4 +15,5 @@ __all__ = (
     "Task", "TaskStatus", "Note", "ENTITIES",
     "build_entity", "Exc", "UniquenessError",
     "MissingIdentifierError", "plural_to_singular",
+    "parse_datetime", "parse_list",
 )
