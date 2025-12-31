@@ -11,7 +11,8 @@ from .utils import (
 )
 
 from .exc import (
-    Exc, UniquenessError, MissingIdentifierError, EntryNotFoundError
+    Exc, UniquenessError, MissingIdentifierError, EntryNotFoundError,
+    OperationNotFoundError
 )
 
 
@@ -41,4 +42,5 @@ __all__ = (
     "MissingIdentifierError",
     "UniquenessError",
     "EntryNotFoundError",
+    "OperationNotFoundError",
 )
