@@ -22,3 +22,7 @@ def build_entity(**data):
     cls = ENTITIES[data.get("type")]
     params = inspect.signature(cls).parameters
     return cls(**{k:data.get(k) for k in params})
+
+
+def plural_to_singular(value: str):
+    return value.removesuffix("s")

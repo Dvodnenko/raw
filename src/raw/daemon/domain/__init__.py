@@ -5,7 +5,7 @@ from .tag import Tag
 from .task import Task
 from .note import Note
 from .enums import TaskStatus
-from .utils import build_entity, ENTITIES
+from .utils import build_entity, ENTITIES, plural_to_singular
 from .exc import Exc, UniquenessError, MissingIdentifierError
 
 
@@ -13,5 +13,5 @@ __all__ = (
     "Entity", "Folder", "Session", "Tag", 
     "Task", "TaskStatus", "Note", "ENTITIES",
     "build_entity", "Exc", "UniquenessError",
-    "MissingIdentifierError",
+    "MissingIdentifierError", "plural_to_singular",
 )
