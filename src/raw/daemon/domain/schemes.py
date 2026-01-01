@@ -112,3 +112,17 @@ class EditingScheme(BaseScheme):
             return {"id_": int(self.identifier)}
         else:
             return {"title_": self.identifier}
+
+@dataclass
+class DeletionScheme(BaseScheme):
+    identifier: str = field(init=False)
+
+    def __post_init__(self):
+        self.identifier = self.args[0]
+
+    @property
+    def resolve(self):
+        if self.identifier.isdigit():
+            return {"id_": int(self.identifier)}
+        else:
+            return {"title_": self.identifier}
