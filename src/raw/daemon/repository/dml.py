@@ -9,7 +9,7 @@ from sqlalchemy import (
     select
 )
 
-from ..domain import Entity, MissingIdentifierError, resolve_entities_to_filter
+from ..domain import Entity, MissingIdentifierError
 from ..database.mappings import (
     TABLES, TABLES_COLUMNS,
     entity_table, link_table
@@ -23,7 +23,7 @@ def create(conn: Connection, obj: Entity):
         for c in columns.intersection(TABLES_COLUMNS["entity"].keys())}
     this_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS[obj.type].keys())}
-    links: list[int] | None = kwargs.pop("links", None)
+    links = entity_values.pop("links", None)
 
     stmt1 = (
         insert(entity_table)
@@ -38,7 +38,7 @@ def create(conn: Connection, obj: Entity):
         .values(**this_values)
     )
     conn.execute(stmt2)
-    obj.id = this_values["id"]
+
     if links:
         link_entity(conn, entity_part.id, links)
     
@@ -63,33 +63,22 @@ def edit(conn: Connection, id_: int = None, title_: str = None, **kwargs):
     if bool(id_) == bool(title_) == False:
         raise MissingIdentifierError()
 
-    links: list[int] = kwargs.pop("link", [])
-    kwargs = resolve_entities_to_filter(kwargs)
     entities_kwargs = kwargs.pop("entity", None)
+    
+    if "links" in entities_kwargs.keys():
+        links = entities_kwargs.pop("links")
+    else:
+        links = None
 
     if entities_kwargs:
         stmt1 = (
             update(entity_table)
             .values(**entities_kwargs)
-            .returning(
-                entity_table.c.type,
-                entity_table.c.parent_id,
-                entity_table.c.title,
-                entity_table.c.description,
-                entity_table.c.styles,
-                entity_table.c.icon,
-            )
+            .returning(entity_table)
         )
     else:
         stmt1 = (
-            select(
-                entity_table.c.type,
-                entity_table.c.parent_id,
-                entity_table.c.title,
-                entity_table.c.description,
-                entity_table.c.styles,
-                entity_table.c.icon,
-            )
+            select(entity_table)
         )
 
     if id_:
@@ -97,8 +86,8 @@ def edit(conn: Connection, id_: int = None, title_: str = None, **kwargs):
     else:
         stmt1 = stmt1.where(entity_table.c.title == title_)
 
-    entity_row = conn.execute(stmt1).mappings().one()
-    table_name = entity_row["type"]+"s"
+    entity_row = conn.execute(stmt1).one()
+    table_name = entity_row.type
     table = TABLES[table_name]
     this_kwargs = kwargs.pop(table_name, None)
 
@@ -113,15 +102,11 @@ def edit(conn: Connection, id_: int = None, title_: str = None, **kwargs):
             select(table)
         )
 
-    if id_:
-        stmt2 = stmt2.where(table.c.id == id_)
-    else:
-        stmt2 = stmt2.where(table.c.title == title_)
+    stmt2 = stmt2.where(table.c.id == entity_row.id)
+    conn.execute(stmt2)
 
-    this_row = conn.execute(stmt2).mappings().one()
-    
     if links:
-        link_entity(conn, this_row["id"], links)
+        link_entity(conn, entity_row.id, links)
 
     return None
 
