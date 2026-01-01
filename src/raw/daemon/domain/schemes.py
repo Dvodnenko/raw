@@ -2,12 +2,12 @@
 Data Transfering Protocols for each CRUD operation
 """
 
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, field
 from datetime import datetime
 from typing import get_origin, Any
 
 from .entity import Entity
-from .utils import parse_datetime, parse_list, ENTITIES
+from .utils import parse_datetime, parse_list, ENTITIES, plural_to_singular
 
 
 def cast(dict_: dict[str, str], cls: type[Entity]) -> dict[str, Any]:
@@ -72,3 +72,15 @@ class BaseScheme:
         for key, values_list in self.kwargs.items():
             result[key] = values_list[0]
         return result
+
+@dataclass
+class CreationScheme(BaseScheme):
+
+    type: str = field(init=False)
+    parameters: dict[str, str] = field(init=False)
+
+    def __post_init__(self):
+        self.type = plural_to_singular(self.args[0])
+        self.parameters = self.kw_without_lists
+        self.parameters["type"] = self.type
+        self.parameters = cast(self.parameters, ENTITIES[self.type])
