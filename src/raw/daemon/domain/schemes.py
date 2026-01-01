@@ -2,7 +2,7 @@
 Data Transfering Protocols for each CRUD operation
 """
 
-from dataclasses import fields
+from dataclasses import dataclass, fields
 from datetime import datetime
 from typing import get_origin, Any
 
@@ -58,3 +58,17 @@ def cast_filters(
                     allowed[filter_name].type(v) for v in values_list]
 
     return result
+
+
+@dataclass
+class BaseScheme:
+    args: list[str]
+    flags: list[str]
+    kwargs: dict[str, list[str]]
+
+    @property
+    def kw_without_lists(self):
+        result: dict[str, str] = {}
+        for key, values_list in self.kwargs.items():
+            result[key] = values_list[0]
+        return result
