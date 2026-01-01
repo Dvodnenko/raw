@@ -7,7 +7,11 @@ from datetime import datetime
 from typing import get_origin, Any
 
 from .entity import Entity
-from .utils import parse_datetime, parse_list, ENTITIES, plural_to_singular
+from .utils import (
+    parse_datetime, parse_list, ENTITIES, plural_to_singular,
+    resolve_entities_to_filter
+)
+from .exc import MissingIdentifierError
 
 
 def cast(dict_: dict[str, str], cls: type[Entity]) -> dict[str, Any]:
@@ -84,3 +88,27 @@ class CreationScheme(BaseScheme):
         self.parameters = self.kw_without_lists
         self.parameters["type"] = self.type
         self.parameters = cast(self.parameters, ENTITIES[self.type])
+
+@dataclass
+class EditingScheme(BaseScheme):
+    identifier: str = field(init=False)
+    parameters: dict[str, dict[str, list[Any]]] = field(init=False)
+
+    def __post_init__(self):
+        try:
+            self.identifier = self.args[0]
+        except IndexError:
+            raise MissingIdentifierError()
+        self.parameters = self.kwargs
+        self.parameters = resolve_entities_to_filter(self.parameters)
+        for entity_name, value in self.parameters.items():
+            for edit_field_name, values_list in self.parameters[entity_name].items():
+                self.parameters[entity_name][edit_field_name] = values_list[0]
+            self.parameters[entity_name] = cast(value, ENTITIES[entity_name])
+
+    @property
+    def resolve(self):
+        if self.identifier.isdigit():
+            return {"id_": int(self.identifier)}
+        else:
+            return {"title_": self.identifier}
