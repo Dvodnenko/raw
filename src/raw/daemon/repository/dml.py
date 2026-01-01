@@ -23,7 +23,7 @@ def create(conn: Connection, obj: Entity):
         for c in columns.intersection(TABLES_COLUMNS["entity"].keys())}
     this_values = {c: kwargs[c] 
         for c in columns.intersection(TABLES_COLUMNS[obj.type].keys())}
-    links = entity_values.pop("links", None)
+    links = kwargs.pop("links", None)
 
     stmt1 = (
         insert(entity_table)
