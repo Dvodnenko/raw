@@ -126,3 +126,14 @@ class DeletionScheme(BaseScheme):
             return {"id_": int(self.identifier)}
         else:
             return {"title_": self.identifier}
+
+@dataclass
+class FiltrationScheme(BaseScheme):
+    filters: dict[str, dict[str, list[Any]]] = field(init=False)
+    order_by: str | None = field(init=False)
+
+    def __post_init__(self):
+        self.order_by = self.kwargs.pop("orderby", None)
+        self.filters = resolve_entities_to_filter(self.kwargs)
+        self.filters = cast_filters(self.filters)
+
