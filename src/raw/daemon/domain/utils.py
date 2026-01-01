@@ -1,4 +1,3 @@
-import inspect
 from dataclasses import fields
 from typing import Any
 
@@ -41,8 +40,8 @@ ALL_FIELDS = [
 
 def build_entity(**data):
     cls = ENTITIES[data.get("type")]
-    params = inspect.signature(cls).parameters
-    return cls(**{k:data.get(k) for k in params})
+    allowed = {f.name for f in fields(cls)}
+    return cls(**{k: v for k, v in data.items() if k in allowed})
 
 
 def plural_to_singular(value: str):
@@ -60,6 +59,8 @@ def parse_datetime(value: str):
     raise ValueError(f"cannot parse string '{value}'")
 
 def parse_list(value: str, separator: str = ","):
+    if value == "":
+        return []
     return value.split(separator)
 
 
