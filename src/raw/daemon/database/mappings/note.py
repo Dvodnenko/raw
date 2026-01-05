@@ -1,12 +1,15 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, Text
 
-from ..orm_registry import mapping_registry
+from ..metadata import metadata
 
 
-notes_table = Table(
-    "notes",
-    mapping_registry.metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-           primary_key=True, autoincrement=True),
+note_table = Table(
+    "note", metadata,
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entity.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
     Column("content", Text, nullable=False)
 )

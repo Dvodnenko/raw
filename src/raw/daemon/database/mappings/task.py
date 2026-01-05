@@ -1,17 +1,20 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime, Enum
 
-from ..orm_registry import mapping_registry
-from ...entities import TaskStatus
+from ..metadata import metadata
+from .enums import TaskStatus
 
 
-tasks_table = Table(
-    "tasks",
-    mapping_registry.metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-           primary_key=True, autoincrement=True),
+task_table = Table(
+    "task", metadata,
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entity.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
     Column("deadline", DateTime, nullable=True),
     Column("status", 
-           Enum(TaskStatus, name="task_status_enum", create_type=True),
-           nullable=False, default=TaskStatus.INACTIVE
+       Enum(TaskStatus, name="task_status_enum", create_type=True),
+       nullable=False, default=TaskStatus.INACTIVE
     ),
 )

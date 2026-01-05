@@ -16,7 +16,7 @@ class Session(Entity):
         return self.end is None
 
     @property
-    def total(self) -> timedelta:
+    def duration(self) -> timedelta:
         if self.is_active:
             return datetime.now().replace(microsecond=0) - self.start
         res = self.end - self.start

@@ -1,11 +1,14 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey
 
-from ..orm_registry import mapping_registry
+from ..metadata import metadata
 
 
-tags_table = Table(
-    "tags",
-    mapping_registry.metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-           primary_key=True, autoincrement=True),
+tag_table = Table(
+    "tag", metadata,
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entity.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
 )

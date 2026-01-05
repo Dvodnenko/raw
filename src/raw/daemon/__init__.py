@@ -5,8 +5,6 @@ import atexit
 
 import setproctitle
 
-from .handler import handlecmd
-from .database.session import init_db
 from ..common import CONFIG_GLOBALS, exe_lines, config_
 
 
@@ -40,8 +38,6 @@ def run():
 
     setproctitle.setproctitle("raw")
     atexit.register(cleanup)
-
-    init_db()
     
     exe_lines(
         config_.get("execute"),
@@ -56,8 +52,6 @@ def run():
                 conn.close()
                 continue
 
-            for row in handlecmd(request):
-                conn.sendall(row.encode())
             conn.close()
 
     finally:

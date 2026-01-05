@@ -1,5 +1,4 @@
 from sqlalchemy import MetaData
-from sqlalchemy.orm import registry
 
 
 naming_conventions: dict[str, str] = {
@@ -11,4 +10,3 @@ naming_conventions: dict[str, str] = {
 }
 
 metadata: MetaData = MetaData(naming_convention=naming_conventions)
-mapping_registry: registry = registry(metadata=metadata)

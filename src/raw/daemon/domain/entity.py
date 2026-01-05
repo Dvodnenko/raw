@@ -10,20 +10,23 @@ class Entity:
     description: str = ""
 
     id: int = None
-    links: list["Entity"] = field(
-        default_factory=lambda: [])
     parent_id: int = None
-    parent: "Folder" = None
+    type: str = None
+    links: list["Entity"] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.title.startswith("/"):
             self.title = f"/{self.title}"
+        if not self.type:
+            self.type = type(self).__name__.lower()
 
-    def update(self, **kwargs):
-        for key, value in kwargs.items():
-            self.__setattr__(key, value)
-        self.__post_init__()
-        return self
+    @property
+    def desc(self):
+        return self.description
+    
+    @desc.setter
+    def desc(self, value):
+        self.description = value
 
     @property
     def parentstr(self) -> str:

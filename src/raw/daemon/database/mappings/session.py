@@ -1,13 +1,16 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, DateTime, Text
 
-from ..orm_registry import mapping_registry
+from ..metadata import metadata
 
 
-sessions_table = Table(
-    "sessions",
-    mapping_registry.metadata,
-    Column("id", Integer, ForeignKey("entities.id"), 
-           primary_key=True, autoincrement=True),
+session_table = Table(
+    "session", metadata,
+    Column(
+        "id",
+        Integer,
+        ForeignKey("entity.id", ondelete="CASCADE"),
+        primary_key=True, nullable=False
+    ),
     Column("start", DateTime, nullable=False),
     Column("end", DateTime, nullable=True),
     Column("summary", Text, nullable=True),
