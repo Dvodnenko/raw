@@ -7,3 +7,9 @@ class FieldSpec:
     field: str
     operator: str
     value: Any
+
+
+@dataclass(frozen=True)
+class AndSpec:
+    left: Any
+    right: Any
