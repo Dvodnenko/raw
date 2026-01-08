@@ -13,3 +13,8 @@ class FieldSpec:
 class AndSpec:
     left: Any
     right: Any
+
+@dataclass(frozen=True)
+class OrSpec:
+    left: Any
+    right: Any
