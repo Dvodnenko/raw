@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from .value_objects import Styles
 from .enums import TaskStatus
 
 
@@ -14,7 +13,6 @@ class Entity:
     id: int
     title: str
     description: str = ""
-    styles: Styles = Styles()
     icon: str = ""
     links: set[int] = field(default_factory=set)
 
