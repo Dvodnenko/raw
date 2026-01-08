@@ -5,7 +5,7 @@ from .value_objects import Styles
 from .enums import TaskStatus
 
 
-def now():
+def now() -> datetime:
     return datetime.now().replace(microsecond=0)
 
 
@@ -16,7 +16,20 @@ class Entity:
     description: str = ""
     styles: Styles = Styles()
     icon: str = ""
-    links: list[int] = field(default_factory=list)
+    links: set[int] = field(default_factory=set)
+
+    def __post_init__(self):
+        if self.title == "" or self.title.strip() == "":
+            raise ValueError("Title cannot be empty")
+        
+    def link(self, links: set[int]):
+        self.links = links
+
+    def add_links(self, links: set[int]):
+        self.links.update(links)
+    
+    def remove_links(self, links: set[int]):
+        self.links.difference_update(links)
 
 
 @dataclass(kw_only=True)
