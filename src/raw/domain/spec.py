@@ -18,3 +18,7 @@ class AndSpec:
 class OrSpec:
     left: Any
     right: Any
+
+@dataclass(frozen=True)
+class NotSpec:
+    spec: Any
