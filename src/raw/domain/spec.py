@@ -10,15 +10,15 @@ class FieldSpec:
 
 
 @dataclass(frozen=True)
-class AndSpec:
+class And:
     left: Any
     right: Any
 
 @dataclass(frozen=True)
-class OrSpec:
+class Or:
     left: Any
     right: Any
 
 @dataclass(frozen=True)
-class NotSpec:
+class Not:
     spec: Any

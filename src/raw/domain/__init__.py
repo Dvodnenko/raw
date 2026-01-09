@@ -1,7 +1,7 @@
 from .entities import Task, Entity
 from .enums import TaskStatus
 from .interfaces import RepositoryFactory, TaskRepository, SpecCompiler
-from .spec import FieldSpec, AndSpec, OrSpec, NotSpec
+from .spec import FieldSpec, And, Or, Not
 
 
 __all__ = (
@@ -19,7 +19,7 @@ __all__ = (
 
     ## Queries
     "FieldSpec",
-    "AndSpec",
-    "OrSpec",
-    "NotSpec",
+    "And",
+    "Or",
+    "Not",
 )
