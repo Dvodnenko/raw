@@ -3,22 +3,27 @@ from typing import Any
 
 
 @dataclass(frozen=True)
-class FieldSpec:
+class Spec:
+    ...
+
+
+@dataclass(frozen=True)
+class FieldSpec(Spec):
     field: str
     operator: str
     value: Any
 
 
 @dataclass(frozen=True)
-class And:
+class And(Spec):
     left: Any
     right: Any
 
 @dataclass(frozen=True)
-class Or:
+class Or(Spec):
     left: Any
     right: Any
 
 @dataclass(frozen=True)
-class Not:
+class Not(Spec):
     spec: Any
