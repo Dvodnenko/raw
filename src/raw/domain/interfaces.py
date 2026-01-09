@@ -3,6 +3,10 @@ from typing import Protocol, Optional, Any, Iterator
 from .entities import Task
 
 
+class RepositoryFactory(Protocol):
+    def tasks(self) -> "TaskRepository": ...
+
+
 class TaskRepository(Protocol):
     def add(self, entity: Task): ...
     def save(self, entity: Task): ...
