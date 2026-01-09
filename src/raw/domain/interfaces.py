@@ -6,6 +6,9 @@ from .entities import Task
 class RepositoryFactory(Protocol):
     def tasks(self) -> "TaskRepository": ...
 
+class SpecCompiler(Protocol):
+    def compile(self, spec: Any): ...
+
 
 class TaskRepository(Protocol):
     def add(self, entity: Task): ...
