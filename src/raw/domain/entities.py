@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Optional
 
 from .enums import TaskStatus
 
@@ -15,6 +16,7 @@ class Entity:
     description: str = ""
     icon: str = ""
     links: set[int] = field(default_factory=set)
+    parent_id: Optional[int] = None
 
     def __post_init__(self):
         if self.title == "" or self.title.strip() == "":
