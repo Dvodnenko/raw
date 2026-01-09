@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -15,21 +15,11 @@ class Entity:
     title: str
     description: str = ""
     icon: str = ""
-    links: set[int] = field(default_factory=set)
     parent_id: Optional[int] = None
 
     def __post_init__(self):
         if self.title == "" or self.title.strip() == "":
             raise ValueError("Title cannot be empty")
-        
-    def link(self, links: set[int]):
-        self.links = links
-
-    def add_links(self, links: set[int]):
-        self.links.update(links)
-    
-    def remove_links(self, links: set[int]):
-        self.links.difference_update(links)
 
 
 @dataclass(kw_only=True)
