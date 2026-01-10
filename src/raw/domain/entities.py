@@ -26,7 +26,7 @@ class Entity:
 class Task(Entity):
     
     status: TaskStatus = TaskStatus.ACTIVE
-    deadline: datetime = None
+    deadline: Optional[datetime] = None
 
     def mark(self, value: str):
         try:
