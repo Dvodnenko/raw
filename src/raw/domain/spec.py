@@ -10,20 +10,18 @@ class Spec:
 @dataclass(frozen=True)
 class FieldSpec(Spec):
     field: str
-    operator: str
+    operator: str # NOTE: add Enum for this field
     value: Any
 
 
 @dataclass(frozen=True)
 class And(Spec):
-    left: Any
-    right: Any
+    items: tuple[Spec]
 
 @dataclass(frozen=True)
 class Or(Spec):
-    left: Any
-    right: Any
+    items: tuple[Spec]
 
 @dataclass(frozen=True)
 class Not(Spec):
-    spec: Any
+    spec: Spec
