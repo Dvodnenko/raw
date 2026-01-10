@@ -4,9 +4,6 @@ from .entities import Task
 from .spec import Spec
 
 
-class RepositoryFactory(Protocol):
-    def tasks(self) -> "TaskRepository": ...
-
 class SpecCompiler(Protocol):
     def compile(self, spec: Spec): ...
 

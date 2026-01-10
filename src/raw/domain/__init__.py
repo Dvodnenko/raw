@@ -1,6 +1,6 @@
 from .entities import Task, Entity
 from .enums import TaskStatus
-from .interfaces import RepositoryFactory, TaskRepository, SpecCompiler
+from .interfaces import TaskRepository, SpecCompiler
 from .spec import Spec, FieldSpec, And, Or, Not
 from .editors import TaskEditor
 
@@ -14,7 +14,6 @@ __all__ = (
     "TaskStatus",
 
     ## Interfaces
-    "RepositoryFactory",
     "SpecCompiler",
     "TaskRepository",
 
