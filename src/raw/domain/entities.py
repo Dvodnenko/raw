@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+import re
 
 from .enums import TaskStatus
 
@@ -17,9 +18,11 @@ class Entity:
     icon: str = ""
     parent_id: Optional[int] = None
 
+    _title_pattern = re.compile(r"^/(?:[A-Za-z0-9 _-]+)(?:/[A-Za-z0-9 _-]+)*$")
+
     def __post_init__(self):
-        if self.title == "" or self.title.strip() == "":
-            raise ValueError("Title cannot be empty")
+        if not self._title_pattern.match(self.title):
+            raise ValueError(f"The title doesn't match the pattern: {self._title_pattern.pattern}")
 
 
 @dataclass(kw_only=True)
