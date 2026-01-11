@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ..domain import TaskStatus, TaskEditor
+from ..domain import TaskStatus, TaskEditor, UnitOfWork
 
 
 @dataclass(frozen=True)
@@ -31,3 +31,8 @@ class EditTaskCommand:
 @dataclass(frozen=True)
 class RemoveTaskCommand:
     id: int
+
+
+class TaskService:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
