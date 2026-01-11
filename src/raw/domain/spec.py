@@ -25,3 +25,10 @@ class Or(Spec):
 @dataclass(frozen=True)
 class Not(Spec):
     spec: Spec
+
+
+def and_(*clauses: Spec):
+    return And(items=clauses)
+
+def or_(*clauses: Spec):
+    return Or(items=clauses)
