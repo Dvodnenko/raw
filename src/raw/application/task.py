@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ..domain import TaskStatus, TaskEditor, UnitOfWork
+from ..domain import Task, TaskStatus, TaskEditor, UnitOfWork
 
 
 @dataclass(frozen=True)
@@ -36,6 +36,31 @@ class RemoveTaskCommand:
 class TaskService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
+    
+    def add(self, cmd: AddTaskCommand):
+        obj = Task(
+            # repository will generate the id by itself 
+            # and we don't really need it here
+            id=None,
+            title=cmd.title,
+            description=cmd.description,
+            icon=cmd.icon,
+            status=cmd.status,
+            deadline=cmd.deadline,
+        )
+
+        parent_path: Optional[str] = self._extract_parent_path(cmd.title)
+
+        with self.uow:
+            if parent_path:
+                parent = self.uow.tasks.get_by_title(parent_path)
+                if not parent:
+                    raise ValueError(
+                        f"Cannot locate Task in {parent_path}/ because it does not exist"
+                    )
+                obj.parent_id = parent.id
+
+            self.uow.tasks.add(obj)
 
     def _extract_parent_title(self, full_path: str) -> Optional[str]:
         if full_path.count("/") == 1: # root entity
