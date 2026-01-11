@@ -14,3 +14,11 @@ class TaskView:
     parent_id: Optional[int]
     status: TaskStatus
     deadline: Optional[datetime]
+
+@dataclass(frozen=True)
+class AddTaskCommand:
+    title: str
+    description: str = ""
+    icon: str = ""
+    status: TaskStatus = TaskStatus.ACTIVE
+    deadline: datetime = None
