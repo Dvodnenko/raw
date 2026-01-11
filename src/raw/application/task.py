@@ -36,3 +36,8 @@ class RemoveTaskCommand:
 class TaskService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
+
+    def _extract_parent_title(self, full_path: str) -> Optional[str]:
+        if full_path.count("/") == 1: # root entity
+            return None
+        return full_path[0:full_path.rfind("/")]
