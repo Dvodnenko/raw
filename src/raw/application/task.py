@@ -88,6 +88,10 @@ class TaskService:
                     new_prefix=edited.title,
                 )
 
+    def remove(self, cmd: RemoveTaskCommand):
+        with self.uow:
+            self.uow.tasks.remove(cmd.id)
+
     def _extract_parent_title(self, full_path: str) -> Optional[str]:
         if full_path.count("/") == 1: # root entity
             return None
