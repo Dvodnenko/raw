@@ -27,3 +27,7 @@ class AddTaskCommand:
 class EditTaskCommand:
     id: int
     editor: TaskEditor
+
+@dataclass(frozen=True)
+class RemoveTaskCommand:
+    id: int
