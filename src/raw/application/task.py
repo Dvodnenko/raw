@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Iterator
 
-from ..domain import Task, TaskStatus, TaskEditor, UnitOfWork
+from ..domain import Task, TaskStatus, Spec, TaskEditor, UnitOfWork
 
 
 @dataclass(frozen=True)
@@ -61,6 +61,18 @@ class TaskService:
                 obj.parent_id = parent.id
 
             self.uow.tasks.add(obj)
+
+    def filter(self, spec: Spec = None) -> Iterator[Task]:
+        for task in self.uow.tasks.filter(spec):
+            yield TaskView(
+                id=task.id,
+                title=task.title,
+                description=task.description,
+                icon=task.icon,
+                parent_id=task.parent_id,
+                status=task.status,
+                deadline=task.deadline,
+            )
 
     def _extract_parent_title(self, full_path: str) -> Optional[str]:
         if full_path.count("/") == 1: # root entity
