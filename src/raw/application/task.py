@@ -73,6 +73,20 @@ class TaskService:
                 status=task.status,
                 deadline=task.deadline,
             )
+    
+    def edit(self, cmd: EditTaskCommand):
+        with self.uow:
+            task = self.uow.tasks.get_by_id(cmd.id)
+            if not task:
+                raise ValueError("Such Task does not exist")
+            old_title = task.title
+            edited = cmd.editor.apply(task)
+            self.uow.tasks.save(edited)
+            if old_title != edited.title:
+                self.uow.tasks.rewrite_subtree_titles(
+                    old_prefix=old_title,
+                    new_prefix=edited.title,
+                )
 
     def _extract_parent_title(self, full_path: str) -> Optional[str]:
         if full_path.count("/") == 1: # root entity
