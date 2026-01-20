@@ -1,36 +1,32 @@
-from sqlalchemy import Connection
+from typing import Optional
+import sqlite3
 
 from ...domain import UnitOfWork
-from .repository import TaskRepositorySA
+from .repository import TaskRepositorySQL
 
 
-class UnitOfWorkSA(UnitOfWork):
+class UnitOfWorkSQL(UnitOfWork):
 
-    def __init__(self, conn: Connection):
-        self._conn = conn
-        self._tx = None
-        
-        self.tasks = TaskRepositorySA(conn)
+    def __init__(self, db_path: str):
+        self._db_path = db_path
+        self._conn: Optional[sqlite3.Connection] = None
 
     def __enter__(self):
-        if self._tx:
-            raise RuntimeError("Transaction is already started")
-        self._tx = self._conn.begin()
+        self._conn = sqlite3.connect(self._db_path)
+        self._conn.row_factory = sqlite3.Row
+        self._conn.execute("BEGIN")
+        self.tasks = TaskRepositorySQL(self._conn)
         return self
-    
+
     def __exit__(self, exc_type, *_):
         if exc_type:
             self.rollback()
         else:
             self.commit()
+        self._conn.close()
 
     def commit(self):
-        if self._tx is None:
-            raise RuntimeError("Unit of work is not started")
-        self._tx.commit()
-        self._tx = None
+        self._conn.execute("COMMIT")
 
     def rollback(self):
-        if self._tx:
-            self._tx.rollback()
-            self._tx = None
+        self._conn.execute("ROLLBACK")

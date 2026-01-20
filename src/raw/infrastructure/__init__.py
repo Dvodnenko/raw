@@ -1,7 +1,5 @@
-from .adapters.repository import TaskRepositorySA
-from .adapters.spec_compiler import SpecCompilerSA
-from .adapters.uow import UnitOfWorkSA
+from .adapters.repository import TaskRepositorySQL
+from .adapters.spec_compiler import SpecCompilerSQL
+from .adapters.uow import UnitOfWorkSQL
 
-from .database.engine import engine
-from .database.metadata import metadata
-from .database.tables import task_table, entity_table, create_tables
+from .database.tables import create_tables
