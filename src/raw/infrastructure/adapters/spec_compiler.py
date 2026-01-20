@@ -1,45 +1,53 @@
-from sqlalchemy import and_, or_, Table
+from typing import Any
+
+from sqlglot import exp
 
 from ...domain import FieldSpec, And, Or, Not, Spec
 
 
-class SpecCompilerSA:
-    def compile(self, spec: Spec, table: Table):
-        if isinstance(spec, FieldSpec):
-            return self._compile_field(spec, table)
-        if isinstance(spec, And):
-            return and_(self.compile(spec, table) for spec in spec.items)
-        if isinstance(spec, Or):
-            return or_(self.compile(spec, table) for spec in spec.items)
-        if isinstance(spec, Not):
-            return ~self.compile(spec.spec)
-        raise TypeError(spec)
+OPERATOR_MAP = {
+    "eq": lambda f, v: f.eq(v),
+    "ne": lambda f, v: f.neq(v),
+    "gt": lambda f, v: f.gt(v),
+    "gte": lambda f, v: f.gte(v),
+    "lt": lambda f, v: f.lt(v),
+    "lte": lambda f, v: f.lte(v),
+    "like": lambda f, v: f.like(v),
+    "in": lambda f, v: f.isin(v),
+}
 
-    def _compile_field(self, spec: FieldSpec, table: Table):
-        try:
-            column = getattr(table.c, spec.field)
-        except AttributeError:
-            raise ValueError(f"Field not found: {spec.field}") from None
-        match spec.operator:
-            case "==":
-                return column == spec.value
-            case "!=":
-                return column != spec.value
-            case ">":
-                return column > spec.value
-            case ">=":
-                return column >= spec.value
-            case "<":
-                return column < spec.value
-            case "<=":
-                return column <= spec.value
-            case "like":
-                return column.like(spec.value)
-            case "notlike":
-                return column.notilike(spec.value)
-            case "in":
-                return column.in_(spec.value)
-            case "notin":
-                return column.notin_(spec.value)
 
-        raise ValueError(spec.operator)
+class SpecCompilerSQL:
+    def compile(self, spec: Spec):
+        match spec:
+            case FieldSpec(field=field, operator=op, value=value):
+                return self._compile_field(field, op, value)
+
+            case And(items=items):
+                return exp.and_(*[self.compile(s) for s in items])
+
+            case Or(items=items):
+                return exp.or_(*[self.compile(s) for s in items])
+
+            case Not(spec=inner):
+                return exp.not_(self.compile(inner))
+
+            case _:
+                raise TypeError(f"Unknown Spec type: {type(spec)}")
+
+    def _compile_field(field: str, operator: str, value: Any) -> exp.Expression:
+        if operator not in OPERATOR_MAP:
+            raise ValueError(f"Unsupported operator: {operator}")
+
+        column = exp.column(field)
+
+        if operator == "in":
+            if not isinstance(value, (list, tuple, set)):
+                raise TypeError("IN operator expects iterable value")
+
+            literals = [exp.Literal(this=v) for v in value]
+            return column.isin(exp.Tuple(expressions=literals))
+
+        literal = exp.Literal(this=value)
+        return OPERATOR_MAP[operator](column, literal)
+
