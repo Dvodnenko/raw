@@ -1,7 +1,8 @@
 from typing import Optional
 from sqlite3 import Connection
+from datetime import datetime
 
-from ...domain import Task, TaskRepository, Spec
+from ...domain import Task, TaskStatus, TaskRepository, Spec
 from .spec_compiler import SpecCompilerSQL
 
 
@@ -44,7 +45,27 @@ class TaskRepositorySQL(TaskRepository):
         )
 
     def get_by_id(self, id: int) -> Optional[Task]:
-        ...
+        entity_query = """
+            SELECT * FROM entity
+            JOIN task ON entity.id = task.id
+            WHERE entity.id = :id
+        """
+
+        result = self._conn.execute(
+            entity_query, {"id": id}
+        ).fetchone()
+
+        if not result:
+            return None
+
+        return Task(
+            id=result["id"],
+            title=result["title"],
+            description=result["description"],
+            icon=result["icon"],
+            status=TaskStatus(result["status"]),
+            deadline=datetime.fromisoformat(result["deadline"])
+        )
     
     def get_by_title(self, title: str) -> Optional[Task]:
         ...
