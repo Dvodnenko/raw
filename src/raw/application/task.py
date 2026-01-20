@@ -49,7 +49,7 @@ class TaskService:
             deadline=cmd.deadline,
         )
 
-        parent_path: Optional[str] = self._extract_parent_path(cmd.title)
+        parent_path: Optional[str] = self._extract_parent_title(cmd.title)
 
         with self.uow:
             if parent_path:
