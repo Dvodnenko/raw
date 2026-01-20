@@ -68,7 +68,27 @@ class TaskRepositorySQL(TaskRepository):
         )
     
     def get_by_title(self, title: str) -> Optional[Task]:
-        ...
+        entity_query = """
+            SELECT * FROM entity
+            JOIN task ON entity.id = task.id
+            WHERE entity.title = :title
+        """
+
+        result = self._conn.execute(
+            entity_query, {"title": title}
+        ).fetchone()
+
+        if not result:
+            return None
+
+        return Task(
+            id=result["id"],
+            title=result["title"],
+            description=result["description"],
+            icon=result["icon"],
+            status=TaskStatus(result["status"]),
+            deadline=datetime.fromisoformat(result["deadline"])
+        )
 
     def filter(self, spec: Spec = None):
         ...
