@@ -4,9 +4,6 @@ from .entities import Task
 from .spec import Spec
 
 
-class SpecCompiler(Protocol):
-    def compile(self, spec: Spec): ...
-
 class UnitOfWork(Protocol):
     tasks: "TaskRepository"
     

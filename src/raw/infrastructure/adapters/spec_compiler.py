@@ -1,9 +1,9 @@
 from sqlalchemy import and_, or_, Table
 
-from ...domain import FieldSpec, And, Or, Not, SpecCompiler, Spec
+from ...domain import FieldSpec, And, Or, Not, Spec
 
 
-class SpecCompilerSA(SpecCompiler):
+class SpecCompilerSA:
     def compile(self, spec: Spec, table: Table):
         if isinstance(spec, FieldSpec):
             return self._compile_field(spec, table)
