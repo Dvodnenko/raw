@@ -14,8 +14,8 @@ class TaskRepositorySQL(TaskRepository):
     def add(self, task: Task):
 
         stmt1 = """
-            INSERT INTO identity (type, title, parent_id)
-            VALUES (:type, :title, :parent_id)
+            INSERT INTO identity (type, title)
+            VALUES (:type, :title)
             RETURNING id
         """
 
@@ -24,19 +24,19 @@ class TaskRepositorySQL(TaskRepository):
             {
                 "type": "task",
                 "title": task.title,
-                "parent_id": task.parent_id,
             }
         ).fetchone()["id"]
 
         stmt2 = """
-            INSERT INTO task (id, title, description, icon, deadline, status)
-            VALUES (:id, :title, :description, :icon, :deadline, :status)
+            INSERT INTO task (id, parent_id, title, description, icon, deadline, status)
+            VALUES (:id, :parent_id, :title, :description, :icon, :deadline, :status)
         """
 
         self._conn.execute(
             stmt2,
             {
                 "id": generated_id,
+                "parent_id": task.parent_id,
                 "title": task.title,
                 "description": task.description,
                 "icon": task.icon,
@@ -47,9 +47,8 @@ class TaskRepositorySQL(TaskRepository):
 
     def get_by_id(self, id: int) -> Optional[Task]:
         query = """
-            SELECT * FROM identity
-            JOIN task ON identity.id = task.id
-            WHERE identity.id = :id
+            SELECT * FROM task
+            WHERE id = :id
         """
 
         result = self._conn.execute(
@@ -64,6 +63,7 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
+            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
@@ -74,9 +74,8 @@ class TaskRepositorySQL(TaskRepository):
     
     def get_by_title(self, title: str) -> Optional[Task]:
         query = """
-            SELECT * FROM identity
-            JOIN task ON identity.id = task.id
-            WHERE identity.title = :title
+            SELECT * FROM task
+            WHERE title = :title
         """
 
         result = self._conn.execute(
@@ -91,6 +90,7 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
+            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
@@ -105,8 +105,7 @@ class TaskRepositorySQL(TaskRepository):
     def save(self, task: Task):
         stmt = """
             UPDATE identity
-            SET title = :title,
-                parent_id = :parent_id
+            SET title = :title
             WHERE id = :id
         """
 
@@ -121,7 +120,8 @@ class TaskRepositorySQL(TaskRepository):
 
         stmt = """
             UPDATE task
-            SET title = :title,
+            SET parent_id = :parent_id,
+                title = :title,
                 description = :description,
                 icon = :icon,
                 deadline = :deadline,
@@ -133,6 +133,7 @@ class TaskRepositorySQL(TaskRepository):
             stmt,
             {
                 "id": task.id,
+                "parent_id": task.parent_id,
                 "title": task.title,
                 "description": task.description,
                 "icon": task.icon,
