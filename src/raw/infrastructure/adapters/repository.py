@@ -113,4 +113,24 @@ class TaskRepositorySQL(TaskRepository):
         old_prefix: str,
         new_prefix: str,
     ):
-        ...
+        stmt = """
+            UPDATE identity
+            SET title = replace(title, :old_prefix, :new_prefix)
+            WHERE title LIKE :old_prefix || '/%';
+        """
+
+        self._conn.execute(
+            stmt,
+            {"old_prefix": old_prefix, "new_prefix": new_prefix}
+        )
+
+        stmt = """
+            UPDATE task
+            SET title = replace(title, :old_prefix, :new_prefix)
+            WHERE title LIKE :old_prefix || '/%';
+        """
+
+        self._conn.execute(
+            stmt,
+            {"old_prefix": old_prefix, "new_prefix": new_prefix}
+        )
