@@ -103,7 +103,43 @@ class TaskRepositorySQL(TaskRepository):
         ...
 
     def save(self, task: Task):
-        ...
+        stmt = """
+            UPDATE identity
+            SET title = :title,
+                parent_id = :parent_id
+            WHERE id = :id
+        """
+
+        self._conn.execute(
+            stmt,
+            {
+                "id": task.id,
+                "title": task.title,
+                "parent_id": task.parent_id,
+            }
+        )
+
+        stmt = """
+            UPDATE task
+            SET title = :title,
+                description = :description,
+                icon = :icon,
+                deadline = :deadline,
+                status = :status
+            WHERE id = :id
+        """
+
+        self._conn.execute(
+            stmt,
+            {
+                "id": task.id,
+                "title": task.title,
+                "description": task.description,
+                "icon": task.icon,
+                "deadline": task.deadline.isoformat() if task.deadline else None,
+                "status": task.status.value,
+            }
+        )
 
     def remove(self, id: int):
         ...
