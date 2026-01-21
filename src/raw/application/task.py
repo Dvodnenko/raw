@@ -63,16 +63,17 @@ class TaskService:
             self.uow.tasks.add(obj)
 
     def filter(self, spec: Spec = None) -> Iterator[Task]:
-        for task in self.uow.tasks.filter(spec):
-            yield TaskView(
-                id=task.id,
-                title=task.title,
-                description=task.description,
-                icon=task.icon,
-                parent_id=task.parent_id,
-                status=task.status,
-                deadline=task.deadline,
-            )
+        with self.uow:
+            for task in self.uow.tasks.filter(spec):
+                yield TaskView(
+                    id=task.id,
+                    title=task.title,
+                    description=task.description,
+                    icon=task.icon,
+                    parent_id=task.parent_id,
+                    status=task.status,
+                    deadline=task.deadline,
+                )
     
     def edit(self, cmd: EditTaskCommand):
         with self.uow:
