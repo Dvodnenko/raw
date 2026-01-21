@@ -14,6 +14,7 @@ class UnitOfWorkSQL(UnitOfWork):
     def __enter__(self):
         self._conn = sqlite3.connect(self._db_path)
         self._conn.row_factory = sqlite3.Row
+        self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("BEGIN")
         self.tasks = TaskRepositorySQL(self._conn)
         return self

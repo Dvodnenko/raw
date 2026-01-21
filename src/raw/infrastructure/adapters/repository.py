@@ -142,7 +142,14 @@ class TaskRepositorySQL(TaskRepository):
         )
 
     def remove(self, id: int):
-        ...
+        stmt = """
+            DELETE FROM identity
+            WHERE id = :id    
+        """
+        self._conn.execute(
+            stmt,
+            {"id": id}
+        )
     
     def rewrite_subtree_titles(
         self,
