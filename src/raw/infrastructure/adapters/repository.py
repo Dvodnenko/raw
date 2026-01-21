@@ -2,6 +2,8 @@ from typing import Optional
 from sqlite3 import Connection
 from datetime import datetime
 
+from sqlglot import exp
+
 from ...domain import Task, TaskStatus, TaskRepository, Spec
 from .spec_compiler import SpecCompilerSQL
 
@@ -100,7 +102,26 @@ class TaskRepositorySQL(TaskRepository):
         )
 
     def filter(self, spec: Spec = None):
-        ...
+        query = self._build_task_select(spec)
+
+        cursor = self._conn.cursor()
+        cursor.execute(query.sql("sqlite"))
+
+        for row in cursor:
+            yield Task(
+                id=row["id"],
+                title=row["title"],
+                description=row["description"],
+                icon=row["icon"],
+                parent_id=row["parent_id"],
+                status=TaskStatus(row["status"]),
+                deadline=(
+                    datetime.fromisoformat(row["deadline"])
+                    if row["deadline"]
+                    else None
+                )
+            )
+
 
     def save(self, task: Task):
         stmt = """
@@ -178,3 +199,11 @@ class TaskRepositorySQL(TaskRepository):
             stmt,
             {"old_prefix": old_prefix, "new_prefix": new_prefix}
         )
+
+    def _build_task_select(self, spec: Spec | None) -> exp.Select:
+        query = exp.select("*").from_("task")
+
+        if spec:
+            query = query.where(self._spec_compiler.compile(spec))
+
+        return query
