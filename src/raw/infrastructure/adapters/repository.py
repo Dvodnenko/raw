@@ -14,8 +14,8 @@ class TaskRepositorySQL(TaskRepository):
     def add(self, task: Task):
 
         stmt1 = """
-            INSERT INTO entity (type, parent_id, title, description, icon)
-            VALUES (:type, :parent_id, :title, :description, :icon)
+            INSERT INTO identity (type, title, parent_id)
+            VALUES (:type, :title, :parent_id)
             RETURNING id
         """
 
@@ -23,36 +23,37 @@ class TaskRepositorySQL(TaskRepository):
             stmt1,
             {
                 "type": "task",
-                "parent_id": task.parent_id,
                 "title": task.title,
-                "description": task.description,
-                "icon": task.icon,
+                "parent_id": task.parent_id,
             }
         ).fetchone()["id"]
 
         stmt2 = """
-            INSERT INTO task (id, deadline, status)
-            VALUES (:id, :deadline, :status)
+            INSERT INTO task (id, title, description, icon, deadline, status)
+            VALUES (:id, :title, :description, :icon, :deadline, :status)
         """
 
         self._conn.execute(
             stmt2,
             {
                 "id": generated_id,
-                "deadline": task.deadline.isoformat(),
+                "title": task.title,
+                "description": task.description,
+                "icon": task.icon,
+                "deadline": task.deadline.isoformat() if task.deadline else None,
                 "status": task.status.value,
             }
         )
 
     def get_by_id(self, id: int) -> Optional[Task]:
-        entity_query = """
-            SELECT * FROM entity
-            JOIN task ON entity.id = task.id
-            WHERE entity.id = :id
+        query = """
+            SELECT * FROM identity
+            JOIN task ON identity.id = task.id
+            WHERE identity.id = :id
         """
 
         result = self._conn.execute(
-            entity_query, {"id": id}
+            query, {"id": id}
         ).fetchone()
 
         if not result:
@@ -64,18 +65,22 @@ class TaskRepositorySQL(TaskRepository):
             description=result["description"],
             icon=result["icon"],
             status=TaskStatus(result["status"]),
-            deadline=datetime.fromisoformat(result["deadline"])
+            deadline=(
+                datetime.fromisoformat(result["deadline"])
+                if result["deadline"]
+                else None
+            )
         )
     
     def get_by_title(self, title: str) -> Optional[Task]:
-        entity_query = """
-            SELECT * FROM entity
-            JOIN task ON entity.id = task.id
-            WHERE entity.title = :title
+        query = """
+            SELECT * FROM identity
+            JOIN task ON identity.id = task.id
+            WHERE identity.title = :title
         """
 
         result = self._conn.execute(
-            entity_query, {"title": title}
+            query, {"title": title}
         ).fetchone()
 
         if not result:
@@ -87,7 +92,11 @@ class TaskRepositorySQL(TaskRepository):
             description=result["description"],
             icon=result["icon"],
             status=TaskStatus(result["status"]),
-            deadline=datetime.fromisoformat(result["deadline"])
+            deadline=(
+                datetime.fromisoformat(result["deadline"])
+                if result["deadline"]
+                else None
+            )
         )
 
     def filter(self, spec: Spec = None):
