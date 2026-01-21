@@ -1,4 +1,6 @@
 from typing import Any
+from datetime import datetime, date
+from enum import Enum
 
 from sqlglot import exp
 
@@ -35,7 +37,7 @@ class SpecCompilerSQL:
             case _:
                 raise TypeError(f"Unknown Spec type: {type(spec)}")
 
-    def _compile_field(field: str, operator: str, value: Any) -> exp.Expression:
+    def _compile_field(self, field: str, operator: str, value: Any) -> exp.Expression:
         if operator not in OPERATOR_MAP:
             raise ValueError(f"Unsupported operator: {operator}")
 
@@ -48,6 +50,41 @@ class SpecCompilerSQL:
             literals = [exp.Literal(this=v) for v in value]
             return column.isin(exp.Tuple(expressions=literals))
 
-        literal = exp.Literal(this=value)
+        literal = self._to_sql_literal(value)
         return OPERATOR_MAP[operator](column, literal)
 
+    def _to_sql_literal(self, value: Any) -> exp.Expression:
+        if value is None:
+            return exp.Null()
+
+        if isinstance(value, bool):
+            return exp.Boolean(this=value)
+
+        if isinstance(value, int):
+            return exp.Literal.number(value)
+
+        if isinstance(value, float):
+            return exp.Literal.number(value)
+
+        if isinstance(value, str):
+            return exp.Literal.string(value)
+
+        if isinstance(value, datetime):
+            return exp.Literal.string(
+                value.replace(microsecond=0).isoformat(sep=" ")
+            )
+
+        if isinstance(value, date):
+            return exp.Literal.string(value.isoformat())
+
+        if isinstance(value, Enum):
+            return exp.Literal.string(value.value)
+
+        if isinstance(value, tuple):
+            return exp.Tuple(
+                expressions=[self._to_sql_literal(v) for v in value]
+            )
+
+        raise TypeError(
+            f"Unsupported value for SQL literal: {value!r} ({type(value)})"
+        )
