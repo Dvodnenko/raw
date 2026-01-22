@@ -10,10 +10,10 @@ from ...domain import FieldSpec, And, Or, Not, Spec
 OPERATOR_MAP = {
     "eq": lambda f, v: f.eq(v),
     "ne": lambda f, v: f.neq(v),
-    "gt": lambda f, v: f.gt(v),
-    "gte": lambda f, v: f.gte(v),
-    "lt": lambda f, v: f.lt(v),
-    "lte": lambda f, v: f.lte(v),
+    "gt": lambda f, v: f > v,
+    "gte": lambda f, v: f >= v,
+    "lt": lambda f, v: f < v,
+    "lte": lambda f, v: f <= v,
     "like": lambda f, v: f.like(v),
     "in": lambda f, v: f.isin(v),
 }
