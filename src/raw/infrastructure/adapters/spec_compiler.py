@@ -87,7 +87,7 @@ class SpecCompilerSQL:
             )
 
         if isinstance(value, date):
-            return exp.Literal.string(value.isoformat())
+            return exp.Literal.string(value.isoformat(sep=""))
 
         if isinstance(value, Enum):
             return exp.Literal.string(value.value)
