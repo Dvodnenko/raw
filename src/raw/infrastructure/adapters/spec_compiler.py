@@ -7,15 +7,27 @@ from sqlglot import exp
 from ...domain import FieldSpec, And, Or, Not, Spec
 
 
+def eq(c: exp.Column, v: exp.Expression):
+    if isinstance(v, exp.Null):
+        return exp.Is(
+            this=c,
+            expression=exp.Null()
+        )
+    return exp.EQ(
+        this=c,
+        expression=v # value is already parsed to literal, no need to do it here
+    )
+
+
 OPERATOR_MAP = {
-    "eq": lambda f, v: f.eq(v),
-    "ne": lambda f, v: f.neq(v),
-    "gt": lambda f, v: f > v,
-    "gte": lambda f, v: f >= v,
-    "lt": lambda f, v: f < v,
-    "lte": lambda f, v: f <= v,
-    "like": lambda f, v: f.like(v),
-    "in": lambda f, v: f.isin(v),
+    "eq": lambda c, v: eq(c, v),
+    "ne": lambda c, v: c.neq(v),
+    "gt": lambda c, v: c > v,
+    "gte": lambda c, v: c >= v,
+    "lt": lambda c, v: c < v,
+    "lte": lambda c, v: c <= v,
+    "like": lambda c, v: c.like(v),
+    "in": lambda c, v: c.isin(v),
 }
 
 
