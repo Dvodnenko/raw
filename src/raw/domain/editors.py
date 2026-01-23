@@ -14,14 +14,12 @@ class TaskEditor:
         title: Optional[str] = _sentinel,
         description: Optional[str] = _sentinel,
         icon: Optional[str] = _sentinel,
-        parent_id: Optional[int] = _sentinel,
         status: Optional[TaskStatus] = _sentinel,
         deadline: Optional[datetime] = _sentinel,
     ):
         self.title = title
         self.description = description
         self.icon = icon
-        self.parent_id = parent_id
         self.status = status
         self.deadline = deadline
 
@@ -35,11 +33,6 @@ class TaskEditor:
                 else task.description
             ),
             icon=self.icon if self.icon is not _sentinel else task.icon,
-            parent_id=(
-                self.parent_id
-                if self.parent_id is not _sentinel
-                else task.parent_id
-            ),
             status=self.status if self.status is not _sentinel else task.status,
             deadline=self.deadline if self.deadline is not _sentinel else task.deadline,
         )
