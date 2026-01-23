@@ -3,6 +3,16 @@ from .enums import TaskStatus
 from .interfaces import TaskRepository, UnitOfWork
 from .spec import Spec, FieldSpec, And, Or, Not, and_, or_
 from .editors import TaskEditor
+from .exc import (
+    EntityRef,
+    EntityType,
+    DomainError,
+    AlreadyExistsError,
+    NotFoundError,
+    ParentNotFoundError,
+    InvalidTitlePatternError,
+    UnexpectedError,
+)
 
 
 __all__ = (
@@ -31,4 +41,23 @@ __all__ = (
 
     ## Editors
     "TaskEditor",
+
+    ## Errors
+    # Base
+    "DomainError",
+
+    # Helper classes
+    "EntityRef",
+    "EntityType",
+
+    # Special Errors
+    "UnexpectedError",
+
+    # Existential Errors
+    "AlreadyExistsError",
+    "NotFoundError",
+
+    # Tree Hierarchy Violations
+    "ParentNotFoundError",
+    "InvalidTitlePatternError",
 )

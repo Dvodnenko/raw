@@ -54,3 +54,8 @@ class InvalidTitlePatternError(DomainError):
         super().__init__(
             f"invalid title: {title} (expected {self.pattern.pattern})")
 
+
+## Unexpected Error ##
+@dataclass
+class UnexpectedError(DomainError):
+    ...
