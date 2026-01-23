@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+import re
 
 
 class EntityType(Enum):
@@ -31,3 +32,25 @@ class NotFoundError(DomainError):
     def __init__(self, entity: EntityRef):
         self.entity = entity
         super().__init__(f"{entity.type.value} not found: {entity.id}")
+
+
+## Tree Hierarchy-Related Errors ##
+@dataclass(init=False)
+class ParentNotFoundError(DomainError):
+    parent_name: str # that was provided
+
+    def __init__(self, parent_name: str):
+        self.parent_name = parent_name
+        super().__init__(f"parent not found: {parent_name}")
+
+@dataclass(init=False)
+class InvalidTitlePatternError(DomainError):
+    title: str # that was provided
+    pattern: re.Pattern # correct & expected pattern
+
+    def __init__(self, title: str, pattern: re.Pattern):
+        self.title = title
+        self.pattern = pattern
+        super().__init__(
+            f"invalid title: {title} (expected {self.pattern.pattern})")
+
