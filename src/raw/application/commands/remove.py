@@ -14,4 +14,7 @@ class RemoveTask:
 
     def remove(self, cmd: RemoveTaskCmd):
         with self.uow:
+            task = self.uow.tasks.get_by_id(cmd.id)
+            if not task:
+                raise ValueError(f"task not found: {cmd.id}")
             self.uow.tasks.remove(cmd.id)
