@@ -16,8 +16,8 @@ class TaskRepositorySQL(TaskRepository):
     def add(self, task: Task):
 
         stmt1 = """
-            INSERT INTO identity (type, title)
-            VALUES (:type, :title)
+            INSERT INTO identity (type, title, parent_id)
+            VALUES (:type, :title, :parent_id)
             RETURNING id
         """
 
@@ -26,19 +26,19 @@ class TaskRepositorySQL(TaskRepository):
             {
                 "type": "task",
                 "title": task.title,
+                "parent_id": task.parent_id,
             }
         ).fetchone()["id"]
 
         stmt2 = """
-            INSERT INTO task (id, parent_id, title, description, icon, deadline, status)
-            VALUES (:id, :parent_id, :title, :description, :icon, :deadline, :status)
+            INSERT INTO task (id, title, description, icon, deadline, status)
+            VALUES (:id, :title, :description, :icon, :deadline, :status)
         """
 
         self._conn.execute(
             stmt2,
             {
                 "id": generated_id,
-                "parent_id": task.parent_id,
                 "title": task.title,
                 "description": task.description,
                 "icon": task.icon,
@@ -65,7 +65,6 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
-            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
@@ -92,7 +91,6 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
-            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
@@ -113,7 +111,6 @@ class TaskRepositorySQL(TaskRepository):
                 title=row["title"],
                 description=row["description"],
                 icon=row["icon"],
-                parent_id=row["parent_id"],
                 status=TaskStatus(row["status"]),
                 deadline=(
                     datetime.fromisoformat(row["deadline"])
@@ -122,11 +119,11 @@ class TaskRepositorySQL(TaskRepository):
                 )
             )
 
-
     def save(self, task: Task):
         stmt = """
             UPDATE identity
-            SET title = :title
+            SET title = :title,
+                parent_id = :parent_id
             WHERE id = :id
         """
 
@@ -141,8 +138,7 @@ class TaskRepositorySQL(TaskRepository):
 
         stmt = """
             UPDATE task
-            SET parent_id = :parent_id,
-                title = :title,
+            SET title = :title,
                 description = :description,
                 icon = :icon,
                 deadline = :deadline,
@@ -154,7 +150,6 @@ class TaskRepositorySQL(TaskRepository):
             stmt,
             {
                 "id": task.id,
-                "parent_id": task.parent_id,
                 "title": task.title,
                 "description": task.description,
                 "icon": task.icon,
