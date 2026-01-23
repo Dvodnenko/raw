@@ -2,7 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ...domain import Task, TaskStatus, UnitOfWork
+from ...domain import (
+    Task, TaskStatus, UnitOfWork,
+    ParentNotFoundError, AlreadyExistsError,
+    EntityType, EntityRef
+)
 from ..common import _extract_parent_title
 
 
@@ -33,12 +37,15 @@ class AddTask:
         parent_path: Optional[str] = _extract_parent_title(cmd.title)
 
         with self.uow:
+            exists = self.uow.tasks.get_by_title(obj.title) is not None
+            if exists:
+                raise AlreadyExistsError(
+                    entity=EntityRef(EntityType.TASK, obj.title))
+
             if parent_path:
                 parent = self.uow.tasks.get_by_title(parent_path)
                 if not parent:
-                    raise ValueError(
-                        f"Cannot locate Task in {parent_path}/ because it does not exist"
-                    )
+                    raise ParentNotFoundError(parent_name=parent_path)
                 obj.parent_id = parent.id
 
             self.uow.tasks.add(obj)

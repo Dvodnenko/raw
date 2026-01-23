@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from ...domain import UnitOfWork
+from ...domain import (
+    UnitOfWork, NotFoundError, EntityRef, EntityType
+)
 
 
 @dataclass(frozen=True)
@@ -16,5 +18,5 @@ class RemoveTask:
         with self.uow:
             task = self.uow.tasks.get_by_id(cmd.id)
             if not task:
-                raise ValueError(f"task not found: {cmd.id}")
+                raise NotFoundError(EntityRef(EntityType.TASK, cmd.id))
             self.uow.tasks.remove(cmd.id)
