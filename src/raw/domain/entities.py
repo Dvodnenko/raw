@@ -30,9 +30,3 @@ class Task(Entity):
     
     status: TaskStatus = TaskStatus.ACTIVE
     deadline: Optional[datetime] = None
-
-    def mark(self, value: str):
-        try:
-            self.status = TaskStatus(value)
-        except ValueError:
-            raise ValueError(f"No such status: {value}") from None
