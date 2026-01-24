@@ -9,8 +9,7 @@ from .exc import (
     DomainError,
     AlreadyExistsError,
     NotFoundError,
-    ParentNotFoundError,
-    InvalidTitlePatternError,
+    InvariantViolationError,
     UnexpectedError,
 )
 
@@ -57,7 +56,10 @@ __all__ = (
     "AlreadyExistsError",
     "NotFoundError",
 
-    # Tree Hierarchy Violations
-    "ParentNotFoundError",
-    "InvalidTitlePatternError",
+    # Invariants Violations
+    "InvariantViolationError",
+
+    # Other
+    "PermissionDeniedError",
+    "StorageUnavailableError",
 )
