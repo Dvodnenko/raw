@@ -7,12 +7,11 @@ from .exc import (
     EntityRef,
     EntityType,
     DomainError,
-    AlreadyExistsError,
-    NotFoundError,
-    InvariantViolationError,
-    UnexpectedError,
-    PermissionDeniedError,
-    StorageUnavailableError,
+    AlreadyExists,
+    NotFound,
+    InvalidValue,
+    InvalidState,
+    Unexpected,
 )
 
 
@@ -47,21 +46,14 @@ __all__ = (
     # Base
     "DomainError",
 
-    # Helper classes
+    # All Exceptions
+    "AlreadyExists",
+    "NotFound",
+    "InvalidValue",
+    "InvalidState",
+    "Unexpected",
+
+    # Helper Classes
     "EntityRef",
     "EntityType",
-
-    # Special Errors
-    "UnexpectedError",
-
-    # Existential Errors
-    "AlreadyExistsError",
-    "NotFoundError",
-
-    # Invariants Violations
-    "InvariantViolationError",
-
-    # Other
-    "PermissionDeniedError",
-    "StorageUnavailableError",
 )

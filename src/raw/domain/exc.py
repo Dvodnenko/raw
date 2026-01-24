@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Union
+from typing import Union, Any
 
 
 class EntityType(Enum):
@@ -16,42 +16,24 @@ class DomainError(Exception):
     """Base domain error class"""
 
 
-## Existential Errors ##
-@dataclass(init=False)
-class AlreadyExistsError(DomainError):
-    entity: EntityRef
-
+class AlreadyExists(DomainError):
     def __init__(self, entity: EntityRef):
         self.entity = entity
         super().__init__(f"{entity.type.value} already exists: {entity.identity}")
 
-@dataclass(init=False)
-class NotFoundError(DomainError):
-    entity: EntityRef
-
+class NotFound(DomainError):
     def __init__(self, entity: EntityRef):
         self.entity = entity
         super().__init__(f"{entity.type.value} not found: {entity.identity}")
 
+class InvalidValue(DomainError):
+    def __init__(self, field: str, value: Any):
+        self.field = field
+        self.value = value
+        super().__init__(f"invalid {field} value ({value})")
 
-## Tree Hierarchy-Related Errors ##
-@dataclass
-class InvariantViolationError(DomainError):
+class InvalidState(DomainError):
     ...
 
-
-## Unexpected Error ##
-@dataclass
-class UnexpectedError(DomainError):
-    ...
-
-
-## Other ##
-
-@dataclass
-class PermissionDeniedError(DomainError):
-    ...
-
-@dataclass
-class StorageUnavailableError(DomainError):
+class Unexpected(DomainError):
     ...
