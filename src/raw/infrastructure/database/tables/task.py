@@ -1,5 +1,5 @@
 task_table = """
-CREATE TABLE task (
+CREATE TABLE IF NOT EXISTS task (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL UNIQUE,
     description TEXT NOT NULL,
