@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-import re
+from typing import Union
 
 
 class EntityType(Enum):
@@ -9,7 +9,7 @@ class EntityType(Enum):
 @dataclass(frozen=True)
 class EntityRef:
     type: EntityType
-    id: int
+    identity: Union[int, str]
 
 
 class DomainError(Exception):
@@ -23,7 +23,7 @@ class AlreadyExistsError(DomainError):
 
     def __init__(self, entity: EntityRef):
         self.entity = entity
-        super().__init__(f"{entity.type.value} already exists: {entity.id}")
+        super().__init__(f"{entity.type.value} already exists: {entity.identity}")
 
 @dataclass(init=False)
 class NotFoundError(DomainError):
@@ -31,7 +31,7 @@ class NotFoundError(DomainError):
 
     def __init__(self, entity: EntityRef):
         self.entity = entity
-        super().__init__(f"{entity.type.value} not found: {entity.id}")
+        super().__init__(f"{entity.type.value} not found: {entity.identity}")
 
 
 ## Tree Hierarchy-Related Errors ##

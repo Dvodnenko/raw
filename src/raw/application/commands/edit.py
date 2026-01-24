@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ...domain import (
-    UnitOfWork, TaskEditor, NotFoundError, ParentNotFoundError,
+    UnitOfWork, TaskEditor, NotFoundError,
     EntityRef, EntityType
 )
 from ..common import _extract_parent_title
@@ -31,7 +31,7 @@ class EditTask:
                 # checking if the new parent exists
                 new_parent = self.uow.tasks.get_by_title(new_parent_path)
                 if not new_parent:
-                    raise ParentNotFoundError(new_parent_path)
+                    raise NotFoundError(EntityRef(EntityType.TASK, new_parent_path))
                 new_parent_id = new_parent.id
             edited = cmd.editor.apply(task)
             if new_parent_id:
