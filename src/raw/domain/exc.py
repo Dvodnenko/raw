@@ -44,3 +44,14 @@ class InvariantViolationError(DomainError):
 @dataclass
 class UnexpectedError(DomainError):
     ...
+
+
+## Other ##
+
+@dataclass
+class PermissionDeniedError(DomainError):
+    ...
+
+@dataclass
+class StorageUnavailableError(DomainError):
+    ...

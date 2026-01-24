@@ -11,6 +11,8 @@ from .exc import (
     NotFoundError,
     InvariantViolationError,
     UnexpectedError,
+    PermissionDeniedError,
+    StorageUnavailableError,
 )
 
 
