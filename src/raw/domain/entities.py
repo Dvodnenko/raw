@@ -4,7 +4,7 @@ from typing import Optional
 import re
 
 from .enums import TaskStatus
-from .exc import InvalidTitlePatternError
+from .exc import InvalidValue
 
 
 def now() -> datetime:
@@ -23,9 +23,7 @@ class Entity:
 
     def __post_init__(self):
         if not self._title_pattern.match(self.title):
-            raise InvalidTitlePatternError(
-                self.title, self._title_pattern
-            )
+            raise InvalidValue("title", self.title)
 
 
 @dataclass(kw_only=True)

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ...domain import (
-    UnitOfWork, TaskEditor, NotFoundError,
-    EntityRef, EntityType
+    UnitOfWork, TaskEditor, NotFound,
+    InvalidState, EntityRef, EntityType
 )
 from ..common import _extract_parent_title
+from ...shared import MISSING
 
 
 @dataclass(frozen=True)
@@ -22,7 +23,10 @@ class EditTask:
         with self.uow:
             task = self.uow.tasks.get_by_id(cmd.id)
             if not task:
-                raise NotFoundError(EntityRef(EntityType.TASK, cmd.id))
+                raise NotFound(EntityRef(EntityType.TASK, cmd.id))
+            if cmd.editor.title is not MISSING: # user tries to edit the title
+                if cmd.editor.title.startswith(task.title+"/"): # ! user tries to move task into itself
+                    raise InvalidState("cannot move task into itself")
             old_title = task.title
             old_parent_path: Optional[str] = _extract_parent_title(task.title)
             new_parent_path: Optional[str] = _extract_parent_title(cmd.editor.title)
@@ -31,7 +35,7 @@ class EditTask:
                 # checking if the new parent exists
                 new_parent = self.uow.tasks.get_by_title(new_parent_path)
                 if not new_parent:
-                    raise NotFoundError(EntityRef(EntityType.TASK, new_parent_path))
+                    raise NotFound(EntityRef(EntityType.TASK, new_parent_path))
                 new_parent_id = new_parent.id
             edited = cmd.editor.apply(task)
             if new_parent_id:
