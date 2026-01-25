@@ -1,11 +1,10 @@
 from .entities import Task, Entity
-from .enums import TaskStatus
-from .interfaces import TaskRepository, UnitOfWork
+from .enums import TaskStatus, EntityType
+from .interfaces import UnitOfWork, TaskRepository
 from .spec import Spec, FieldSpec, And, Or, Not, and_, or_
 from .editors import TaskEditor
 from .exc import (
     EntityRef,
-    EntityType,
     DomainError,
     AlreadyExists,
     NotFound,
@@ -21,11 +20,12 @@ __all__ = (
     "Task",
 
     ## Enums
+    "EntityType",
     "TaskStatus",
 
     ## Interfaces
-    "TaskRepository",
     "UnitOfWork",
+    "TaskRepository",
 
     ## Queries' Specifications
     # Models
@@ -55,5 +55,4 @@ __all__ = (
 
     # Helper Classes
     "EntityRef",
-    "EntityType",
 )

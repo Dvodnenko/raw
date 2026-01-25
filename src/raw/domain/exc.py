@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-from enum import Enum
-from typing import Union, Any
+from typing import Union
 
+from .enums import EntityType
 
-class EntityType(Enum):
-    TASK = "task"
 
 @dataclass(frozen=True)
 class EntityRef:
