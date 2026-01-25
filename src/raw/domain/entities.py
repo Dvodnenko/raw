@@ -22,8 +22,10 @@ class Entity:
     _title_pattern = re.compile(r"^/(?:[A-Za-z0-9 _-]+)(?:/[A-Za-z0-9 _-]+)*$")
 
     def __post_init__(self):
+        if not self.title or self.title.strip == "":
+            raise InvalidValue("title cannot be empty")
         if not self._title_pattern.match(self.title):
-            raise InvalidValue("title", self.title)
+            raise InvalidValue("title is invalid")
 
 
 @dataclass(kw_only=True)

@@ -15,6 +15,10 @@ class EntityRef:
 class DomainError(Exception):
     """Base domain error class"""
 
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
 
 class AlreadyExists(DomainError):
     def __init__(self, entity: EntityRef):
@@ -27,10 +31,7 @@ class NotFound(DomainError):
         super().__init__(f"{entity.type.value} not found: {entity.identity}")
 
 class InvalidValue(DomainError):
-    def __init__(self, field: str, value: Any):
-        self.field = field
-        self.value = value
-        super().__init__(f"invalid {field} value ({value})")
+    ...
 
 class InvalidState(DomainError):
     ...
