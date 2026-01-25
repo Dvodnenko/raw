@@ -2,9 +2,14 @@ from typing import Protocol, Optional, Iterator
 
 from .entities import Task
 from .spec import Spec
+from .enums import EntityType
 
+
+class EntityTypeResolver:
+    def resolve(self, id: int) -> EntityType: ...
 
 class UnitOfWork(Protocol):
+    resolver: EntityTypeResolver
     tasks: "TaskRepository"
     
     def commit(self) -> None: ...
