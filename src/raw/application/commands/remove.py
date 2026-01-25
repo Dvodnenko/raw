@@ -9,7 +9,6 @@ from ...domain import (
 class RemoveTaskCmd:
     id: int
 
-
 class RemoveTask:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
@@ -20,3 +19,20 @@ class RemoveTask:
             if not task:
                 raise NotFound(EntityRef(EntityType.TASK, cmd.id))
             self.uow.tasks.remove(cmd.id)
+
+
+@dataclass(frozen=True)
+class RemoveEntityCmd:
+    id: int
+
+class RemoveEntity:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
+
+    def remove(self, cmd: RemoveEntityCmd):
+        with self.uow:
+            type = self.uow.resolver.resolve(cmd.id)
+        
+        if type is EntityType.TASK:
+            cmd = RemoveTaskCmd(cmd.id)
+            RemoveTask(self.uow).remove(cmd)

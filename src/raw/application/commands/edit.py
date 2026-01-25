@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 from ...domain import (
     UnitOfWork, TaskEditor, NotFound,
@@ -13,7 +13,6 @@ from ...shared import MISSING
 class EditTaskCmd:
     id: int
     editor: TaskEditor
-
 
 class EditTask:
     def __init__(self, uow: UnitOfWork):
@@ -46,3 +45,25 @@ class EditTask:
                     old_prefix=old_title,
                     new_prefix=edited.title,
                 )
+
+
+@dataclass(frozen=True)
+class EditEntityCmd:
+    id: int
+    fields: dict[str, Any]
+
+class EditEntity:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
+
+    def edit(self, cmd: EditEntityCmd):
+        with self.uow:
+            type = self.uow.resolver.resolve(cmd.id)
+        
+        if type is EntityType.TASK:
+            cmd = EditTaskCmd(
+                cmd.id,
+                TaskEditor(**cmd.fields)
+            )
+            EditTask(self.uow).edit(cmd)
+
