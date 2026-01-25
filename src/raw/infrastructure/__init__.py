@@ -1,4 +1,4 @@
-from .adapters.repository import TaskRepositorySQL
+from .adapters.repositories.task import TaskRepositorySQL
 from .adapters.spec_compiler import SpecCompilerSQL
 from .adapters.uow import UnitOfWorkSQL
 

@@ -4,11 +4,11 @@ from datetime import datetime
 
 from sqlglot import exp
 
-from ...domain import (
+from ....domain import (
     Task, TaskStatus, TaskRepository, Spec, 
     AlreadyExists, EntityRef, EntityType, NotFound)
-from .spec_compiler import SpecCompilerSQL
-from ..exc import (
+from ..spec_compiler import SpecCompilerSQL
+from ...exc import (
     ConstraintViolated, StorageUnavailable, resolve_integrity_error, ConstraintKind)
 
 
