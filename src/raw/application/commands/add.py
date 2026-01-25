@@ -12,11 +12,11 @@ from ..common import _extract_parent_title
 
 @dataclass(frozen=True)
 class AddTaskCmd:
-    title: str
-    description: str = ""
-    icon: str = ""
-    status: TaskStatus = TaskStatus.ACTIVE
-    deadline: datetime = None
+    title: Optional[str] = ""
+    description: Optional[str] = ""
+    icon: Optional[str] = ""
+    status: Optional[TaskStatus] = TaskStatus.ACTIVE
+    deadline: Optional[datetime] = None
 
 class AddTask:
     def __init__(self, uow: UnitOfWork):
