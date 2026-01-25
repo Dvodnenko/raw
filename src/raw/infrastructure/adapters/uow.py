@@ -2,7 +2,8 @@ from typing import Optional
 import sqlite3
 
 from ...domain import UnitOfWork
-from .repository import TaskRepositorySQL
+from .repositories.task import TaskRepositorySQL
+from .repositories.resolver import EntityTypeResolverSQL
 
 
 class UnitOfWorkSQL(UnitOfWork):
@@ -16,7 +17,10 @@ class UnitOfWorkSQL(UnitOfWork):
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("BEGIN")
+
+        self.resolver = EntityTypeResolverSQL(self._conn)
         self.tasks = TaskRepositorySQL(self._conn)
+
         return self
 
     def __exit__(self, exc_type, *_):
