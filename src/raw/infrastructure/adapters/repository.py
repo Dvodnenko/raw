@@ -1,11 +1,15 @@
 from typing import Optional
-from sqlite3 import Connection
+from sqlite3 import Connection, OperationalError, IntegrityError
 from datetime import datetime
 
 from sqlglot import exp
 
-from ...domain import Task, TaskStatus, TaskRepository, Spec
+from ...domain import (
+    Task, TaskStatus, TaskRepository, Spec, 
+    AlreadyExists, EntityRef, EntityType, NotFound)
 from .spec_compiler import SpecCompilerSQL
+from ..exc import (
+    ConstraintViolated, StorageUnavailable, resolve_integrity_error, ConstraintKind)
 
 
 class TaskRepositorySQL(TaskRepository):
@@ -21,31 +25,40 @@ class TaskRepositorySQL(TaskRepository):
             RETURNING id
         """
 
-        generated_id = self._conn.execute(
-            stmt1,
-            {
-                "type": "task",
-                "title": task.title,
-                "parent_id": task.parent_id,
-            }
-        ).fetchone()["id"]
-
         stmt2 = """
             INSERT INTO task (id, title, description, icon, deadline, status)
             VALUES (:id, :title, :description, :icon, :deadline, :status)
         """
+        try:
+            generated_id = self._conn.execute(
+                stmt1,
+                {
+                    "type": "task",
+                    "title": task.title,
+                    "parent_id": task.parent_id,
+                }
+            ).fetchone()["id"]
 
-        self._conn.execute(
-            stmt2,
-            {
-                "id": generated_id,
-                "title": task.title,
-                "description": task.description,
-                "icon": task.icon,
-                "deadline": task.deadline.isoformat(sep=" ") if task.deadline else None,
-                "status": task.status.value,
-            }
-        )
+            self._conn.execute(
+                stmt2,
+                {
+                    "id": generated_id,
+                    "title": task.title,
+                    "description": task.description,
+                    "icon": task.icon,
+                    "deadline": task.deadline.isoformat(sep=" ") if task.deadline else None,
+                    "status": task.status.value,
+                }
+            )
+        except OperationalError as exc:
+            raise StorageUnavailable("storage unavailable") from exc
+        except IntegrityError as exc:
+            violation = resolve_integrity_error(exc)
+            if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
+                raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
+            if violation.kind is ConstraintKind.FOREIGN_KEY and violation.column == "parent_id":
+                raise NotFound("parent") from exc
+            raise ConstraintViolated() from exc
 
     def get_by_id(self, id: int) -> Optional[Task]:
         query = """
@@ -120,23 +133,14 @@ class TaskRepositorySQL(TaskRepository):
             )
 
     def save(self, task: Task):
-        stmt = """
+        stmt1 = """
             UPDATE identity
             SET title = :title,
                 parent_id = :parent_id
             WHERE id = :id
         """
 
-        self._conn.execute(
-            stmt,
-            {
-                "id": task.id,
-                "title": task.title,
-                "parent_id": task.parent_id,
-            }
-        )
-
-        stmt = """
+        stmt2 = """
             UPDATE task
             SET title = :title,
                 description = :description,
@@ -145,18 +149,36 @@ class TaskRepositorySQL(TaskRepository):
                 status = :status
             WHERE id = :id
         """
+        try:
+            self._conn.execute(
+                stmt1,
+                {
+                    "id": task.id,
+                    "title": task.title,
+                    "parent_id": task.parent_id,
+                }
+            )
 
-        self._conn.execute(
-            stmt,
-            {
-                "id": task.id,
-                "title": task.title,
-                "description": task.description,
-                "icon": task.icon,
-                "deadline": task.deadline.isoformat() if task.deadline else None,
-                "status": task.status.value,
-            }
-        )
+            self._conn.execute(
+                stmt2,
+                {
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.description,
+                    "icon": task.icon,
+                    "deadline": task.deadline.isoformat() if task.deadline else None,
+                    "status": task.status.value,
+                }
+            )
+        except OperationalError as exc:
+            raise StorageUnavailable("storage unavailable") from exc
+        except IntegrityError as exc:
+            violation = resolve_integrity_error(exc)
+            if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
+                raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
+            if violation.kind is ConstraintKind.FOREIGN_KEY and violation.column == "parent_id":
+                raise NotFound("parent") from exc
+            raise ConstraintViolated() from exc
 
     def remove(self, id: int):
         stmt = """
@@ -200,5 +222,9 @@ class TaskRepositorySQL(TaskRepository):
 
         if spec:
             query = query.where(self._spec_compiler.compile(spec))
+
+        # it will raise sqlglot.ParseError if syntax is invalid.
+        # CLI will show it as "unexpected error"
+        query.sql("sqlite") 
 
         return query
