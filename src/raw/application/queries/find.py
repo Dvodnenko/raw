@@ -2,12 +2,8 @@ from dataclasses import dataclass
 from typing import Optional, Iterator
 from datetime import datetime
 
-from ...domain import UnitOfWork, Spec, TaskStatus
+from ...domain import UnitOfWork, Spec, TaskStatus, InvalidValue
 
-
-@dataclass(frozen=True)
-class FindTaskQuery:
-    spec: Spec
 
 @dataclass(frozen=True)
 class TaskView:
@@ -19,6 +15,9 @@ class TaskView:
     status: TaskStatus
     deadline: Optional[datetime]
 
+@dataclass(frozen=True)
+class FindTaskQuery:
+    spec: Spec
 
 class FindTask:
     def __init__(self, uow: UnitOfWork):
@@ -36,3 +35,19 @@ class FindTask:
                     status=task.status,
                     deadline=task.deadline,
                 )
+
+
+@dataclass(frozen=True)
+class FindEntityQuery:
+    type: str
+    spec: Spec
+
+class FindEntity:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
+
+    def find(self, cmd: FindEntityQuery):
+        if cmd.type == "task":
+            FindTask(self.uow).find(FindTaskQuery(cmd.spec))
+        else:
+            raise InvalidValue("unknown entity type")
