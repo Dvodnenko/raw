@@ -1,0 +1,1 @@
+EDITOR_SENTINEL = "__EDITOR__"
