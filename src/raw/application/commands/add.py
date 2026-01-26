@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from ...domain import (
     Task, TaskStatus, UnitOfWork,
-    NotFound, AlreadyExists,
+    NotFound, AlreadyExists, InvalidValue,
     EntityType, EntityRef
 )
 from ..common import _extract_parent_title
@@ -49,3 +49,19 @@ class AddTask:
                 obj.parent_id = parent.id
 
             self.uow.tasks.add(obj)
+
+
+@dataclass(frozen=True)
+class AddEntityCmd:
+    type: str
+    fields: dict[str, Any]
+
+class AddEntity:
+    def __init__(self, uow: UnitOfWork):
+        self.uow = uow
+
+    def add(self, cmd: AddEntityCmd):
+        if cmd.type == "task":
+            AddTask(self.uow).add(AddTaskCmd(**cmd.fields))
+        else:
+            raise InvalidValue("unknown entity type")

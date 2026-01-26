@@ -1,4 +1,4 @@
-from .commands.add import AddTask, AddTaskCmd
+from .commands.add import AddTask, AddTaskCmd, AddEntity, AddEntityCmd
 from .commands.edit import EditTask, EditTaskCmd, EditEntity, EditEntityCmd
 from .commands.remove import RemoveTask, RemoveTaskCmd, RemoveEntity, RemoveEntityCmd
 
