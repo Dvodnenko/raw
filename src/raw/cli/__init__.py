@@ -21,6 +21,9 @@ def main(argv=None):
     except (DomainError, InfrastructureError) as e:
         print(e.message, file=sys.stderr)
         sys.exit(1)
+    except (KeyboardInterrupt):
+        print("cancelled by user")
+        exit(0)
     except Exception as e:
         print("unexpected error")
         if args.D:
