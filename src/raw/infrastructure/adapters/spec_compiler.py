@@ -37,11 +37,11 @@ class SpecCompilerSQL:
             case FieldSpec(field=field, operator=op, value=value):
                 return self._compile_field(field, op, value)
 
-            case And(items=items):
-                return exp.and_(*[self.compile(s) for s in items])
+            case And(left=left, right=right):
+                return exp.and_(self.compile(spec.left), self.compile(spec.right))
 
-            case Or(items=items):
-                return exp.or_(*[self.compile(s) for s in items])
+            case Or(left=left, right=right):
+                return exp.or_(self.compile(spec.left), self.compile(spec.right))
 
             case Not(spec=inner):
                 return exp.not_(self.compile(inner))

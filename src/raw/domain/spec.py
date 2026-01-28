@@ -16,11 +16,13 @@ class FieldSpec(Spec):
 
 @dataclass(frozen=True)
 class And(Spec):
-    items: tuple[Spec]
+    left: Spec
+    right: Spec
 
 @dataclass(frozen=True)
 class Or(Spec):
-    items: tuple[Spec]
+    left: Spec
+    right: Spec
 
 @dataclass(frozen=True)
 class Not(Spec):
