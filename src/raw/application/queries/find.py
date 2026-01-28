@@ -48,6 +48,7 @@ class FindEntity:
 
     def find(self, cmd: FindEntityQuery):
         if cmd.type == "task":
-            FindTask(self.uow).find(FindTaskQuery(cmd.spec))
+            yield from FindTask(self.uow).find(FindTaskQuery(cmd.spec))
+            return
         else:
             raise InvalidValue("unknown entity type")
