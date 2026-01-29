@@ -23,13 +23,16 @@ class EditTask:
             task = self.uow.tasks.get_by_id(cmd.id)
             if not task:
                 raise NotFound(EntityRef(EntityType.TASK, cmd.id))
+            
+            old_title = task.title
+            old_parent_path: Optional[str] = _extract_parent_title(old_title)
+            new_parent_path: Optional[str] = None
+            new_parent_id: Optional[int] = None
+
             if cmd.editor.title is not MISSING: # user tries to edit the title
                 if cmd.editor.title.startswith(task.title+"/"): # ! user tries to move task into itself
                     raise InvalidState("cannot move task into itself")
-            old_title = task.title
-            old_parent_path: Optional[str] = _extract_parent_title(task.title)
-            new_parent_path: Optional[str] = _extract_parent_title(cmd.editor.title)
-            new_parent_id: Optional[int] = None
+                new_parent_path = _extract_parent_title(cmd.editor.title)
             if old_parent_path != new_parent_path:
                 # checking if the new parent exists
                 new_parent = self.uow.tasks.get_by_title(new_parent_path)
