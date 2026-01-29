@@ -166,7 +166,7 @@ class TaskRepositorySQL(TaskRepository):
                     "title": task.title,
                     "description": task.description,
                     "icon": task.icon,
-                    "deadline": task.deadline.isoformat() if task.deadline else None,
+                    "deadline": task.deadline.isoformat(sep=" ") if task.deadline else None,
                     "status": task.status.value,
                 }
             )
