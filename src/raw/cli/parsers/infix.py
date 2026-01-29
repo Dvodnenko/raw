@@ -73,7 +73,9 @@ class Parser:
         op = self.consume()
         value = self.consume()
 
-        if value.startswith("'") and value.endswith("'"):
+        if value == "null":
+            value = None
+        elif value.startswith("'") and value.endswith("'"):
             value = value[1:-1]
 
         return FieldSpec(field, op, value)
