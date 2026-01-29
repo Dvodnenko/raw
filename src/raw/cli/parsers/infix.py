@@ -1,6 +1,6 @@
 import re
 
-from ...domain import Spec, FieldSpec, And, Or, Not, InvalidValue
+from ...domain import Spec, FieldSpec, And, Or, Not, InvalidValue, Operator
 
 
 TOKEN_RE = re.compile(
@@ -70,7 +70,7 @@ class Parser:
             return expr
 
         field = self.consume()
-        op = self.consume()
+        op = Operator(self.consume())
         value = self.consume()
 
         if value == "null":

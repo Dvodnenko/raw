@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
+from enum import Enum
 
 
 @dataclass(frozen=True)
@@ -7,10 +8,20 @@ class Spec:
     ...
 
 
+class Operator(Enum):
+    EQ = "eq"
+    NE = "ne"
+    GT = "gt"
+    GTE = "gte"
+    LT = "lt"
+    LTE = "lte"
+    LIKE = "like"
+
+
 @dataclass(frozen=True)
 class FieldSpec(Spec):
     field: str
-    operator: str # NOTE: add Enum for this field
+    operator: Operator
     value: Any
 
 

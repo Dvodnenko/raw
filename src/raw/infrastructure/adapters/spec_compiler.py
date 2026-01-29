@@ -34,7 +34,7 @@ class SpecCompilerSQL:
     def compile(self, spec: Spec):
         match spec:
             case FieldSpec(field=field, operator=op, value=value):
-                return self._compile_field(field, op, value)
+                return self._compile_field(field, op.value, value)
 
             case And(left=left, right=right):
                 return exp.and_(self.compile(spec.left), self.compile(spec.right))
