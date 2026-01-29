@@ -2,7 +2,7 @@ import sys
 
 from ..domain import DomainError
 from ..infrastructure import InfrastructureError
-from .parser import build_parser
+from .parsers import build_parser
 
 
 def main(argv=None):

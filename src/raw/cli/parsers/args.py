@@ -1,8 +1,8 @@
 import argparse
 
-from .commands.init import register_init_cmd
-from .commands.add import register_add_cmd
-from .commands.edit import register_edit_cmd
+from ..commands.init import register_init_cmd
+from ..commands.add import register_add_cmd
+from ..commands.edit import register_edit_cmd
 
 
 def build_parser():
