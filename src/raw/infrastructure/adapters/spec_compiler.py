@@ -27,7 +27,6 @@ OPERATOR_MAP = {
     "lt": lambda c, v: c < v,
     "lte": lambda c, v: c <= v,
     "like": lambda c, v: c.like(v),
-    "in": lambda c, v: c.isin(v),
 }
 
 
