@@ -2,6 +2,7 @@ import argparse
 
 from ..commands.init import register_init_cmd
 from ..commands.add import register_add_cmd
+from ..commands.find import register_find_cmd
 from ..commands.edit import register_edit_cmd
 
 
@@ -20,6 +21,7 @@ def build_parser():
     parser.add_argument("-D", action="store_true", help="run script in debug mode")
     register_init_cmd(sub)
     register_add_cmd(sub)
+    register_find_cmd(sub)
     register_edit_cmd(sub)
 
     return parser
