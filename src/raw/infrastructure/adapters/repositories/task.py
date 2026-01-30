@@ -62,8 +62,17 @@ class TaskRepositorySQL(TaskRepository):
 
     def get_by_id(self, id: int) -> Optional[Task]:
         query = """
-            SELECT * FROM task
-            WHERE id = :id
+            SELECT 
+                task.id,
+                task.title,
+                task.description,
+                task.icon,
+                task.status,
+                task.deadline,
+                identity.parent_id
+            FROM task
+            JOIN identity ON task.id = identity.id
+            WHERE identity.id = :id
         """
 
         result = self._conn.execute(
@@ -78,6 +87,7 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
+            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
@@ -88,8 +98,17 @@ class TaskRepositorySQL(TaskRepository):
     
     def get_by_title(self, title: str) -> Optional[Task]:
         query = """
-            SELECT * FROM task
-            WHERE title = :title
+            SELECT 
+                task.id,
+                task.title,
+                task.description,
+                task.icon,
+                task.status,
+                task.deadline,
+                identity.parent_id
+            FROM task
+            JOIN identity ON task.id = identity.id
+            WHERE identity.title = :title
         """
 
         result = self._conn.execute(
@@ -104,6 +123,7 @@ class TaskRepositorySQL(TaskRepository):
             title=result["title"],
             description=result["description"],
             icon=result["icon"],
+            parent_id=result["parent_id"],
             status=TaskStatus(result["status"]),
             deadline=(
                 datetime.fromisoformat(result["deadline"])
