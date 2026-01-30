@@ -17,5 +17,5 @@ class EntityTypeResolverSQL(EntityTypeResolver):
         ).fetchone()
 
         if not row:
-            raise NotFound(EntityRef(EntityType.TASK, id))
+            raise NotFound(EntityRef(EntityType.ENTITY, id))
         return EntityType(row["type"])
