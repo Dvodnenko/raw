@@ -7,4 +7,6 @@ class TaskStatus(Enum):
     CANCELLED = "cancelled"
 
 class EntityType(Enum):
+    ENTITY = "entity" # general entity type for all cases
+    
     TASK = "task"
