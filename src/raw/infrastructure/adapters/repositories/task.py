@@ -132,8 +132,8 @@ class TaskRepositorySQL(TaskRepository):
             )
         )
 
-    def filter(self, spec: Spec = None):
-        query = self._build_task_select(spec)
+    def filter(self, spec: Spec = None, order_by: str = None):
+        query = self._build_task_select(spec, order_by)
 
         cursor = self._conn.cursor()
         cursor.execute(query.sql("sqlite"))
@@ -237,8 +237,11 @@ class TaskRepositorySQL(TaskRepository):
             {"old_prefix": old_prefix, "new_prefix": new_prefix}
         )
 
-    def _build_task_select(self, spec: Spec | None) -> exp.Select:
+    def _build_task_select(self, spec: Spec | None, order_by: str = None) -> exp.Select:
         query = exp.select("*").from_("task")
+        
+        if order_by:
+            query = query.order_by(order_by)
 
         if spec:
             query = query.where(self._spec_compiler.compile(spec))

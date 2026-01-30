@@ -10,6 +10,7 @@ from ..parsers import parse_infix
 
 def handle_find_cmd(args: argparse.Namespace):
     raw_filter = resolve_arg("specification", args.where)
+    order_by = resolve_arg("orderby", args.orderby)
 
     spec = None
     if raw_filter:
@@ -21,6 +22,7 @@ def handle_find_cmd(args: argparse.Namespace):
     cmd = FindEntityQuery(
         type=args.type.strip("s"),
         spec=spec,
+        order_by=order_by,
     )
     interactor = FindEntity(UnitOfWorkSQL(DB_PATH))
 

@@ -18,6 +18,7 @@ class TaskView:
 @dataclass(frozen=True)
 class FindTaskQuery:
     spec: Spec
+    order_by: str
 
 class FindTask:
     def __init__(self, uow: UnitOfWork):
@@ -25,7 +26,10 @@ class FindTask:
 
     def find(self, query: FindTaskQuery) -> Iterator[TaskView]:
         with self.uow:
-            for task in self.uow.tasks.filter(query.spec):
+            for task in self.uow.tasks.filter(
+                query.spec,
+                query.order_by
+            ):
                 yield TaskView(
                     id=task.id,
                     title=task.title,
@@ -41,6 +45,7 @@ class FindTask:
 class FindEntityQuery:
     type: str
     spec: Spec
+    order_by: str
 
 class FindEntity:
     def __init__(self, uow: UnitOfWork):
@@ -48,7 +53,12 @@ class FindEntity:
 
     def find(self, cmd: FindEntityQuery):
         if cmd.type == "task":
-            yield from FindTask(self.uow).find(FindTaskQuery(cmd.spec))
+            yield from (
+                FindTask(self.uow)
+                .find(
+                    FindTaskQuery(cmd.spec, cmd.order_by)
+                )
+            )
             return
         else:
             raise InvalidValue("unknown entity type")

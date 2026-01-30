@@ -18,5 +18,11 @@ def register_find_cmd(sub: argparse._SubParsersAction):
         default=MISSING,
         metavar="<specification>"
     )
+    parser.add_argument("--orderby",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<field>"
+    )
 
     parser.set_defaults(handler=handle_find_cmd)
