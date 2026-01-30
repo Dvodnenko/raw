@@ -5,18 +5,27 @@ from ..resolvers import resolve_arg, parse_datetime, parse_enum
 
 
 def handle_edit_cmd(args: argparse.Namespace):
-    from ...domain import TaskStatus
-    from ...application import EditEntity, EditEntityCmd
+    from ...domain import TaskStatus, NotFound, EntityRef, EntityType
+    from ...application import (
+        EditEntity, EditEntityCmd, FindEntityByIdQuery, FindEntityById
+    )
     from ...infrastructure import UnitOfWorkSQL
     
     cmd_kwargs = {}
 
     id: int = args.id
-    title = resolve_arg("title", args.title)
-    description = resolve_arg("description", args.description)
-    icon = resolve_arg("icon", args.icon)
-    status = parse_enum(resolve_arg("status", args.status), TaskStatus, "status")
-    deadline = parse_datetime(resolve_arg("deadline", args.deadline), "deadline")
+
+    # check if the entity exists. if so - grab values for initial text in editor
+    query = FindEntityByIdQuery(id=id)
+    entity = FindEntityById(UnitOfWorkSQL(DB_PATH)).find_by_id(query)
+    if not entity:
+        raise NotFound(EntityRef(EntityType.ENTITY, id))
+
+    title = resolve_arg("title", args.title, entity.title)
+    description = resolve_arg("description", args.description, entity.description)
+    icon = resolve_arg("icon", args.icon, entity.icon)
+    status = parse_enum(resolve_arg("status", args.status, entity.status), TaskStatus, "status")
+    deadline = parse_datetime(resolve_arg("deadline", args.deadline, entity.deadline), "deadline")
 
     if title: cmd_kwargs.update({"title": title})
     if description: cmd_kwargs.update({"description": description})
