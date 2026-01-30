@@ -12,11 +12,11 @@ def handle_edit_cmd(args: argparse.Namespace):
     cmd_kwargs = {}
 
     id: int = args.id
-    title = resolve_arg(args.title)
-    description = resolve_arg(args.description)
-    icon = resolve_arg(args.icon)
-    status = parse_enum(resolve_arg(args.status), TaskStatus, "status")
-    deadline = parse_datetime(resolve_arg(args.deadline), "deadline")
+    title = resolve_arg("title", args.title)
+    description = resolve_arg("description", args.description)
+    icon = resolve_arg("icon", args.icon)
+    status = parse_enum(resolve_arg("status", args.status), TaskStatus, "status")
+    deadline = parse_datetime(resolve_arg("deadline", args.deadline), "deadline")
 
     if title: cmd_kwargs.update({"title": title})
     if description: cmd_kwargs.update({"description": description})
