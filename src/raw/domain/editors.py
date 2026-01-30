@@ -31,6 +31,7 @@ class TaskEditor:
                 else task.description
             ),
             icon=self.icon if self.icon is not MISSING else task.icon,
+            parent_id=task.parent_id, # it cannot be changed here
             status=self.status if self.status is not MISSING else task.status,
             deadline=self.deadline if self.deadline is not MISSING else task.deadline,
         )
