@@ -18,7 +18,10 @@ class TaskView:
 @dataclass(frozen=True)
 class FindTaskQuery:
     spec: Spec
+    
+    # Optionals
     order_by: str
+    reverse: bool = False
 
 class FindTask:
     def __init__(self, uow: UnitOfWork):
@@ -28,7 +31,8 @@ class FindTask:
         with self.uow:
             for task in self.uow.tasks.filter(
                 query.spec,
-                query.order_by
+                query.order_by,
+                query.reverse,
             ):
                 yield TaskView(
                     id=task.id,
@@ -45,7 +49,10 @@ class FindTask:
 class FindEntityQuery:
     type: str
     spec: Spec
+
+    # Optionals
     order_by: str
+    reverse: bool = False
 
 class FindEntity:
     def __init__(self, uow: UnitOfWork):
@@ -56,7 +63,9 @@ class FindEntity:
             yield from (
                 FindTask(self.uow)
                 .find(
-                    FindTaskQuery(cmd.spec, cmd.order_by)
+                    FindTaskQuery(
+                        cmd.spec, cmd.order_by, cmd.reverse
+                    )
                 )
             )
             return
