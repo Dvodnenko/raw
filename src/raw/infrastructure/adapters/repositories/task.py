@@ -57,8 +57,6 @@ class TaskRepositorySQL(TaskRepository):
             violation = resolve_integrity_error(exc)
             if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
                 raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
-            if violation.kind is ConstraintKind.FOREIGN_KEY and violation.column == "parent_id":
-                raise NotFound("parent") from exc
             raise ConstraintViolated() from exc
 
     def get_by_id(self, id: int) -> Optional[Task]:
@@ -182,8 +180,6 @@ class TaskRepositorySQL(TaskRepository):
             violation = resolve_integrity_error(exc)
             if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
                 raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
-            if violation.kind is ConstraintKind.FOREIGN_KEY and violation.column == "parent_id":
-                raise NotFound("parent") from exc
             raise ConstraintViolated() from exc
 
     def remove(self, id: int):
