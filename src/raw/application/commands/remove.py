@@ -17,7 +17,7 @@ class RemoveTask:
         with self.uow:
             task = self.uow.tasks.get_by_id(cmd.id)
             if not task:
-                raise NotFound(EntityRef(EntityType.TASK, cmd.id))
+                raise NotFound(EntityRef(cmd.id))
             self.uow.tasks.remove(cmd.id)
 
 

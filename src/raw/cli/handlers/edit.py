@@ -19,7 +19,7 @@ def handle_edit_cmd(args: argparse.Namespace):
     query = FindEntityByIdQuery(id=id)
     entity = FindEntityById(UnitOfWorkSQL(DB_PATH)).find_by_id(query)
     if not entity:
-        raise NotFound(EntityRef(EntityType.ENTITY, id))
+        raise NotFound(EntityRef(id))
 
     title = resolve_arg("title", args.title, entity.title)
     description = resolve_arg("description", args.description, entity.description)

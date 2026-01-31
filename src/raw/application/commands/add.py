@@ -4,8 +4,7 @@ from typing import Optional, Any
 
 from ...domain import (
     Task, TaskStatus, UnitOfWork,
-    NotFound, AlreadyExists, InvalidValue,
-    EntityType, EntityRef
+    NotFound, AlreadyExists, InvalidValue, EntityRef
 )
 from ..common import _extract_parent_title
 
@@ -39,13 +38,12 @@ class AddTask:
         with self.uow:
             exists = self.uow.tasks.get_by_title(obj.title) is not None
             if exists:
-                raise AlreadyExists(
-                    entity=EntityRef(EntityType.TASK, obj.title))
+                raise AlreadyExists(EntityRef(obj.title))
 
             if parent_path:
                 parent = self.uow.tasks.get_by_title(parent_path)
                 if not parent:
-                    raise NotFound(EntityRef(EntityType.TASK, parent_path))
+                    raise NotFound(EntityRef(parent_path))
                 obj.parent_id = parent.id
 
             self.uow.tasks.add(obj)

@@ -6,7 +6,6 @@ from .enums import EntityType
 
 @dataclass(frozen=True)
 class EntityRef:
-    type: EntityType
     identity: Union[int, str]
 
 
@@ -21,12 +20,12 @@ class DomainError(Exception):
 class AlreadyExists(DomainError):
     def __init__(self, entity: EntityRef):
         self.entity = entity
-        super().__init__(f"{entity.type.value} already exists: {entity.identity}")
+        super().__init__(f"already exists: {entity.identity}")
 
 class NotFound(DomainError):
     def __init__(self, entity: EntityRef):
         self.entity = entity
-        super().__init__(f"{entity.type.value} not found: {entity.identity}")
+        super().__init__(f"not found: {entity.identity}")
 
 class InvalidValue(DomainError):
     ...

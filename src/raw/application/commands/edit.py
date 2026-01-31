@@ -23,7 +23,7 @@ class EditTask:
             # 1. check if the task even exists
             task = self.uow.tasks.get_by_id(cmd.id)
             if not task:
-                raise NotFound(EntityRef(EntityType.TASK, cmd.id))
+                raise NotFound(EntityRef(cmd.id))
             
             # 2. remember his old title and parent's old title, in case user edits it
             old_title = task.title
@@ -43,7 +43,7 @@ class EditTask:
                 # checking if the new parent exists
                 new_parent = self.uow.tasks.get_by_title(new_parent_path)
                 if not new_parent:
-                    raise NotFound(EntityRef(EntityType.TASK, new_parent_path))
+                    raise NotFound(EntityRef(new_parent_path))
                 # parent id changes ONLY if:
                 # 1. parent title was changed
                 # 2. new parent exists
