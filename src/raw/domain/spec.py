@@ -16,6 +16,7 @@ class Operator(Enum):
     LT = "lt"
     LTE = "lte"
     LIKE = "like"
+    IN = "in"
 
 
 @dataclass(frozen=True)
