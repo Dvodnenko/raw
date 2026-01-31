@@ -54,9 +54,6 @@ class TaskRepositorySQL(TaskRepository):
         except OperationalError as exc:
             raise StorageUnavailable("storage unavailable") from exc
         except IntegrityError as exc:
-            violation = resolve_integrity_error(exc)
-            if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
-                raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
             raise ConstraintViolated() from exc
 
     def get_by_id(self, id: int) -> Optional[Task]:
@@ -177,9 +174,6 @@ class TaskRepositorySQL(TaskRepository):
         except OperationalError as exc:
             raise StorageUnavailable("storage unavailable") from exc
         except IntegrityError as exc:
-            violation = resolve_integrity_error(exc)
-            if violation.kind is ConstraintKind.UNIQUE and violation.column == "title":
-                raise AlreadyExists(EntityRef(EntityType.TASK, task.title)) from exc
             raise ConstraintViolated() from exc
 
     def remove(self, id: int):
