@@ -7,8 +7,14 @@ from ..commands.edit import register_edit_cmd
 from ..commands.remove import register_remove_cmd
 
 
+class ArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        print(message)
+        exit(1)
+
+
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         prog="raw",
         add_help=True,
         formatter_class=argparse.RawTextHelpFormatter,
