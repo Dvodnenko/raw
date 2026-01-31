@@ -22,7 +22,7 @@ def handle_find_cmd(args: argparse.Namespace):
     cmd = FindEntityQuery(
         type=args.type.strip("s"),
         spec=spec,
-        order_by=order_by,
+        order_by=order_by or "id",
         reverse=args.r,
     )
     interactor = FindEntity(UnitOfWorkSQL(DB_PATH))

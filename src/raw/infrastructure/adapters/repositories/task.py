@@ -230,8 +230,8 @@ class TaskRepositorySQL(TaskRepository):
         if order_by:
             query = query.order_by(order_by)
 
-        if reverse:
-            query = query.desc()
+            if reverse: # cannot be reversed if order_by isn't provided
+                query = query.desc()
 
         if spec:
             query = query.where(self._spec_compiler.compile(spec))
