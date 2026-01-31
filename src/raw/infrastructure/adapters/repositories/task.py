@@ -26,8 +26,8 @@ class TaskRepositorySQL(TaskRepository):
         """
 
         stmt2 = """
-            INSERT INTO task (id, title, description, icon, deadline, status)
-            VALUES (:id, :title, :description, :icon, :deadline, :status)
+            INSERT INTO task (id, parent_id, title, description, icon, deadline, status)
+            VALUES (:id, :parent_id, :title, :description, :icon, :deadline, :status)
         """
         try:
             generated_id = self._conn.execute(
@@ -43,6 +43,7 @@ class TaskRepositorySQL(TaskRepository):
                 stmt2,
                 {
                     "id": generated_id,
+                    "parent_id": task.parent_id,
                     "title": task.title,
                     "description": task.description,
                     "icon": task.icon,
@@ -62,17 +63,8 @@ class TaskRepositorySQL(TaskRepository):
 
     def get_by_id(self, id: int) -> Optional[Task]:
         query = """
-            SELECT 
-                task.id,
-                task.title,
-                task.description,
-                task.icon,
-                task.status,
-                task.deadline,
-                identity.parent_id
-            FROM task
-            JOIN identity ON task.id = identity.id
-            WHERE identity.id = :id
+            SELECT * FROM task
+            WHERE id = :id
         """
 
         result = self._conn.execute(
@@ -98,17 +90,8 @@ class TaskRepositorySQL(TaskRepository):
     
     def get_by_title(self, title: str) -> Optional[Task]:
         query = """
-            SELECT 
-                task.id,
-                task.title,
-                task.description,
-                task.icon,
-                task.status,
-                task.deadline,
-                identity.parent_id
-            FROM task
-            JOIN identity ON task.id = identity.id
-            WHERE identity.title = :title
+            SELECT * FROM task
+            WHERE title = :title
         """
 
         result = self._conn.execute(
@@ -141,6 +124,7 @@ class TaskRepositorySQL(TaskRepository):
         for row in cursor:
             yield Task(
                 id=row["id"],
+                parent_id=row["parent_id"],
                 title=row["title"],
                 description=row["description"],
                 icon=row["icon"],
@@ -162,7 +146,8 @@ class TaskRepositorySQL(TaskRepository):
 
         stmt2 = """
             UPDATE task
-            SET title = :title,
+            SET parent_id = :parent_id,
+                title = :title,
                 description = :description,
                 icon = :icon,
                 deadline = :deadline,
@@ -183,6 +168,7 @@ class TaskRepositorySQL(TaskRepository):
                 stmt2,
                 {
                     "id": task.id,
+                    "parent_id": task.parent_id,
                     "title": task.title,
                     "description": task.description,
                     "icon": task.icon,
