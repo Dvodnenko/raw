@@ -16,6 +16,7 @@ class ArgumentParser(argparse.ArgumentParser):
 def build_parser():
     parser = ArgumentParser(
         prog="raw",
+        description="unstable lifeos",
         add_help=True,
         formatter_class=argparse.RawTextHelpFormatter,
     )
