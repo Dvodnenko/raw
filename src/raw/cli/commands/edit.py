@@ -14,7 +14,7 @@ def register_edit_cmd(sub: argparse._SubParsersAction):
         description="edit an entity",
         help="edit an entity")
     
-    parser.add_argument("id", type=int)
+    parser.add_argument("identifier")
 
     ## General Options, for All Entity Types
     parser.add_argument("--title",

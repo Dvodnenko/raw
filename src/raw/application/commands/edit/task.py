@@ -2,16 +2,17 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ....domain import (
-    UnitOfWork, TaskEditor, NotFound,
+    Task, UnitOfWork, TaskEditor, NotFound,
     InvalidState, EntityRef, AlreadyExists
 )
 from ...common import _extract_parent_title
 from ....shared import MISSING
+from ...identifier import Identifier
 
 
 @dataclass(frozen=True)
 class EditTaskCmd:
-    id: int
+    identifier: Identifier
     editor: TaskEditor
 
 class EditTask:
@@ -21,11 +22,15 @@ class EditTask:
     def edit(self, cmd: EditTaskCmd):
         with self.uow:
             # 1. check if the task even exists
-            task = self.uow.tasks.get_by_id(cmd.id)
+            task: Optional[Task] = None
+            if cmd.identifier.is_title:
+                task = self.uow.tasks.get_by_title(cmd.identifier.value)
+            else:
+                task = self.uow.tasks.get_by_id(int(cmd.identifier.value))
             if not task:
-                raise NotFound(EntityRef(cmd.id))
+                raise NotFound(EntityRef(cmd.identifier.value))
             
-            # 2. remember his old title and parent's old title, in case user edits it
+            # 2. remember its old title and parent's old title, in case user edits it
             old_title = task.title
             old_parent_path: Optional[str] = _extract_parent_title(old_title)
 

@@ -3,4 +3,6 @@ from .commands.edit import EditTask, EditTaskCmd, EditEntity, EditEntityCmd
 from .commands.remove import Remove, RemoveCmd
 
 from .queries.find import FindTask, FindTaskQuery, FindEntity, FindEntityQuery
-from .queries.find_by_id import FindEntityByIdQuery, FindEntityById
+from .queries.find_by_identifier import FindEntityByIdentifierQuery, FindEntityByIdentifier
+
+from .identifier import Identifier

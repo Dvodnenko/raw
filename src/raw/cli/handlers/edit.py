@@ -5,21 +5,22 @@ from ..resolvers import resolve_arg, parse_datetime, parse_enum
 
 
 def handle_edit_cmd(args: argparse.Namespace):
-    from ...domain import TaskStatus, NotFound, EntityRef, EntityType
+    from ...domain import TaskStatus, NotFound, EntityRef
     from ...application import (
-        EditEntity, EditEntityCmd, FindEntityByIdQuery, FindEntityById
+        EditEntity, EditEntityCmd, FindEntityByIdentifier,
+        FindEntityByIdentifierQuery, Identifier
     )
     from ...infrastructure import UnitOfWorkSQL
     
     cmd_kwargs = {}
 
-    id: int = args.id
+    identifier = Identifier(args.identifier)
 
     # check if the entity exists. if so - grab values for initial text in editor
-    query = FindEntityByIdQuery(id=id)
-    entity = FindEntityById(UnitOfWorkSQL(DB_PATH)).find_by_id(query)
+    query = FindEntityByIdentifierQuery(identifier)
+    entity = FindEntityByIdentifier(UnitOfWorkSQL(DB_PATH)).find(query)
     if not entity:
-        raise NotFound(EntityRef(id))
+        raise NotFound(EntityRef(identifier.value))
 
     title = resolve_arg("title", args.title, entity.title)
     description = resolve_arg("description", args.description, entity.description)
@@ -34,7 +35,7 @@ def handle_edit_cmd(args: argparse.Namespace):
     if deadline: cmd_kwargs.update({"deadline": deadline})
 
     cmd = EditEntityCmd(
-        id=id,
+        identifier=identifier,
         fields=cmd_kwargs
     )
     interactor = EditEntity(UnitOfWorkSQL(DB_PATH))

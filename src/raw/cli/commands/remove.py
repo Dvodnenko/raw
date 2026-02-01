@@ -8,6 +8,6 @@ def register_remove_cmd(sub: argparse._SubParsersAction):
         description="remove an entity",
         help="remove an entity")
     
-    parser.add_argument("id", type=int)
+    parser.add_argument("identifier")
 
     parser.set_defaults(handler=handle_remove_cmd)

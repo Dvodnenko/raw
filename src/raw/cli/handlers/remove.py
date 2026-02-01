@@ -1,15 +1,15 @@
 import argparse
 
-from ...application import Remove, RemoveCmd
+from ...application import Remove, RemoveCmd, Identifier
 from ...infrastructure import UnitOfWorkSQL
 from ...config import DB_PATH
 
 
 def handle_remove_cmd(args: argparse.Namespace):
 
-    id: int = args.id
+    identifier: int = args.identifier
 
-    cmd = RemoveCmd(id=id)
+    cmd = RemoveCmd(Identifier(identifier))
     interactor = Remove(UnitOfWorkSQL(DB_PATH))
 
     interactor.remove(cmd)
