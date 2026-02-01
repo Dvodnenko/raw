@@ -15,7 +15,7 @@ class FindEntityById:
 
     def find_by_id(self, cmd: FindEntityByIdQuery):
         with self.uow:
-            type = self.uow.resolver.resolve(cmd.id)
+            type = self.uow.intertype.resolve_type(cmd.id)
 
             if type is EntityType.TASK:
                 task = self.uow.tasks.get_by_id(cmd.id)

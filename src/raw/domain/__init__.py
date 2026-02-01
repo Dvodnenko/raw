@@ -1,6 +1,6 @@
 from .entities import Task, Entity
 from .enums import TaskStatus, EntityType
-from .interfaces import EntityTypeResolver, UnitOfWork, TaskRepository
+from .interfaces import UnitOfWork, IntertypeRepository, TaskRepository
 from .spec import Spec, FieldSpec, And, Or, Not, and_, or_, Operator
 from .editors import TaskEditor
 from .exc import (
@@ -24,8 +24,8 @@ __all__ = (
     "TaskStatus",
 
     ## Interfaces
-    "EntityTypeResolver",
     "UnitOfWork",
+    "IntertypeRepository",
     "TaskRepository",
 
     ## Queries' Specifications

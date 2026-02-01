@@ -3,7 +3,7 @@ import sqlite3
 
 from ...domain import UnitOfWork
 from .repositories.task import TaskRepositorySQL
-from .repositories.resolver import EntityTypeResolverSQL
+from .repositories.intertype import IntertypeRepositorySQL
 
 
 class UnitOfWorkSQL(UnitOfWork):
@@ -18,7 +18,7 @@ class UnitOfWorkSQL(UnitOfWork):
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("BEGIN")
 
-        self.resolver = EntityTypeResolverSQL(self._conn)
+        self.intertype = IntertypeRepositorySQL(self._conn)
         self.tasks = TaskRepositorySQL(self._conn)
 
         return self

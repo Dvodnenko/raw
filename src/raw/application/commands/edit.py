@@ -35,11 +35,12 @@ class EditTask:
             if cmd.editor.title is not MISSING: # user tries to edit the title
                 if cmd.editor.title.startswith(task.title+"/"): # ! user tries to move task into itself
                     raise InvalidState("cannot move task into itself")
+            edited = cmd.editor.apply(task)
             # check if user changed parent
             # or only title of task itself (only title = last title segment,
             # in "/a/b/c" it's "c")
-            edited = cmd.editor.apply(task)
-            if _extract_parent_title(edited.title) != old_parent_path: # parent changed
+            new_parent_path = _extract_parent_title(edited.title)
+            if new_parent_path != old_parent_path: # parent changed
                 # checking if the new parent exists
                 new_parent = self.uow.tasks.get_by_title(new_parent_path)
                 if not new_parent:
@@ -69,7 +70,7 @@ class EditEntity:
 
     def edit(self, cmd: EditEntityCmd):
         with self.uow:
-            type = self.uow.resolver.resolve(cmd.id)
+            type = self.uow.intertype.resolve_type(cmd.id)
         
         if type is EntityType.TASK:
             cmd = EditTaskCmd(

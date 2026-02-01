@@ -1,16 +1,16 @@
 from sqlite3 import Connection
 
 from ....domain import (
-    EntityTypeResolver, EntityType, NotFound,
+    IntertypeRepository, EntityType, NotFound,
     EntityRef, EntityType
 )
 
 
-class EntityTypeResolverSQL(EntityTypeResolver):
+class IntertypeRepositorySQL(IntertypeRepository):
     def __init__(self, conn: Connection):
         self._conn = conn
 
-    def resolve(self, id: int) -> EntityType:
+    def resolve_type(self, id: int) -> EntityType:
         row = self._conn.execute(
             "SELECT type FROM identity WHERE id = :id",
             {"id": id}

@@ -5,15 +5,16 @@ from .spec import Spec
 from .enums import EntityType
 
 
-class EntityTypeResolver:
-    def resolve(self, id: int) -> EntityType: ...
-
 class UnitOfWork(Protocol):
-    resolver: EntityTypeResolver
+    intertype: "IntertypeRepository"
     tasks: "TaskRepository"
     
     def commit(self) -> None: ...
     def rollback(self) -> None: ...
+
+
+class IntertypeRepository(Protocol):
+    def resolve_type(self, id: int) -> EntityType: ...
 
 
 class TaskRepository(Protocol):
