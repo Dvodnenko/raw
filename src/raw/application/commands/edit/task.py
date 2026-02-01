@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional, Any
 
-from ...domain import (
+from ....domain import (
     UnitOfWork, TaskEditor, NotFound,
     InvalidState, EntityRef, EntityType
 )
-from ..common import _extract_parent_title
-from ...shared import MISSING
+from ...common import _extract_parent_title
+from ....shared import MISSING
 
 
 @dataclass(frozen=True)
@@ -57,28 +57,3 @@ class EditTask:
                     old_prefix=old_title,
                     new_prefix=edited.title,
                 )
-
-
-@dataclass(frozen=True)
-class EditEntityCmd:
-    id: int
-    fields: dict[str, Any]
-
-class EditEntity:
-    def __init__(self, uow: UnitOfWork):
-        self.uow = uow
-
-    def edit(self, cmd: EditEntityCmd):
-        with self.uow:
-            type = self.uow.intertype.resolve_type(cmd.id)
-
-        if not type:
-            raise NotFound(EntityRef(cmd.id))
-        
-        if type is EntityType.TASK:
-            cmd = EditTaskCmd(
-                cmd.id,
-                TaskEditor(**cmd.fields)
-            )
-            EditTask(self.uow).edit(cmd)
-
