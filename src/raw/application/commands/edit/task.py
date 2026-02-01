@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional
 
 from ....domain import (
     UnitOfWork, TaskEditor, NotFound,
-    InvalidState, EntityRef, EntityType
+    InvalidState, EntityRef, AlreadyExists
 )
 from ...common import _extract_parent_title
 from ....shared import MISSING
@@ -35,6 +35,12 @@ class EditTask:
             if cmd.editor.title is not MISSING: # user tries to edit the title
                 if cmd.editor.title.startswith(task.title+"/"): # ! user tries to move task into itself
                     raise InvalidState("cannot move task into itself")
+                already_exists = (
+                    self.uow.intertype
+                    .resolve_type_by_title(cmd.editor.title)
+                ) is not None
+                if already_exists:
+                    raise AlreadyExists(EntityRef(cmd.editor.title))
             edited = cmd.editor.apply(task)
             # check if user changed parent
             # or only title of task itself (only title = last title segment,
