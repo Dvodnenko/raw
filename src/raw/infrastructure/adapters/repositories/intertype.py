@@ -1,9 +1,6 @@
 from sqlite3 import Connection
 
-from ....domain import (
-    IntertypeRepository, EntityType, NotFound,
-    EntityRef, EntityType
-)
+from ....domain import IntertypeRepository, EntityType, EntityType
 
 
 class IntertypeRepositorySQL(IntertypeRepository):
@@ -17,5 +14,5 @@ class IntertypeRepositorySQL(IntertypeRepository):
         ).fetchone()
 
         if not row:
-            raise NotFound(EntityRef(id))
+            return None
         return EntityType(row["type"])

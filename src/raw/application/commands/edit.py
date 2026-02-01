@@ -71,6 +71,9 @@ class EditEntity:
     def edit(self, cmd: EditEntityCmd):
         with self.uow:
             type = self.uow.intertype.resolve_type(cmd.id)
+
+        if not type:
+            raise NotFound(EntityRef(cmd.id))
         
         if type is EntityType.TASK:
             cmd = EditTaskCmd(

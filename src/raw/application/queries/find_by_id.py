@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ...domain import UnitOfWork, EntityType
+from ...domain import UnitOfWork, EntityType, NotFound, EntityRef
 from .find import TaskView
 
 
@@ -16,6 +16,9 @@ class FindEntityById:
     def find_by_id(self, cmd: FindEntityByIdQuery):
         with self.uow:
             type = self.uow.intertype.resolve_type(cmd.id)
+
+            if not type:
+                raise NotFound(EntityRef(cmd.id))
 
             if type is EntityType.TASK:
                 task = self.uow.tasks.get_by_id(cmd.id)

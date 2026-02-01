@@ -14,7 +14,7 @@ class UnitOfWork(Protocol):
 
 
 class IntertypeRepository(Protocol):
-    def resolve_type(self, id: int) -> EntityType: ...
+    def resolve_type(self, id: int) -> EntityType | None: ...
 
 
 class TaskRepository(Protocol):

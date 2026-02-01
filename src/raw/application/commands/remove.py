@@ -32,6 +32,9 @@ class RemoveEntity:
     def remove(self, cmd: RemoveEntityCmd):
         with self.uow:
             type = self.uow.intertype.resolve_type(cmd.id)
+
+        if not type:
+            raise NotFound(EntityRef(cmd.id))
         
         if type is EntityType.TASK:
             cmd = RemoveTaskCmd(cmd.id)
