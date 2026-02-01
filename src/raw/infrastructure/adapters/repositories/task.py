@@ -181,14 +181,14 @@ class TaskRepositorySQL(TaskRepository):
     ) -> exp.Select:
         query = exp.select("*").from_("task")
         
+        if spec:
+            query = query.where(self._spec_compiler.compile(spec))
+
         if order_by:
             query = query.order_by(order_by)
 
             if reverse: # cannot be reversed if order_by isn't provided
                 query = query.desc()
-
-        if spec:
-            query = query.where(self._spec_compiler.compile(spec))
 
         # it will raise sqlglot.ParseError if syntax is invalid.
         # CLI will show it as "unexpected error"
