@@ -15,10 +15,10 @@ class RemoveTask:
 
     def remove(self, cmd: RemoveTaskCmd):
         with self.uow:
-            task = self.uow.tasks.get_by_id(cmd.id)
-            if not task:
+            exists = self.uow.intertype.resolve_type(cmd.id) is not None
+            if not exists:
                 raise NotFound(EntityRef(cmd.id))
-            self.uow.tasks.remove(cmd.id)
+            self.uow.intertype.remove(cmd.id)
 
 
 @dataclass(frozen=True)

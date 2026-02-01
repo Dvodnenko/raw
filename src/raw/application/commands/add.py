@@ -36,15 +36,15 @@ class AddTask:
         parent_path: Optional[str] = _extract_parent_title(cmd.title)
 
         with self.uow:
-            exists = self.uow.tasks.get_by_title(obj.title) is not None
-            if exists:
+            already_exists = self.uow.intertype.resolve_type_by_title(obj.title) is not None
+            if already_exists:
                 raise AlreadyExists(EntityRef(obj.title))
 
             if parent_path:
-                parent = self.uow.tasks.get_by_title(parent_path)
-                if not parent:
+                parent_id = self.uow.intertype.resolve_id_by_title(parent_path)
+                if not parent_id:
                     raise NotFound(EntityRef(parent_path))
-                obj.parent_id = parent.id
+                obj.parent_id = parent_id
 
             self.uow.tasks.add(obj)
 

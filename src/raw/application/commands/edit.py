@@ -42,18 +42,18 @@ class EditTask:
             new_parent_path = _extract_parent_title(edited.title)
             if new_parent_path != old_parent_path: # parent changed
                 # checking if the new parent exists
-                new_parent = self.uow.tasks.get_by_title(new_parent_path)
-                if not new_parent:
+                new_parent_id = self.uow.intertype.resolve_id_by_title(new_parent_path)
+                if not new_parent_id:
                     raise NotFound(EntityRef(new_parent_path))
                 # parent id changes ONLY if:
                 # 1. parent title was changed
                 # 2. new parent exists
-                edited.parent_id = new_parent.id
+                edited.parent_id = new_parent_id
 
             self.uow.tasks.save(edited)
 
             if old_title != edited.title:
-                self.uow.tasks.rewrite_subtree_titles(
+                self.uow.intertype.rewrite_subtree_titles(
                     old_prefix=old_title,
                     new_prefix=edited.title,
                 )

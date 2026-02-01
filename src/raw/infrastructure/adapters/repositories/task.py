@@ -4,12 +4,9 @@ from datetime import datetime
 
 from sqlglot import exp
 
-from ....domain import (
-    Task, TaskStatus, TaskRepository, Spec, 
-    AlreadyExists, EntityRef, EntityType, NotFound)
+from ....domain import Task, TaskStatus, TaskRepository, Spec
 from ..spec_compiler import SpecCompilerSQL
-from ...exc import (
-    ConstraintViolated, StorageUnavailable, resolve_integrity_error, ConstraintKind)
+from ...exc import ConstraintViolated, StorageUnavailable
 
 
 class TaskRepositorySQL(TaskRepository):
@@ -175,43 +172,6 @@ class TaskRepositorySQL(TaskRepository):
             raise StorageUnavailable("storage unavailable") from exc
         except IntegrityError as exc:
             raise ConstraintViolated() from exc
-
-    def remove(self, id: int):
-        stmt = """
-            DELETE FROM identity
-            WHERE id = :id    
-        """
-        self._conn.execute(
-            stmt,
-            {"id": id}
-        )
-    
-    def rewrite_subtree_titles(
-        self,
-        old_prefix: str,
-        new_prefix: str,
-    ):
-        stmt = """
-            UPDATE identity
-            SET title = replace(title, :old_prefix, :new_prefix)
-            WHERE title LIKE :old_prefix || '/%';
-        """
-
-        self._conn.execute(
-            stmt,
-            {"old_prefix": old_prefix, "new_prefix": new_prefix}
-        )
-
-        stmt = """
-            UPDATE task
-            SET title = replace(title, :old_prefix, :new_prefix)
-            WHERE title LIKE :old_prefix || '/%';
-        """
-
-        self._conn.execute(
-            stmt,
-            {"old_prefix": old_prefix, "new_prefix": new_prefix}
-        )
 
     def _build_task_select(
         self,
