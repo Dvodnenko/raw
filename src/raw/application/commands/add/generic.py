@@ -3,6 +3,7 @@ from typing import Any
 
 from ....domain import UnitOfWork,InvalidValue
 from .task import AddTask, AddTaskCmd
+from .note import AddNote, AddNoteCmd
 
 
 @dataclass(frozen=True)
@@ -17,5 +18,7 @@ class AddEntity:
     def add(self, cmd: AddEntityCmd):
         if cmd.type == "task":
             AddTask(self.uow).add(AddTaskCmd(**cmd.fields))
+        elif cmd.type == "note":
+            AddNote(self.uow).add(AddNoteCmd(**cmd.fields))
         else:
             raise InvalidValue("unknown entity type")

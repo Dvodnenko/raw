@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import Any
 
-from ....domain import UnitOfWork, TaskEditor, NotFound, EntityRef, EntityType
+from ....domain import (
+    UnitOfWork, TaskEditor, NoteEditor, NotFound, EntityRef, EntityType)
 from ...identifier import Identifier
 from .task import EditTask, EditTaskCmd
+from .note import EditNote, EditNoteCmd
 
 
 @dataclass(frozen=True)
@@ -31,3 +33,9 @@ class EditEntity:
                 TaskEditor(**cmd.fields)
             )
             EditTask(self.uow).edit(cmd)
+        elif type is EntityType.NOTE:
+            cmd = EditNoteCmd(
+                cmd.identifier,
+                NoteEditor(**cmd.fields)
+            )
+            EditNote(self.uow).edit(cmd)

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from ....domain import UnitOfWork, Spec, InvalidValue
 from .task import FindTask, FindTaskQuery
+from .note import FindNote, FindNoteQuery
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,16 @@ class FindEntity:
                 FindTask(self.uow)
                 .find(
                     FindTaskQuery(
+                        cmd.spec, cmd.order_by, cmd.reverse
+                    )
+                )
+            )
+            return
+        elif cmd.type == "note":
+            yield from (
+                FindNote(self.uow)
+                .find(
+                    FindNoteQuery(
                         cmd.spec, cmd.order_by, cmd.reverse
                     )
                 )

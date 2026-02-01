@@ -1,8 +1,8 @@
-from .entities import Task, Entity
+from .entities import Entity, Task, Note
 from .enums import TaskStatus, EntityType
-from .interfaces import UnitOfWork, IntertypeRepository, TaskRepository
+from .interfaces import UnitOfWork, IntertypeRepository, TaskRepository, NoteRepository
 from .spec import Spec, FieldSpec, And, Or, Not, and_, or_, Operator
-from .editors import TaskEditor
+from .editors import TaskEditor, NoteEditor
 from .exc import (
     EntityRef,
     DomainError,
@@ -18,6 +18,7 @@ __all__ = (
     ## Entity Types
     "Entity",
     "Task",
+    "Note",
 
     ## Enums
     "EntityType",
@@ -27,6 +28,7 @@ __all__ = (
     "UnitOfWork",
     "IntertypeRepository",
     "TaskRepository",
+    "NoteRepository",
 
     ## Queries' Specifications
     # Models
@@ -45,6 +47,7 @@ __all__ = (
 
     ## Editors
     "TaskEditor",
+    "NoteEditor",
 
     ## Errors
     # Base

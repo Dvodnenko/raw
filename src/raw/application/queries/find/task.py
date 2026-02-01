@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Iterator
 from datetime import datetime
 
-from ....domain import UnitOfWork, Spec, TaskStatus
+from ....domain import UnitOfWork, Spec, TaskStatus, EntityType
 
 
 @dataclass(frozen=True)
@@ -14,6 +14,7 @@ class TaskView:
     parent_id: Optional[int]
     status: TaskStatus
     deadline: Optional[datetime]
+    type: str = "task"
 
 @dataclass(frozen=True)
 class FindTaskQuery:

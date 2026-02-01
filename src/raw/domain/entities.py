@@ -33,3 +33,7 @@ class Task(Entity):
     
     status: TaskStatus = TaskStatus.ACTIVE
     deadline: Optional[datetime] = None
+
+@dataclass(kw_only=True)
+class Note(Entity):
+    content: str = ""

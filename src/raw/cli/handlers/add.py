@@ -17,12 +17,14 @@ def handle_add_cmd(args: argparse.Namespace):
     icon = resolve_arg("icon", args.icon)
     status = parse_enum(resolve_arg("status", args.status), TaskStatus, "status")
     deadline = parse_datetime(resolve_arg("deadline", args.deadline), "deadline")
+    content = resolve_arg("content", args.content)
 
     if title: cmd_kwargs.update({"title": title})
     if description: cmd_kwargs.update({"description": description})
     if icon: cmd_kwargs.update({"icon": icon})
     if status: cmd_kwargs.update({"status": status})
     if deadline: cmd_kwargs.update({"deadline": deadline})
+    if content: cmd_kwargs.update({"content": content})
 
     cmd = AddEntityCmd(
         type=type,

@@ -2,8 +2,9 @@ from typing import Optional
 import sqlite3
 
 from ...domain import UnitOfWork
-from .repositories.task import TaskRepositorySQL
 from .repositories.intertype import IntertypeRepositorySQL
+from .repositories.task import TaskRepositorySQL
+from .repositories.note import NoteRepositorySQL
 
 
 class UnitOfWorkSQL(UnitOfWork):
@@ -20,6 +21,7 @@ class UnitOfWorkSQL(UnitOfWork):
 
         self.intertype = IntertypeRepositorySQL(self._conn)
         self.tasks = TaskRepositorySQL(self._conn)
+        self.notes = NoteRepositorySQL(self._conn)
 
         return self
 

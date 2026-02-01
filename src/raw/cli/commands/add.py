@@ -52,4 +52,12 @@ def register_add_cmd(sub: argparse._SubParsersAction):
         metavar="<deadline>"
     )
 
+    ## Note Options
+    parser.add_argument("--content",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<content>"
+    )
+
     parser.set_defaults(handler=handle_add_cmd)

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ...domain import UnitOfWork, EntityType, NotFound, EntityRef
-from .find import TaskView
+from .find import TaskView, NoteView
 from ..identifier import Identifier
 
 
@@ -40,4 +40,15 @@ class FindEntityByIdentifier:
                     parent_id=task.parent_id,
                     status=task.status,
                     deadline=task.deadline,
+                )
+            elif type is EntityType.NOTE:
+                note = self.uow.notes.get_by_id(id)
+                
+                return NoteView(
+                    id=note.id,
+                    title=note.title,
+                    description=note.description,
+                    icon=note.icon,
+                    parent_id=note.parent_id,
+                    content=note.content,
                 )
