@@ -1,6 +1,6 @@
 import argparse
 
-from ...application import RemoveEntity, RemoveEntityCmd
+from ...application import Remove, RemoveCmd
 from ...infrastructure import UnitOfWorkSQL
 from ...config import DB_PATH
 
@@ -9,7 +9,7 @@ def handle_remove_cmd(args: argparse.Namespace):
 
     id: int = args.id
 
-    cmd = RemoveEntityCmd(id=id)
-    interactor = RemoveEntity(UnitOfWorkSQL(DB_PATH))
+    cmd = RemoveCmd(id=id)
+    interactor = Remove(UnitOfWorkSQL(DB_PATH))
 
     interactor.remove(cmd)
