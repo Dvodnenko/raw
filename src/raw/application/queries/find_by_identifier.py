@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ...domain import UnitOfWork, EntityType, NotFound, EntityRef
-from .find import TaskView, NoteView
+from .find import TaskView, NoteView, SessionView
 from ..identifier import Identifier
 
 
@@ -29,26 +29,43 @@ class FindEntityByIdentifier:
             if not type:
                 raise NotFound(EntityRef(cmd.identifier.value))
 
-            if type is EntityType.TASK:
-                task = self.uow.tasks.get_by_id(id)
-                
-                return TaskView(
-                    id=task.id,
-                    title=task.title,
-                    description=task.description,
-                    icon=task.icon,
-                    parent_id=task.parent_id,
-                    status=task.status,
-                    deadline=task.deadline,
-                )
-            elif type is EntityType.NOTE:
-                note = self.uow.notes.get_by_id(id)
-                
-                return NoteView(
-                    id=note.id,
-                    title=note.title,
-                    description=note.description,
-                    icon=note.icon,
-                    parent_id=note.parent_id,
-                    content=note.content,
-                )
+            match type:
+                case EntityType.TASK:
+                    task = self.uow.tasks.get_by_id(id)
+                    
+                    return TaskView(
+                        id=task.id,
+                        title=task.title,
+                        description=task.description,
+                        icon=task.icon,
+                        parent_id=task.parent_id,
+                        status=task.status,
+                        deadline=task.deadline,
+                    )
+                case EntityType.NOTE:
+                    note = self.uow.notes.get_by_id(id)
+                    
+                    return NoteView(
+                        id=note.id,
+                        title=note.title,
+                        description=note.description,
+                        icon=note.icon,
+                        parent_id=note.parent_id,
+                        content=note.content,
+                    )
+                case EntityType.SESSION:
+                    session = self.uow.sessions.get_by_id(id)
+                    
+                    return SessionView(
+                        id=session.id,
+                        title=session.title,
+                        description=session.description,
+                        icon=session.icon,
+                        parent_id=session.parent_id,
+                        message=session.message,
+                        summary=session.summary,
+                        started_at=session.started_at,
+                        ended_at=session.ended_at,
+                        is_active=session.is_active,
+                        duration=session.duration
+                    )

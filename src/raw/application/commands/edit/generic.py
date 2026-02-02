@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from ....domain import (
-    UnitOfWork, TaskEditor, NoteEditor, NotFound, EntityRef, EntityType)
+    UnitOfWork, TaskEditor, NoteEditor, NotFound,
+    EntityRef, EntityType, SessionEditor)
 from ...identifier import Identifier
 from .task import EditTask, EditTaskCmd
 from .note import EditNote, EditNoteCmd
+from .session import EditSession, EditSessionCmd
 
 
 @dataclass(frozen=True)
@@ -27,15 +29,22 @@ class EditEntity:
         if not type:
             raise NotFound(EntityRef(cmd.identifier.value))
         
-        if type is EntityType.TASK:
-            cmd = EditTaskCmd(
-                cmd.identifier,
-                TaskEditor(**cmd.fields)
-            )
-            EditTask(self.uow).edit(cmd)
-        elif type is EntityType.NOTE:
-            cmd = EditNoteCmd(
-                cmd.identifier,
-                NoteEditor(**cmd.fields)
-            )
-            EditNote(self.uow).edit(cmd)
+        match type:
+            case EntityType.TASK:
+                cmd = EditTaskCmd(
+                    cmd.identifier,
+                    TaskEditor(**cmd.fields)
+                )
+                EditTask(self.uow).edit(cmd)
+            case EntityType.NOTE:
+                cmd = EditNoteCmd(
+                    cmd.identifier,
+                    NoteEditor(**cmd.fields)
+                )
+                EditNote(self.uow).edit(cmd)
+            case EntityType.SESSION:
+                cmd = EditSessionCmd(
+                    cmd.identifier,
+                    SessionEditor(**cmd.fields)
+                )
+                EditSession(self.uow).edit(cmd)

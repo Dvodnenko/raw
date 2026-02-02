@@ -4,7 +4,7 @@ from typing import Optional
 import re
 
 from .enums import TaskStatus
-from .exc import InvalidValue
+from .exc import InvalidValue, InvalidState
 
 
 def now() -> datetime:
@@ -37,3 +37,26 @@ class Task(Entity):
 @dataclass(kw_only=True)
 class Note(Entity):
     content: str = ""
+
+@dataclass(kw_only=True)
+class Session(Entity):
+    message: str = ""
+    summary: str = ""
+    started_at: datetime
+    ended_at: Optional[datetime] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.started_at is None:
+            raise InvalidValue("start time is required")
+        if not self.is_active:
+            if self.started_at > self.ended_at:
+                raise InvalidState("start time cannot be later than end time")
+
+    @property
+    def is_active(self):
+        return self.ended_at is None
+
+    @property
+    def duration(self):
+        return (self.ended_at or now()) - self.started_at

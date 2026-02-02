@@ -20,7 +20,7 @@ def handle_find_cmd(args: argparse.Namespace):
             raise InvalidValue("invalid filter") from exc
 
     cmd = FindEntityQuery(
-        type=args.type.strip("s"),
+        type=args.type.rstrip("s"),
         spec=spec,
         order_by=order_by or "id",
         reverse=args.r,

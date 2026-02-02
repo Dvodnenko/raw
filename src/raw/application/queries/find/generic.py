@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from ....domain import UnitOfWork, Spec, InvalidValue
 from .task import FindTask, FindTaskQuery
 from .note import FindNote, FindNoteQuery
+from .session import FindSession, FindSessionQuery
 
 
 @dataclass(frozen=True)
@@ -19,26 +20,15 @@ class FindEntity:
         self.uow = uow
 
     def find(self, cmd: FindEntityQuery):
-        if cmd.type == "task":
-            yield from (
-                FindTask(self.uow)
-                .find(
-                    FindTaskQuery(
-                        cmd.spec, cmd.order_by, cmd.reverse
-                    )
-                )
-            )
-            return
-        elif cmd.type == "note":
-            yield from (
-                FindNote(self.uow)
-                .find(
-                    FindNoteQuery(
-                        cmd.spec, cmd.order_by, cmd.reverse
-                    )
-                )
-            )
-            return
-        else:
-            raise InvalidValue("unknown entity type")
-
+        match cmd.type:
+            case "task":
+                yield from (FindTask(self.uow).find(FindTaskQuery(cmd.spec, cmd.order_by, cmd.reverse)))
+                return
+            case "note":
+                yield from (FindNote(self.uow).find(FindNoteQuery(cmd.spec, cmd.order_by, cmd.reverse)))
+                return
+            case "session":
+                yield from (FindSession(self.uow).find(FindSessionQuery(cmd.spec, cmd.order_by, cmd.reverse)))
+                return
+            case _:
+                raise InvalidValue("unknown entity type")

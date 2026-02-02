@@ -60,4 +60,30 @@ def register_add_cmd(sub: argparse._SubParsersAction):
         metavar="<content>"
     )
 
+    ## Session Options
+    parser.add_argument("--message",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<message>"
+    )
+    parser.add_argument("--summary",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<summary>"
+    )
+    parser.add_argument("--started_at",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<start time>"
+    )
+    parser.add_argument("--ended_at",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<end time>"
+    )
+
     parser.set_defaults(handler=handle_add_cmd)

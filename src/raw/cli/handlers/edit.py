@@ -40,6 +40,16 @@ def handle_edit_cmd(args: argparse.Namespace):
         case "note":
             content = resolve_arg("content", args.content, entity.content)
             if content: cmd_kwargs.update({"content": content})
+        case "session":
+            message = resolve_arg("message", args.message, entity.message)
+            summary = resolve_arg("summary", args.summary, entity.summary)
+            started_at = parse_datetime(resolve_arg("started_at", args.started_at, entity.started_at), "started_at")
+            ended_at = parse_datetime(resolve_arg("ended_at", args.ended_at, entity.ended_at), "ended_at")
+
+            if message: cmd_kwargs.update({"message": message})
+            if summary: cmd_kwargs.update({"summary": summary})
+            if started_at: cmd_kwargs.update({"started_at": started_at})
+            if ended_at: cmd_kwargs.update({"ended_at": ended_at})
 
     cmd = EditEntityCmd(
         identifier=identifier,

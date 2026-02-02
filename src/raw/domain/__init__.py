@@ -1,8 +1,14 @@
-from .entities import Entity, Task, Note
+from .entities import Entity, Task, Note, Session, now
 from .enums import TaskStatus, EntityType
-from .interfaces import UnitOfWork, IntertypeRepository, TaskRepository, NoteRepository
+from .interfaces import (
+    UnitOfWork,
+    IntertypeRepository,
+    TaskRepository,
+    NoteRepository,
+    SessionRepository,
+)
 from .spec import Spec, FieldSpec, And, Or, Not, and_, or_, Operator
-from .editors import TaskEditor, NoteEditor
+from .editors import TaskEditor, NoteEditor, SessionEditor
 from .exc import (
     EntityRef,
     DomainError,
@@ -19,6 +25,7 @@ __all__ = (
     "Entity",
     "Task",
     "Note",
+    "Session",
 
     ## Enums
     "EntityType",
@@ -29,6 +36,7 @@ __all__ = (
     "IntertypeRepository",
     "TaskRepository",
     "NoteRepository",
+    "SessionRepository",
 
     ## Queries' Specifications
     # Models
@@ -48,6 +56,7 @@ __all__ = (
     ## Editors
     "TaskEditor",
     "NoteEditor",
+    "SessionEditor",
 
     ## Errors
     # Base
@@ -60,6 +69,7 @@ __all__ = (
     "InvalidState",
     "Unexpected",
 
-    # Helper Classes
+    # Helper Classes & Methods
     "EntityRef",
+    "now",
 )

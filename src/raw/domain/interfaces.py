@@ -1,6 +1,6 @@
 from typing import Protocol, Optional, Iterator
 
-from .entities import Task, Note
+from .entities import Task, Note, Session
 from .spec import Spec
 from .enums import EntityType
 
@@ -9,6 +9,7 @@ class UnitOfWork(Protocol):
     intertype: "IntertypeRepository"
     tasks: "TaskRepository"
     notes: "NoteRepository"
+    sessions: "SessionRepository"
     
     def commit(self) -> None: ...
     def rollback(self) -> None: ...
@@ -49,3 +50,16 @@ class NoteRepository(Protocol):
         order_by: str = None,
         reverse: bool = False
     ) -> Iterator[Note]: ...
+
+class SessionRepository(Protocol):
+    def add(self, entity: Session): ...
+    def save(self, entity: Session): ...
+    def get_by_id(self, id: int) -> Optional[Session]: ...
+    def get_by_title(self, title: str) -> Optional[Session]: ...
+    def get_active(self) -> Optional[Session]: ...
+    def filter(
+        self,
+        spec: Spec = None,
+        order_by: str = None,
+        reverse: bool = False
+    ) -> Iterator[Session]: ...
