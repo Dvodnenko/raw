@@ -31,7 +31,7 @@ class Entity:
 @dataclass(kw_only=True)
 class Task(Entity):
     
-    status: TaskStatus = TaskStatus.ACTIVE
+    status: TaskStatus = TaskStatus.INACTIVE
     deadline: Optional[datetime] = None
 
 @dataclass(kw_only=True)
