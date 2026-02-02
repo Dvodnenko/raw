@@ -13,25 +13,29 @@ def register_add_cmd(sub: argparse._SubParsersAction):
     """
 
     parser = sub.add_parser("add",
+        aliases=["create"],
         description="create a new entity",
         help="create a new entity")
     
     parser.add_argument("type")
 
     ## General Options, for All Entity Types
-    parser.add_argument("--title",
+    common_options = parser.add_argument_group(
+        "common options",
+    )
+    common_options.add_argument("--title",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<title>"
     )
-    parser.add_argument("--description",
+    common_options.add_argument("--description",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<desc>"
     )
-    parser.add_argument("--icon",
+    common_options.add_argument("--icon",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
@@ -39,13 +43,16 @@ def register_add_cmd(sub: argparse._SubParsersAction):
     )
 
     ## Task Options
-    parser.add_argument("--status",
+    task_options = parser.add_argument_group(
+        "task options",
+    )
+    task_options.add_argument("--status",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<status>"
     )
-    parser.add_argument("--deadline",
+    task_options.add_argument("--deadline",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
@@ -53,7 +60,10 @@ def register_add_cmd(sub: argparse._SubParsersAction):
     )
 
     ## Note Options
-    parser.add_argument("--content",
+    note_options = parser.add_argument_group(
+        "note options",
+    )
+    note_options.add_argument("--content",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
@@ -61,25 +71,28 @@ def register_add_cmd(sub: argparse._SubParsersAction):
     )
 
     ## Session Options
-    parser.add_argument("--message",
+    session_options = parser.add_argument_group(
+        "session options",
+    )
+    session_options.add_argument("--message",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<message>"
     )
-    parser.add_argument("--summary",
+    session_options.add_argument("--summary",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<summary>"
     )
-    parser.add_argument("--started_at",
+    session_options.add_argument("--started_at",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
         metavar="<start time>"
     )
-    parser.add_argument("--ended_at",
+    session_options.add_argument("--ended_at",
         nargs="?",
         const=EDITOR_SENTINEL,
         default=MISSING,
