@@ -24,7 +24,7 @@ def parse_datetime(value: str | None, name: str):
     dt = dateparser.parse(value)
     if not dt: # dateparser couldn't parse it => invalid format
         raise InvalidValue(f"invalid {name} format")
-    return dt
+    return dt.replace(microsecond=0)
 
 def parse_enum[T](value: str | None, enum: type[T], name: str) -> T | None:
     if value is None:
