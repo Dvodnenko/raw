@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlglot import exp
 
-from ....domain import Session, SessionRepository, Spec
+from ....domain import Session, SessionRepository, Spec, FieldSpec, Operator
 from ..spec_compiler import SpecCompilerSQL
 from ...exc import ConstraintViolated, StorageUnavailable
 
@@ -112,6 +112,10 @@ class SessionRepositorySQL(SessionRepository):
                 if result["ended_at"]
                 else None)
             )
+
+    def get_active_sessions(self, order_by: str = None, reverse: bool = False):
+        spec = FieldSpec("ended_at", Operator.EQ, None)
+        yield from self.filter(spec, order_by, reverse)
 
     def filter(self, spec: Spec = None, order_by: str = None, reverse: bool = False):
         query = self._build_task_select(spec, order_by, reverse)

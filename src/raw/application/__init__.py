@@ -19,5 +19,6 @@ from .queries.find import (
     FindSession, FindSessionQuery
 ) 
 from .queries.find_by_identifier import FindEntityByIdentifier, FindEntityByIdentifierQuery
+from .queries.get_active_sessions import GetActiveSessions, GetActiveSessionQuery
 
 from .identifier import Identifier

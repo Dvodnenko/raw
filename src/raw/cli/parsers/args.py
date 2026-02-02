@@ -4,6 +4,7 @@ from ..commands.init import register_init_cmd
 from ..commands.sql import register_sql_cmd
 from ..commands.add import register_add_cmd
 from ..commands.find import register_find_cmd
+from ..commands.gas import register_gas_cmd
 from ..commands.edit import register_edit_cmd
 from ..commands.remove import register_remove_cmd
 
@@ -32,6 +33,7 @@ def build_parser():
     register_sql_cmd(sub)
     register_add_cmd(sub)
     register_find_cmd(sub)
+    register_gas_cmd(sub)
     register_edit_cmd(sub)
     register_remove_cmd(sub)
 
