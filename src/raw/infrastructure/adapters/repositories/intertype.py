@@ -52,7 +52,7 @@ class IntertypeRepositorySQL(IntertypeRepository):
         old_prefix: str,
         new_prefix: str,
     ):
-        tables = ["identity", "task"]
+        tables = ["identity", "task", "note", "session", "folder"]
         
         for table in tables:
             stmt = f"""
