@@ -5,6 +5,7 @@ from ....domain import UnitOfWork,InvalidValue
 from .task import AddTask, AddTaskCmd
 from .note import AddNote, AddNoteCmd
 from .session import AddSession, AddSessionCmd
+from .folder import AddFolder, AddFolderCmd
 
 
 @dataclass(frozen=True)
@@ -24,5 +25,7 @@ class AddEntity:
                 AddNote(self.uow).add(AddNoteCmd(**cmd.fields))
             case "session":
                 AddSession(self.uow).add(AddSessionCmd(**cmd.fields))
+            case "folder":
+                AddFolder(self.uow).add(AddFolderCmd(**cmd.fields))
             case _:
                 raise InvalidValue("unknown entity type")

@@ -17,7 +17,7 @@ def register_add_cmd(sub: argparse._SubParsersAction):
         description="create a new entity",
         help="create a new entity")
     
-    parser.add_argument("type")
+    parser.add_argument("type", choices=("task", "note", "session", "folder"))
 
     ## General Options, for All Entity Types
     common_options = parser.add_argument_group(

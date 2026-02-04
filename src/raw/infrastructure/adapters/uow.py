@@ -6,6 +6,7 @@ from .repositories.intertype import IntertypeRepositorySQL
 from .repositories.task import TaskRepositorySQL
 from .repositories.note import NoteRepositorySQL
 from .repositories.session import SessionRepositorySQL
+from .repositories.folder import FolderRepositorySQL
 
 
 class UnitOfWorkSQL(UnitOfWork):
@@ -24,6 +25,7 @@ class UnitOfWorkSQL(UnitOfWork):
         self.tasks = TaskRepositorySQL(self._conn)
         self.notes = NoteRepositorySQL(self._conn)
         self.sessions = SessionRepositorySQL(self._conn)
+        self.folders = FolderRepositorySQL(self._conn)
 
         return self
 

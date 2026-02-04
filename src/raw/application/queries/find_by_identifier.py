@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ...domain import UnitOfWork, EntityType, NotFound, EntityRef
-from .find import TaskView, NoteView, SessionView
+from .find import TaskView, NoteView, SessionView, FolderView
 from ..identifier import Identifier
 
 
@@ -68,4 +68,14 @@ class FindEntityByIdentifier:
                         ended_at=session.ended_at,
                         is_active=session.is_active,
                         duration=session.duration
+                    )
+                case EntityType.FOLDER:
+                    folder = self.uow.folders.get_by_id(id)
+                        
+                    return FolderView(
+                        id=folder.id,
+                        title=folder.title,
+                        description=folder.description,
+                        icon=folder.icon,
+                        parent_id=folder.parent_id,
                     )

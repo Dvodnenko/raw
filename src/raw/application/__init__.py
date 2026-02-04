@@ -3,12 +3,14 @@ from .commands.add import (
     AddTask, AddTaskCmd,
     AddNote, AddNoteCmd,
     AddSession, AddSessionCmd,
+    AddFolder, AddFolderCmd,
 )
 from .commands.edit import (
     EditEntity, EditEntityCmd,
     EditTask, EditTaskCmd,
     EditNote, EditNoteCmd,
     EditSession, EditSessionCmd,
+    EditFolder, EditFolderCmd,
 )
 from .commands.remove import Remove, RemoveCmd
 from .commands.start import StartSession, StartSessionCmd
@@ -18,7 +20,8 @@ from .queries.find import (
     FindEntity, FindEntityQuery,
     FindTask, FindTaskQuery,
     FindNote, FindNoteQuery,
-    FindSession, FindSessionQuery
+    FindSession, FindSessionQuery,
+    FindFolder, FindFolderQuery,
 ) 
 from .queries.find_by_identifier import FindEntityByIdentifier, FindEntityByIdentifierQuery
 from .queries.get_active_sessions import GetActiveSessions, GetActiveSessionQuery

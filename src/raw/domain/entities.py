@@ -60,3 +60,7 @@ class Session(Entity):
     @property
     def duration(self):
         return (self.ended_at or now()) - self.started_at
+
+@dataclass(kw_only=True)
+class Folder(Entity):
+    ...

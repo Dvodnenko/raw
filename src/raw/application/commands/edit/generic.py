@@ -3,11 +3,12 @@ from typing import Any
 
 from ....domain import (
     UnitOfWork, TaskEditor, NoteEditor, NotFound,
-    EntityRef, EntityType, SessionEditor)
+    EntityRef, EntityType, SessionEditor, FolderEditor)
 from ...identifier import Identifier
 from .task import EditTask, EditTaskCmd
 from .note import EditNote, EditNoteCmd
 from .session import EditSession, EditSessionCmd
+from .folder import EditFolder, EditFolderCmd
 
 
 @dataclass(frozen=True)
@@ -48,3 +49,9 @@ class EditEntity:
                     SessionEditor(**cmd.fields)
                 )
                 EditSession(self.uow).edit(cmd)
+            case EntityType.FOLDER:
+                cmd = EditFolderCmd(
+                    cmd.identifier,
+                    FolderEditor(**cmd.fields)
+                )
+                EditFolder(self.uow).edit(cmd)

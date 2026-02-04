@@ -13,3 +13,4 @@ class EntityType(Enum):
     TASK = "task"
     NOTE = "note"
     SESSION = "session"
+    FOLDER = "folder"

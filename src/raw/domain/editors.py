@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 
-from .entities import Task, Note, Session
+from .entities import Task, Note, Session, Folder
 from .enums import TaskStatus
 from ..shared import MISSING
 
@@ -97,4 +97,28 @@ class SessionEditor:
             summary=self.summary if self.summary is not MISSING else session.summary,
             started_at=self.started_at if self.started_at is not MISSING else session.started_at,
             ended_at=self.ended_at if self.ended_at is not MISSING else session.ended_at
+        )
+
+class FolderEditor:
+    def __init__(
+        self,
+        title: Optional[str] = MISSING,
+        description: Optional[str] = MISSING,
+        icon: Optional[str] = MISSING,
+    ):
+        self.title = title
+        self.description = description
+        self.icon = icon
+
+    def apply(self, folder: Folder) -> Folder:
+        return Folder(
+            id=folder.id,
+            title=self.title if self.title is not MISSING else folder.title,
+            description=(
+                self.description
+                if self.description is not MISSING
+                else folder.description
+            ),
+            icon=self.icon if self.icon is not MISSING else folder.icon,
+            parent_id=folder.parent_id, # it cannot be changed here
         )
