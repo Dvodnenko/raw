@@ -11,6 +11,8 @@ from .commands.edit import (
     EditSession, EditSessionCmd,
 )
 from .commands.remove import Remove, RemoveCmd
+from .commands.start import StartSession, StartSessionCmd
+from .commands.stop import StopSession, StopSessionCmd
 
 from .queries.find import (
     FindEntity, FindEntityQuery,
