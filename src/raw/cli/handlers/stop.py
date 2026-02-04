@@ -1,0 +1,47 @@
+import argparse
+
+from ...config import DB_PATH
+from ..resolvers import resolve_arg, parse_datetime
+
+
+def handle_stop_cmd(args: argparse.Namespace):
+    from ...domain import NotFound, EntityRef, SessionEditor
+    from ...application import (
+        StopSession, StopSessionCmd, FindEntityByIdentifier,
+        FindEntityByIdentifierQuery, Identifier
+    )
+    from ...infrastructure import UnitOfWorkSQL
+    
+    cmd_kwargs = {}
+
+    identifier = Identifier(args.identifier)
+
+    # check if the session exists. if so - grab values for initial text in editor
+    query = FindEntityByIdentifierQuery(identifier)
+    entity = FindEntityByIdentifier(UnitOfWorkSQL(DB_PATH)).find(query)
+    if not entity:
+        raise NotFound(EntityRef(identifier.value))
+
+    title = resolve_arg("title", args.title, entity.title)
+    description = resolve_arg("description", args.description, entity.description)
+    icon = resolve_arg("icon", args.icon, entity.icon)
+    message = resolve_arg("message", args.message, entity.message)
+    summary = resolve_arg("summary", args.summary, entity.summary)
+    started_at = parse_datetime(resolve_arg("started_at", args.started_at, entity.started_at), "started_at")
+    ended_at = parse_datetime(resolve_arg("ended_at", args.ended_at, entity.ended_at), "ended_at")
+
+    if title: cmd_kwargs.update({"title": title})
+    if description: cmd_kwargs.update({"description": description})
+    if icon: cmd_kwargs.update({"icon": icon})
+    if message: cmd_kwargs.update({"message": message})
+    if summary: cmd_kwargs.update({"summary": summary})
+    if started_at: cmd_kwargs.update({"started_at": started_at})
+    if ended_at: cmd_kwargs.update({"ended_at": ended_at})
+
+    cmd = StopSessionCmd(
+        identifier=identifier,
+        editor=SessionEditor(**cmd_kwargs)
+    )
+    interactor = StopSession(UnitOfWorkSQL(DB_PATH))
+
+    interactor.stop(cmd)

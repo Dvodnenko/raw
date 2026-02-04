@@ -28,4 +28,4 @@ def handle_find_cmd(args: argparse.Namespace):
     interactor = FindEntity(UnitOfWorkSQL(DB_PATH))
 
     for entity in interactor.find(cmd):
-        print(f"#{entity.id} {entity.title}")
+        print(f"#{entity.id} {entity.title} {entity.duration}")

@@ -7,6 +7,8 @@ from ..commands.find import register_find_cmd
 from ..commands.gas import register_gas_cmd
 from ..commands.edit import register_edit_cmd
 from ..commands.remove import register_remove_cmd
+from ..commands.start import register_start_cmd
+from ..commands.stop import register_stop_cmd
 
 
 class ArgumentParser(argparse.ArgumentParser):
@@ -36,5 +38,7 @@ def build_parser():
     register_gas_cmd(sub)
     register_edit_cmd(sub)
     register_remove_cmd(sub)
+    register_start_cmd(sub)
+    register_stop_cmd(sub)
 
     return parser
