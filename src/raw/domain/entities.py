@@ -49,9 +49,6 @@ class Session(Entity):
         super().__post_init__()
         if self.started_at is None:
             raise InvalidValue("start time is required")
-        if not self.is_active:
-            if self.started_at > self.ended_at:
-                raise InvalidState("start time cannot be later than end time")
 
     @property
     def is_active(self):
