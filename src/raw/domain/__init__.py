@@ -1,5 +1,5 @@
 from .entities import Entity, Task, Note, Session, Folder, now
-from .enums import TaskStatus, EntityType
+from .enums import EntityType
 from .interfaces import (
     UnitOfWork,
     IntertypeRepository,
@@ -31,7 +31,6 @@ __all__ = (
 
     ## Enums
     "EntityType",
-    "TaskStatus",
 
     ## Interfaces
     "UnitOfWork",

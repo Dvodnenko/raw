@@ -5,7 +5,6 @@ from ..resolvers import resolve_arg, parse_datetime, parse_enum
 
 
 def handle_add_cmd(args: argparse.Namespace):
-    from ...domain import TaskStatus
     from ...application import AddEntity, AddEntityCmd
     from ...infrastructure import UnitOfWorkSQL
     
@@ -17,7 +16,7 @@ def handle_add_cmd(args: argparse.Namespace):
     icon = resolve_arg("icon", args.icon)
 
     ## Task Options
-    status = parse_enum(resolve_arg("status", args.status), TaskStatus, "status")
+    status = resolve_arg("status", args.status)
     deadline = parse_datetime(resolve_arg("deadline", args.deadline), "deadline")
     ## Note Options
     content = resolve_arg("content", args.content)

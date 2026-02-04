@@ -1,11 +1,11 @@
 import argparse
 
 from ...config import DB_PATH
-from ..resolvers import resolve_arg, parse_datetime, parse_enum
+from ..resolvers import resolve_arg, parse_datetime
 
 
 def handle_edit_cmd(args: argparse.Namespace):
-    from ...domain import TaskStatus, NotFound, EntityRef
+    from ...domain import NotFound, EntityRef
     from ...application import (
         EditEntity, EditEntityCmd, FindEntityByIdentifier,
         FindEntityByIdentifierQuery, Identifier
@@ -32,7 +32,7 @@ def handle_edit_cmd(args: argparse.Namespace):
 
     match entity.type:
         case "task":
-            status = parse_enum(resolve_arg("status", args.status, entity.status), TaskStatus, "status")
+            status = resolve_arg("status", args.status, entity.status)
             deadline = parse_datetime(resolve_arg("deadline", args.deadline, entity.deadline), "deadline")
 
             if status: cmd_kwargs.update({"status": status})

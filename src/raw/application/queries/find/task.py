@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Iterator
 from datetime import datetime
 
-from ....domain import UnitOfWork, Spec, TaskStatus, EntityType
+from ....domain import UnitOfWork, Spec
 
 
 @dataclass(frozen=True)
@@ -12,7 +12,7 @@ class TaskView:
     description: str
     icon: str
     parent_id: Optional[int]
-    status: TaskStatus
+    status: str
     deadline: Optional[datetime]
     type: str = "task"
 

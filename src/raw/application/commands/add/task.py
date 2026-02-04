@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from ....domain import (
-    Task, TaskStatus, UnitOfWork,
+    Task, UnitOfWork,
     NotFound, AlreadyExists, EntityRef
 )
 from ...common import _extract_parent_title
@@ -14,7 +14,7 @@ class AddTaskCmd:
     title: Optional[str] = ""
     description: Optional[str] = ""
     icon: Optional[str] = ""
-    status: Optional[TaskStatus] = TaskStatus.INACTIVE
+    status: Optional[str] = ""
     deadline: Optional[datetime] = None
 
 class AddTask:

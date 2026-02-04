@@ -2,7 +2,6 @@ from typing import Optional
 from datetime import datetime
 
 from .entities import Task, Note, Session, Folder
-from .enums import TaskStatus
 from ..shared import MISSING
 
 
@@ -12,7 +11,7 @@ class TaskEditor:
         title: Optional[str] = MISSING,
         description: Optional[str] = MISSING,
         icon: Optional[str] = MISSING,
-        status: Optional[TaskStatus] = MISSING,
+        status: Optional[str] = MISSING,
         deadline: Optional[datetime] = MISSING,
     ):
         self.title = title

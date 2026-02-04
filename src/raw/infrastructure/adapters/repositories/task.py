@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlglot import exp
 
-from ....domain import Task, TaskStatus, TaskRepository, Spec
+from ....domain import Task, TaskRepository, Spec
 from ..spec_compiler import SpecCompilerSQL
 from ...exc import ConstraintViolated, StorageUnavailable
 
@@ -45,7 +45,7 @@ class TaskRepositorySQL(TaskRepository):
                     "description": task.description,
                     "icon": task.icon,
                     "deadline": task.deadline.isoformat(sep=" ") if task.deadline else None,
-                    "status": task.status.value,
+                    "status": task.status,
                 }
             )
         except OperationalError as exc:
@@ -72,7 +72,7 @@ class TaskRepositorySQL(TaskRepository):
             description=result["description"],
             icon=result["icon"],
             parent_id=result["parent_id"],
-            status=TaskStatus(result["status"]),
+            status=result["status"],
             deadline=(
                 datetime.fromisoformat(result["deadline"])
                 if result["deadline"]
@@ -99,7 +99,7 @@ class TaskRepositorySQL(TaskRepository):
             description=result["description"],
             icon=result["icon"],
             parent_id=result["parent_id"],
-            status=TaskStatus(result["status"]),
+            status=result["status"],
             deadline=(
                 datetime.fromisoformat(result["deadline"])
                 if result["deadline"]
@@ -120,7 +120,7 @@ class TaskRepositorySQL(TaskRepository):
                 title=row["title"],
                 description=row["description"],
                 icon=row["icon"],
-                status=TaskStatus(row["status"]),
+                status=row["status"],
                 deadline=(
                     datetime.fromisoformat(row["deadline"])
                     if row["deadline"]

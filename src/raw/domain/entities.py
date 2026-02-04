@@ -3,8 +3,7 @@ from datetime import datetime
 from typing import Optional
 import re
 
-from .enums import TaskStatus
-from .exc import InvalidValue, InvalidState
+from .exc import InvalidValue
 
 
 def now() -> datetime:
@@ -31,7 +30,7 @@ class Entity:
 @dataclass(kw_only=True)
 class Task(Entity):
     
-    status: TaskStatus = TaskStatus.INACTIVE
+    status: str = ""
     deadline: Optional[datetime] = None
 
 @dataclass(kw_only=True)
