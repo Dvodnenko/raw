@@ -1,5 +1,7 @@
 import argparse
 
+import jinja2
+
 from ...application import GetActiveSessions, GetActiveSessionQuery
 from ...infrastructure import UnitOfWorkSQL
 from ...config import config
@@ -15,5 +17,11 @@ def handle_gas_cmd(args: argparse.Namespace):
     )
     interactor = GetActiveSessions(UnitOfWorkSQL(config["core"]["database"]))
 
-    for entity in interactor.get_active_sessions(cmd):
-        print(f"#{entity.id} {entity.title}")
+    env = jinja2.Environment(
+        autoescape=False,
+        undefined=jinja2.StrictUndefined,
+    )
+    template = env.from_string(config["output"]["formats"]["session"])
+
+    for obj in interactor.get_active_sessions(cmd):
+        print(template.render(obj=obj))
