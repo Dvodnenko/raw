@@ -1,7 +1,7 @@
 import argparse
 
-from ...config import DB_PATH
-from ..resolvers import resolve_arg, parse_datetime, parse_enum
+from ...config import config
+from ..resolvers import resolve_arg, parse_datetime
 
 
 def handle_add_cmd(args: argparse.Namespace):
@@ -41,6 +41,6 @@ def handle_add_cmd(args: argparse.Namespace):
         type=type,
         fields=cmd_kwargs
     )
-    interactor = AddEntity(UnitOfWorkSQL(DB_PATH))
+    interactor = AddEntity(UnitOfWorkSQL(config["core"]["database"]))
 
     interactor.add(cmd)

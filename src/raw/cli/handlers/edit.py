@@ -1,6 +1,6 @@
 import argparse
 
-from ...config import DB_PATH
+from ...config import config
 from ..resolvers import resolve_arg, parse_datetime
 
 
@@ -18,7 +18,7 @@ def handle_edit_cmd(args: argparse.Namespace):
 
     # check if the entity exists. if so - grab values for initial text in editor
     query = FindEntityByIdentifierQuery(identifier)
-    entity = FindEntityByIdentifier(UnitOfWorkSQL(DB_PATH)).find(query)
+    entity = FindEntityByIdentifier(UnitOfWorkSQL(config["core"]["database"])).find(query)
     if not entity:
         raise NotFound(EntityRef(identifier.value))
 
@@ -55,6 +55,6 @@ def handle_edit_cmd(args: argparse.Namespace):
         identifier=identifier,
         fields=cmd_kwargs
     )
-    interactor = EditEntity(UnitOfWorkSQL(DB_PATH))
+    interactor = EditEntity(UnitOfWorkSQL(config["core"]["database"]))
 
     interactor.edit(cmd)
