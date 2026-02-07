@@ -1,5 +1,7 @@
 import argparse
 
+import jinja2
+
 from ...domain import InvalidValue
 from ...application import FindEntity, FindEntityQuery
 from ...infrastructure import UnitOfWorkSQL
@@ -27,5 +29,11 @@ def handle_find_cmd(args: argparse.Namespace):
     )
     interactor = FindEntity(UnitOfWorkSQL(config["core"]["database"]))
 
-    for entity in interactor.find(cmd):
-        print(f"#{entity.id} {entity.title}")
+    env = jinja2.Environment(
+        autoescape=False,
+        undefined=jinja2.StrictUndefined,
+    )
+    template = env.from_string(config["formats"][args.type.rstrip("s")])
+
+    for obj in interactor.find(cmd):
+        print(template.render(obj=obj))

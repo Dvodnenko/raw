@@ -2,6 +2,8 @@ import tempfile
 import subprocess
 import os
 
+from ..config import config
+
 
 def from_editor(title: str, initial_text: str = ""):
     with tempfile.NamedTemporaryFile(
@@ -10,7 +12,7 @@ def from_editor(title: str, initial_text: str = ""):
     ) as tmpfile:
         tmpfile.write(initial_text)
 
-    subprocess.run(["open", "-a", "TextEdit", "-W", tmpfile.name])
+    subprocess.run([*config["uix"]["editor"].split(" "), tmpfile.name])
     with open(tmpfile.name, "r") as file:
         content = file.read()
         

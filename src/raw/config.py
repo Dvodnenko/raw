@@ -8,6 +8,15 @@ DEFAULT_CONFIG = {
     "core": {
         "database": f"{Path.home()}/.local/share/raw/raw.db",
     },
+    "formats": {
+        "task": "#{{ obj.id }} {{ obj.title }}",
+        "note": "#{{ obj.id }} {{ obj.title }}",
+        "session": "#{{ obj.id }} {{ obj.title }}",
+        "folder": "#{{ obj.id }} {{ obj.title }}",
+    },
+    "uix": {
+        "editor": "vim"
+    }
 }
 
 
