@@ -2,6 +2,7 @@ import argparse
 
 import jinja2
 
+from ...shared import MISSING
 from ...domain import InvalidValue
 from ...application import FindEntity, FindEntityQuery
 from ...infrastructure import UnitOfWorkSQL
@@ -11,8 +12,13 @@ from ..parsers import parse_infix
 
 
 def handle_find_cmd(args: argparse.Namespace):
+    type: str = args.type.rstrip("s")
     raw_filter = resolve_arg("specification", args.where)
-    order_by = resolve_arg("orderby", args.orderby)
+    reverse: bool = config["output"]["order"][type][1] != args.r
+    order_by: str = config["output"]["order"][type][0]
+
+    if args.orderby is not (MISSING or None):
+        order_by = args.orderby
 
     spec = None
     if raw_filter:
@@ -22,10 +28,10 @@ def handle_find_cmd(args: argparse.Namespace):
             raise InvalidValue("invalid filter") from exc
 
     cmd = FindEntityQuery(
-        type=args.type.rstrip("s"),
+        type=type,
         spec=spec,
         order_by=order_by or "id",
-        reverse=args.r,
+        reverse=reverse,
     )
     interactor = FindEntity(UnitOfWorkSQL(config["core"]["database"]))
 
@@ -33,7 +39,7 @@ def handle_find_cmd(args: argparse.Namespace):
         autoescape=False,
         undefined=jinja2.StrictUndefined,
     )
-    template = env.from_string(config["formats"][args.type.rstrip("s")])
+    template = env.from_string(config["output"]["formats"][type])
 
     for obj in interactor.find(cmd):
         print(template.render(obj=obj))

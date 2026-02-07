@@ -8,11 +8,19 @@ DEFAULT_CONFIG = {
     "core": {
         "database": f"{Path.home()}/.local/share/raw/raw.db",
     },
-    "formats": {
-        "task": "#{{ obj.id }} {{ obj.title }}",
-        "note": "#{{ obj.id }} {{ obj.title }}",
-        "session": "#{{ obj.id }} {{ obj.title }}",
-        "folder": "#{{ obj.id }} {{ obj.title }}",
+    "output":{
+        "formats": {
+            "task": "#{{ obj.id }} {{ obj.title }}",
+            "note": "#{{ obj.id }} {{ obj.title }}",
+            "session": "#{{ obj.id }} {{ obj.title }}",
+            "folder": "#{{ obj.id }} {{ obj.title }}",
+        },
+        "order": {
+            "task": ["id", False],
+            "note": ["id", False],
+            "session": ["id", False],
+            "folder": ["id", False],
+        },
     },
     "uix": {
         "editor": "vim"
