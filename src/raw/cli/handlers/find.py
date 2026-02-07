@@ -3,7 +3,7 @@ import argparse
 from ...domain import InvalidValue
 from ...application import FindEntity, FindEntityQuery
 from ...infrastructure import UnitOfWorkSQL
-from ...config import DB_PATH
+from ...config import config
 from ..resolvers import resolve_arg
 from ..parsers import parse_infix
 
@@ -25,7 +25,7 @@ def handle_find_cmd(args: argparse.Namespace):
         order_by=order_by or "id",
         reverse=args.r,
     )
-    interactor = FindEntity(UnitOfWorkSQL(DB_PATH))
+    interactor = FindEntity(UnitOfWorkSQL(config["core"]["database"]))
 
     for entity in interactor.find(cmd):
         print(f"#{entity.id} {entity.title}")

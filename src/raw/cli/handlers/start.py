@@ -1,6 +1,6 @@
 import argparse
 
-from ...config import DB_PATH
+from ...config import config
 from ..resolvers import resolve_arg, parse_datetime
 
 
@@ -31,6 +31,6 @@ def handle_start_cmd(args: argparse.Namespace):
     cmd = StartSessionCmd(
         **cmd_kwargs,
     )
-    interactor = StartSession(UnitOfWorkSQL(DB_PATH))
+    interactor = StartSession(UnitOfWorkSQL(config["core"]["database"]))
 
     interactor.start(cmd)

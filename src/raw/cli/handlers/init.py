@@ -1,12 +1,13 @@
 import argparse
 import sqlite3
+from pathlib import Path
 
-from ...config import DB_PATH
+from ...config import config
 
 
 def handle_init_cmd(args: argparse.Namespace):
     from ...infrastructure import create_tables, create_db_file
 
-    with sqlite3.connect(DB_PATH) as conn:
-        create_db_file(DB_PATH)
+    create_db_file(Path(config["core"]["database"]))
+    with sqlite3.connect(config["core"]["database"]) as conn:
         create_tables(conn)

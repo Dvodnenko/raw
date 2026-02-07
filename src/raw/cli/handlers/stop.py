@@ -1,6 +1,6 @@
 import argparse
 
-from ...config import DB_PATH
+from ...config import config
 from ..resolvers import resolve_arg, parse_datetime
 
 
@@ -18,7 +18,7 @@ def handle_stop_cmd(args: argparse.Namespace):
 
     # check if the session exists. if so - grab values for initial text in editor
     query = FindEntityByIdentifierQuery(identifier)
-    entity = FindEntityByIdentifier(UnitOfWorkSQL(DB_PATH)).find(query)
+    entity = FindEntityByIdentifier(UnitOfWorkSQL(config["core"]["database"])).find(query)
     if not entity:
         raise NotFound(EntityRef(identifier.value))
 
@@ -42,6 +42,6 @@ def handle_stop_cmd(args: argparse.Namespace):
         identifier=identifier,
         editor=SessionEditor(**cmd_kwargs)
     )
-    interactor = StopSession(UnitOfWorkSQL(DB_PATH))
+    interactor = StopSession(UnitOfWorkSQL(config["core"]["database"]))
 
     interactor.stop(cmd)
