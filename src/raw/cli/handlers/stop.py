@@ -1,5 +1,6 @@
 import argparse
 
+from ...shared import MISSING
 from ...config import config
 from ..resolvers import resolve_arg, parse_datetime
 
@@ -30,13 +31,13 @@ def handle_stop_cmd(args: argparse.Namespace):
     started_at = parse_datetime(resolve_arg("started_at", args.started_at, entity.started_at), "started_at")
     ended_at = parse_datetime(resolve_arg("ended_at", args.ended_at, entity.ended_at), "ended_at")
 
-    if title: cmd_kwargs.update({"title": title})
-    if description: cmd_kwargs.update({"description": description})
-    if icon: cmd_kwargs.update({"icon": icon})
-    if message: cmd_kwargs.update({"message": message})
-    if summary: cmd_kwargs.update({"summary": summary})
-    if started_at: cmd_kwargs.update({"started_at": started_at})
-    if ended_at: cmd_kwargs.update({"ended_at": ended_at})
+    if title is not MISSING: cmd_kwargs.update({"title": title})
+    if description is not MISSING: cmd_kwargs.update({"description": description})
+    if icon is not MISSING: cmd_kwargs.update({"icon": icon})
+    if message is not MISSING: cmd_kwargs.update({"message": message})
+    if summary is not MISSING: cmd_kwargs.update({"summary": summary})
+    if started_at is not MISSING: cmd_kwargs.update({"started_at": started_at})
+    if ended_at is not MISSING: cmd_kwargs.update({"ended_at": ended_at})
 
     cmd = StopSessionCmd(
         identifier=identifier,

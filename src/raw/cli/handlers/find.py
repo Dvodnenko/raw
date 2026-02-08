@@ -20,6 +20,9 @@ def handle_find_cmd(args: argparse.Namespace):
     if args.orderby is not (MISSING or None):
         order_by = args.orderby
 
+    if raw_filter is MISSING:
+        raw_filter = None
+
     spec = None
     if raw_filter:
         try:

@@ -6,20 +6,22 @@ from .constants import EDITOR_SENTINEL
 from .editor import from_editor
 
 
-def resolve_arg(name: str, value: str | _Missing, initial_text: str = "") -> str | None:
+def resolve_arg(name: str, value: str | _Missing, initial_text: str = "") -> str | None | _Missing:
     """
     resolves the tri-state UX logic. does NOT parse/cast data types
     """
     if value is MISSING:
-        return None
+        return MISSING
     if value == EDITOR_SENTINEL:
-        return from_editor(name, initial_text)
+        value = from_editor(name, initial_text)
+    if value.lower() == "null":
+        return None
     return value
 
 
 def parse_datetime(value: str | None, name: str):
-    if value is None:
-        return None
+    if value in (None, MISSING):
+        return value
     
     dt = dateparser.parse(value)
     if not dt: # dateparser couldn't parse it => invalid format
