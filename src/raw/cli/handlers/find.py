@@ -15,10 +15,10 @@ def handle_find_cmd(args: argparse.Namespace):
     type: str = args.type.rstrip("s")
     raw_filter = resolve_arg("specification", args.where)
     reverse: bool = config["output"]["order"][type][1] != args.r
-    order_by: str = config["output"]["order"][type][0]
+    order_by = resolve_arg("orderby", args.orderby)
 
-    if args.orderby is not (MISSING or None):
-        order_by = args.orderby
+    if order_by is MISSING:
+        order_by = config["output"]["order"][type][0]
 
     if raw_filter is MISSING:
         raw_filter = None
