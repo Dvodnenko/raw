@@ -74,6 +74,8 @@ class Parser:
         op = Operator(self.consume())
         value = self.consume()
 
+        if field.startswith("'") and field.endswith("'"):
+            field = field[1:-1]
         if value == "null":
             value = None
         elif (name := field) in ("deadline", "started_at", "ended_at"): # then value need to be parsed as a datetime

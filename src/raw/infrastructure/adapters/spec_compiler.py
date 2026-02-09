@@ -2,7 +2,7 @@ from typing import Any
 from datetime import datetime, date
 from enum import Enum
 
-from sqlglot import exp
+from sqlglot import exp, parse_one
 
 from ...domain import FieldSpec, And, Or, Not, Spec
 
@@ -53,7 +53,7 @@ class SpecCompilerSQL:
         if operator not in OPERATOR_MAP:
             raise ValueError(f"Unsupported operator: {operator}")
 
-        column = exp.column(field)
+        column = parse_one(field, dialect="sqlite")
 
         if operator == "in":
             if not isinstance(value, (list, tuple, set)):
