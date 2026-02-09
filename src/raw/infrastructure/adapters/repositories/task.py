@@ -165,7 +165,7 @@ class TaskRepositorySQL(TaskRepository):
                     "description": task.description,
                     "icon": task.icon,
                     "deadline": task.deadline.isoformat(sep=" ") if task.deadline else None,
-                    "status": task.status.value,
+                    "status": task.status,
                 }
             )
         except OperationalError as exc:
