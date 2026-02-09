@@ -9,7 +9,7 @@ TOKEN_RE = re.compile(
     \s*(
         \(|\)
         |and|or|not
-        |eq|ne|gt|lt|gte|lte|like
+        |eq|ne|gte|lte|gt|lt|like
         |[a-zA-Z_][a-zA-Z0-9_]*
         |'[^']*'
         |\S
