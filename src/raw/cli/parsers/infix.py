@@ -1,6 +1,7 @@
 import re
 
 from ...domain import Spec, FieldSpec, And, Or, Not, InvalidValue, Operator
+from ..resolvers import parse_datetime
 
 
 TOKEN_RE = re.compile(
@@ -75,6 +76,8 @@ class Parser:
 
         if value == "null":
             value = None
+        elif (name := field) in ("deadline", "started_at", "ended_at"): # then value need to be parsed as a datetime
+            value = parse_datetime(value, name)
         elif value.startswith("'") and value.endswith("'"):
             value = value[1:-1]
 
