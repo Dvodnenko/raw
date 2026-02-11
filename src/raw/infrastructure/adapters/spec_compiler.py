@@ -58,9 +58,12 @@ class SpecCompilerSQL:
         if operator == "in":
             if not isinstance(value, (list, tuple, set)):
                 raise TypeError("IN operator expects iterable value")
+            
+            res = column.isin(
+                *[exp.Literal.string(v)
+                  for v in value])
 
-            literals = [exp.Literal(this=v) for v in value]
-            return column.isin(exp.Tuple(expressions=literals))
+            return res
 
         literal = self._to_sql_literal(value)
         return OPERATOR_MAP[operator](column, literal)

@@ -1,6 +1,6 @@
-from typing import Protocol, Optional, Iterator
+from typing import Protocol, Optional, Iterator, Sequence
 
-from .entities import Task, Note, Session, Folder
+from .entities import Entity, Task, Note, Session, Folder
 from .spec import Spec
 from .enums import EntityType
 
@@ -24,6 +24,13 @@ class IntertypeRepository(Protocol):
     def resolve_type(self, id: int) -> EntityType | None: ...
     def resolve_type_by_title(self, title: str) -> EntityType | None: ...
     def resolve_id_by_title(self, title: str) -> int | None: ...
+    def filter(
+        self,
+        types: tuple[str],
+        spec: Spec = None,
+        order_by: str = None,
+        reverse: bool = False
+    ) -> Iterator[Entity]: ...
     def remove(self, id: int): ...
     def rewrite_subtree_titles(self, old_prefix: str, new_prefix: str): ...
 
