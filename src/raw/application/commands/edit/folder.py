@@ -51,15 +51,21 @@ class EditFolder:
             # or only title of folder itself (only title = last title segment,
             # in "/a/b/c" it's "c")
             new_parent_path = _extract_parent_title(edited.title)
+
             if new_parent_path != old_parent_path: # parent changed
-                # checking if the new parent exists
-                new_parent_id = self.uow.intertype.resolve_id_by_title(new_parent_path)
-                if not new_parent_id:
-                    raise NotFound(EntityRef(new_parent_path))
-                # parent id changes ONLY if:
-                # 1. parent title was changed
-                # 2. new parent exists
-                edited.parent_id = new_parent_id
+                if new_parent_path is None: # entity has been moved to the root folder
+                    edited.parent_id = None
+                else: # entity has been moved NOT to the root folder
+                    # here, the new_parent_id must exist cuz 
+                    # we know from above that entity has been moved 
+                    # NOT into the root folder, hense new parent must exist
+                    new_parent_id = self.uow.intertype.resolve_id_by_title(new_parent_path)
+                    if not new_parent_id:
+                        raise NotFound(EntityRef(new_parent_path))
+                    # parent id changes ONLY if:
+                    # 1. parent title was changed NOT into the root folder
+                    # 2. new parent exists
+                    edited.parent_id = new_parent_id
 
             self.uow.folders.save(edited)
 
