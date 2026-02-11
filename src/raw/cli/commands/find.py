@@ -5,13 +5,21 @@ from ..constants import EDITOR_SENTINEL
 from ..handlers.find import handle_find_cmd
 
 
+def split_by_commas(value: str):
+    if value == "all":
+        return ["task", "note", "session", "folder"]
+    return [
+        v.rstrip("s") # to convert plural to singular
+        for v in value.split(",")]
+
+
 def register_find_cmd(sub: argparse._SubParsersAction):
     parser = sub.add_parser("find",
         aliases=["print"],
         description="find entities by provided specification",
         help="find entities by provided specification")
     
-    parser.add_argument("type")
+    parser.add_argument("types", type=split_by_commas)
     
     parser.add_argument("--where",
         nargs="?",

@@ -12,13 +12,13 @@ from ..parsers import parse_infix
 
 
 def handle_find_cmd(args: argparse.Namespace):
-    type: str = args.type.rstrip("s")
+    types: str = args.types
     raw_filter = resolve_arg("specification", args.where)
-    reverse: bool = config["output"]["order"][type][1] != args.r
+    reverse: bool = args.r
     order_by = resolve_arg("orderby", args.orderby)
 
-    if order_by is MISSING:
-        order_by = config["output"]["order"][type][0]
+    if order_by in (MISSING, None):
+        order_by = None
 
     if raw_filter is MISSING:
         raw_filter = None
@@ -31,18 +31,24 @@ def handle_find_cmd(args: argparse.Namespace):
             raise InvalidValue("invalid filter") from exc
 
     cmd = FindEntityQuery(
-        type=type,
+        types=types,
         spec=spec,
         order_by=order_by or "id",
         reverse=reverse,
     )
+
     interactor = FindEntity(UnitOfWorkSQL(config["core"]["database"]))
 
     env = jinja2.Environment(
         autoescape=False,
         undefined=jinja2.StrictUndefined,
     )
-    template = env.from_string(config["output"]["formats"][type])
+    templates = {
+        "task": env.from_string(config["output"]["formats"]["task"]),
+        "note": env.from_string(config["output"]["formats"]["note"]),
+        "session": env.from_string(config["output"]["formats"]["session"]),
+        "folder": env.from_string(config["output"]["formats"]["folder"]),
+    }
 
     for obj in interactor.find(cmd):
-        print(template.render(obj=obj))
+        print(templates[obj.type].render(obj=obj))
