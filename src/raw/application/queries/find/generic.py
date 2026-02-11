@@ -1,10 +1,42 @@
 from dataclasses import dataclass
+from typing import Optional
+from datetime import datetime, timedelta
 
 from ....domain import UnitOfWork, Spec, Task, Note, Session, Folder
-from .task import TaskView
-from .note import NoteView
-from .session import SessionView
-from .folder import FolderView
+
+
+@dataclass(frozen=True)
+class BaseView:
+    id: int
+    title: str
+    description: str
+    icon: str
+    parent_id: Optional[int]
+
+@dataclass(frozen=True)
+class TaskView(BaseView):
+    status: str
+    deadline: Optional[datetime]
+    type: str = "task"
+
+@dataclass(frozen=True)
+class NoteView(BaseView):
+    content: str
+    type: str = "note"
+
+@dataclass(frozen=True)
+class SessionView(BaseView):
+    message: str
+    summary: str
+    started_at: datetime
+    ended_at: Optional[datetime]
+    is_active: bool
+    duration: timedelta
+    type: str = "session"
+
+@dataclass(frozen=True)
+class FolderView(BaseView):
+    type: str = "folder"
 
 
 @dataclass(frozen=True)
