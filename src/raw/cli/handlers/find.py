@@ -16,9 +16,13 @@ def handle_find_cmd(args: argparse.Namespace):
     raw_filter = resolve_arg("specification", args.where)
     reverse: bool = args.r
     order_by = resolve_arg("orderby", args.orderby)
+    sepby = resolve_arg("sepby", args.sepby)
 
     if order_by in (MISSING, None):
         order_by = None
+
+    if sepby in (MISSING, None):
+        sepby = None
 
     if raw_filter is MISSING:
         raw_filter = None
@@ -50,5 +54,16 @@ def handle_find_cmd(args: argparse.Namespace):
         "folder": env.from_string(config["output"]["formats"]["folder"]),
     }
 
-    for obj in interactor.find(cmd):
-        print(templates[obj.type].render(obj=obj))
+    gen = interactor.find(cmd)
+    if sepby:
+        first_entity = next(gen)
+        print(templates[first_entity.type].render(obj=first_entity))
+        last_value = getattr(first_entity, sepby)
+        for obj in gen:
+            if (new_value := getattr(obj, sepby)) != last_value:
+                print()
+                last_value = new_value
+            print(templates[obj.type].render(obj=obj))
+    else:
+        for obj in gen:
+            print(templates[obj.type].render(obj=obj))

@@ -34,6 +34,13 @@ def register_find_cmd(sub: argparse._SubParsersAction):
         metavar="<field>",
         help="change output order"
     )
+    parser.add_argument("--sepby",
+        nargs="?",
+        const=EDITOR_SENTINEL,
+        default=MISSING,
+        metavar="<field>",
+        help="divide rows into groups"
+    )
     parser.add_argument("-r",
         action="store_true",
         help="reverse output"
