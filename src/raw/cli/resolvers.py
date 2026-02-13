@@ -1,4 +1,4 @@
-import dateparser
+from datetime import datetime
 
 from ..domain import InvalidValue
 from ..shared import MISSING, _Missing
@@ -22,16 +22,9 @@ def resolve_arg(name: str, value: str | _Missing, initial_text: str = "") -> str
 def parse_datetime(value: str | None, name: str):
     if value in (None, MISSING):
         return value
-    
-    dt = dateparser.parse(value)
-    if not dt: # dateparser couldn't parse it => invalid format
+
+    try:    
+        dt = datetime.fromisoformat(value)
+    except ValueError:
         raise InvalidValue(f"invalid {name} format")
     return dt.replace(microsecond=0)
-
-def parse_enum[T](value: str | None, enum: type[T], name: str) -> T | None:
-    if value is None:
-        return None
-    try:
-        return enum(value.lower())
-    except (ValueError, KeyError) as exc:
-        raise InvalidValue(f"invalid {name}") from exc
