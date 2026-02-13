@@ -137,7 +137,7 @@ class IntertypeRepositorySQL(IntertypeRepository):
         order_by: str = None,
         reverse: bool = False
     ) -> exp.Select:
-        query = (
+        subquery = (
             exp.select(
                 "identity.*",
                 
@@ -159,7 +159,9 @@ class IntertypeRepositorySQL(IntertypeRepository):
             .join("note", "identity.id = note.id", join_type="left")
             .join("session", "identity.id = session.id", join_type="left")
             .join("folder", "identity.id = folder.id", join_type="left")
+            .subquery()
         )
+        query = exp.select("*").from_(subquery)
         
         if spec:
             query = query.where(self._spec_compiler.compile(spec))
